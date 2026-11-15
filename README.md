@@ -13,8 +13,8 @@
 
 저장소의 Settings → Pages에서 `main` 브랜치를 배포하면 아래 주소로 열립니다.
 
-- 연구 허브: `https://tuna616.github.io/research-hub/`
-- 실험 도구모음: `https://tuna616.github.io/research-hub/lab-tools/`
+- 연구 허브: https://tuna616.github.io/research-hub/
+- 실험 도구모음: https://tuna616.github.io/research-hub/lab-tools/
 
 **내 컴퓨터에서 열기**
 
