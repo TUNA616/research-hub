@@ -678,6 +678,10 @@ hr.sep{border:0;border-top:1px solid var(--line);width:100%;margin:4px 0}
   .rfdup{flex-direction:column;align-items:stretch}.fig .ops .btn{flex:1 1 40%}.fig .ops .btn.danger{margin-left:0}
   .dialog.pea header h2{font-size:14px}.figgrid{grid-template-columns:1fr}
 }
+.steps{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:420px){.steps{grid-template-columns:1fr}}
+.fig .ops .btn.danger.armed{background:#b3372f;border-color:#b3372f;color:#fff}
 .welcome{background:var(--gold-soft);border:1px solid var(--gold);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:14px;line-height:1.6}
 .quick{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .qlink{font-size:13px;font-weight:600;text-decoration:none;padding:6px 11px;border-radius:999px;border:1px solid currentColor;color:inherit;opacity:.85;white-space:nowrap}
@@ -2117,7 +2121,7 @@ document.addEventListener("click",async e=>{
     await store.remove(p.id);S.sel=null;render();toast("삭제했어요");if(assets)ids.forEach(id=>assets.delete(id).catch(()=>{}));}
   else if(a==="view"){const f=p.figures[i];$("#viewTitle").textContent=f.label;$("#viewImg").src=figSrc(f);$("#viewCap").textContent=f.caption||"";$("#viewModal").hidden=false;$("#viewModal").dataset.i=i;}
   else if(a==="dlfig")dlFig(p,p.figures[i]);
-  else if(a==="delfig"){const f=p.figures[i];await store.update(p.id,{figures:p.figures.filter((_,k)=>k!==i)});if(assets&&f.asset)assets.delete(f.asset).catch(()=>{});}
+  else if(a==="delfig"){if(!t.classList.contains("armed")){t.classList.add("armed");t.textContent="한 번 더 누르면 빼요";setTimeout(()=>{if(t.isConnected){t.classList.remove("armed");t.textContent="이 그림 빼기";}},4000);return;}const f=p.figures[i];await store.update(p.id,{figures:p.figures.filter((_,k)=>k!==i)});if(assets&&f.asset)assets.delete(f.asset).catch(()=>{});}
   else if(a==="dltbl"){const tb=p.tables[i];download(baseName(p)+"_"+part(tb.label,30)+".csv",new Blob([toCsv(tb.rows)],{type:"text/csv"}));}
   else if(a==="dlfigs"){const zip=new JSZip();for(const f of p.figures){try{const bl=await figBlob(f);if(bl)zip.file(part(f.label,40)+".png",bl);}catch(e){}}download(baseName(p)+"_figures.zip",await zip.generateAsync({type:"blob"}));}
   else if(a==="crop")openCrop(p);
