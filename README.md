@@ -3,7 +3,8 @@
 논문을 찾고, 읽고, 분석하고, 원고를 쓰고, 그림을 그리는 일과 실험실 기록(프로젝트, 재료, 세포 stock, 발주, 실험노트, 실험 일정, 과제 계획서·보고서)을 한 화면에서 하는 연구용 웹 페이지입니다.
 설치할 것이 없고, 파일 하나(`index.html`)로 돌아갑니다.
 
-**바로 쓰기:** https://tuna616.github.io/research-hub/
+**바로 쓰기:** `https://<내아이디>.github.io/<저장소이름>/`
+(위 주소를 본인 저장소 주소로 바꿔 적어 주세요.)
 
 ---
 
@@ -11,7 +12,7 @@
 
 1. 위 주소를 크롬이나 엣지에서 엽니다.
 2. 처음 뜨는 창에 **사이트 이름**과 **내 연구 주제**를 적고 저장합니다. 연구 주제는 요약, 리서치, 검색 순위에 쓰입니다.
-3. 검색 탭에서 영문 키워드로 논문을 찾고, 마음에 드는 논문을 라이브러리에 담습니다.
+3. 문헌 검색 탭에서 영문 키워드로 논문을 찾고, 마음에 드는 논문을 라이브러리에 담습니다.
 4. AI 기능(요약, 번역, 리서치 도구, 원고 다듬기)을 자동으로 쓰려면 설정에 API 키를 넣습니다. 아래 "AI 연결"을 보세요.
 
 회원 가입이나 로그인은 없습니다. 자료는 모두 쓰는 사람의 브라우저에 저장됩니다.
@@ -23,10 +24,11 @@
 ### ① 찾기
 | 화면 | 할 수 있는 일 |
 |---|---|
-| 검색 | OpenAlex, Europe PMC, PubMed, Crossref, Semantic Scholar 동시 검색과 중복 병합. 관련성·영향력·최신성·출처·접근성 5계층 점수와 목적별 프로필. 내 연구 주제에 맞춘 정렬과 거르기. 고IF 저널 필터(JCR 2026 기준 표). 인용망 확장 |
+| 문헌 검색 | OpenAlex, Europe PMC, PubMed, Crossref, Semantic Scholar 동시 검색과 중복 병합. 관련성·영향력·최신성·출처·접근성 5계층 점수와 목적별 프로필. 내 연구 주제에 맞춘 정렬과 거르기. 고IF 저널 필터(JCR 2026 기준 표). 인용망 확장 |
+| 찾는 순서 안내 | 홈에서 "in vitro에서 CKD 모델로 섬유화 기전을 보고 싶어"처럼 쓰면, 이 사이트의 어느 탭·어느 DB를 어떤 순서로 쓰면 되는지 4~8단계로 안내하고 각 단계에서 바로 조회·이동. AI가 없으면 일반적인 순서를 보여 줌. 보고서로 저장 가능 |
 | 새 논문 알림 | 검색어를 구독하면 그 주제로 새로 나온 논문만 홈에 모아 보여 줌 |
 | 관계도 | 논문 한 편을 중심으로 선행 연구, 후속 연구, 비슷한 연구를 한 장에 표시. 여러 논문을 한꺼번에 놓고 놓친 핵심 논문 찾기. 내 라이브러리를 키워드로 이은 지도 |
-| DB 조회 | 공개 데이터베이스 16종을 바로 조회하고 AI로 해석. 유전자·서열(NCBI Gene, GenBank·RefSeq, Ensembl), 단백질·구조(UniProt, PDB), 변이(ClinVar, dbSNP), 경로(Reactome, KEGG), 암·면역·오믹스(GEO, GDC·TCGA, cBioPortal, Open Targets), 화합물(PubChem), 문헌·임상(PubMed, ClinicalTrials.gov). 그 밖에 ENA, DDBJ, EGA, JGA, dbGaP, GWAS Catalog, COSMIC, DepMap, ImmPort, IEDB, 국내 공공 바이오 데이터 포털 등은 검색 화면으로 바로 이동 |
+| DB 조회 | 질문 한 줄을 쓰면 AI가 맞는 DB를 1~3개 골라 조회하고 그 결과를 근거로 답함(어느 DB를 어떤 검색어로 찾았는지 함께 표시). DB를 직접 골라 조회할 수도 있음(29종 · 이름으로 DB 찾기, 최근 조회 다시 보기, 같은 검색어로 관련 DB에 넘기기 포함). 조회가 실패하면 그 자리에서 같은 내용을 찾을 수 있는 사이트 바로가기를 보여 주고, '연결 점검' 버튼으로 어느 DB가 이 브라우저에서 연결되는지 한 번에 확인 가능. 독성·식품 위해(PubChem 독성·GHS, openFDA 식품 회수), 스포츠 도핑(약리 분류로 WADA 금지 범주 추정 — 확정 판정 아님), 마약류 검출 정보(이론 m/z, DEA 규제 기록, 스펙트럼 라이브러리 바로가기), 질량·스펙트럼(이름·분자식·펩타이드 서열로 이론 m/z와 흔한 이온 표, 동위원소 분포 그림, PubChem에 모인 실측 LC-MS/MS·GC-MS 봉우리 그림, UV 흡수, 역상 HPLC 참고), 기전 분석·발현(g:Profiler 유전자 목록 농축 분석, STRING 상호작용망과 망 그림, Human Protein Atlas 신장 조직·단일세포 발현), 생물활성(ChEMBL·PubChem BioAssay의 EC50·IC50·Ki·Kd를 표적별로 요약), 합성 생성물 예측(반응물 + 반응물 | 반응 종류로 생성물 분자식·분자량 계산, AI가 예측한 구조 그림과 SMILES, 예측 질량 스펙트럼). 유전자·서열(NCBI Gene, GenBank·RefSeq, Ensembl), 단백질·구조(UniProt, PDB), 변이(ClinVar, dbSNP), 경로(Reactome, KEGG), 암·면역·오믹스(GEO, GDC·TCGA, cBioPortal, Open Targets), 세포주(Cellosaurus: ATCC·DSMZ·JCRB·KCLB 분양 번호와 오염 경고), 항체(Antibody Registry: RRID, 판매처·카탈로그), 동물 모델(Alliance: 질환·유전자별 모델, IMSR·JAX 분양 찾기), 화합물(PubChem), 문헌·임상(PubMed, ClinicalTrials.gov). 그 밖에 ENA, DDBJ, EGA, JGA, dbGaP, GWAS Catalog, COSMIC, DepMap, ImmPort, IEDB, 국내 공공 바이오 데이터 포털 등은 검색 화면으로 바로 이동 |
 
 ### ② 모으고 읽기
 | 화면 | 할 수 있는 일 |
@@ -44,7 +46,7 @@
 | 아이디어·설계 | 가설 생성, 실험 설계 점검, 소크라테스 대화 |
 | 쓰기·심사 | 초록·서론 초안, 동료 심사 패널, 심사 답변서, 투고 저널 추천, 한국어 글 다듬기, 자동 개선 루프 |
 
-결과는 보고서 탭에 자동으로 저장되고 Word, PPT, 엑셀, Markdown으로 내보낼 수 있습니다. 메뉴 순서는 홈 · 검색 · 라이브러리 · 관계도 · 리서치 · 원고 · 프로젝트·재료·방법·일정 · 일러스트레이터 · DB 조회 · 보고서입니다.
+결과는 보고서 탭에 자동으로 저장되고 Word, PPT, 엑셀, Markdown으로 내보낼 수 있습니다. 메뉴 순서는 홈 · 문헌 검색 · 라이브러리 · 관계도 · 리서치 · 원고 · 프로젝트·재료·방법·일정 · 일러스트레이터 · DB 조회 · 보고서입니다.
 
 ### ④ 쓰기
 | 화면 | 할 수 있는 일 |
@@ -111,6 +113,8 @@ AI를 쓰는 기능은 설정에 넣은 본인 API 키로 실행됩니다. 키�
 
 ## 알아 둘 점
 
+- **일부 DB는 브라우저에서 바로 연결되지 않습니다.** 이 사이트는 서버 없이 브라우저에서 DB 서버로 직접 요청합니다. 그래서 브라우저 요청을 받지 않는 DB(CORS 미허용)는 조회에 실패합니다. 내려받은 파일(file://)로 열면 요청에 주소가 없어(Origin: null) 거절하는 곳이 더 많으니, 가능하면 GitHub Pages 주소(https://…)로 여세요. DB 조회 탭의 '연결 점검'으로 확인할 수 있고, 실패한 DB는 화면에 뜨는 바로가기 링크로 찾으면 됩니다.
+
 - **AI가 만든 내용은 틀릴 수 있습니다.** 요약, 근거 문장, 증거 표, 그림에서 읽은 수치는 원문으로 확인하고 쓰세요.
 - **프로토콜, 과제 문서 초안, 평가**는 AI가 쓴 초안입니다. 농도와 조건은 제조사 설명서로, 비목과 비율 상한은 공고문으로 확인하세요. 평가는 실제 선정 결과를 예측하지 않습니다.
 - **재료 사진 읽기**는 이미지를 볼 수 있는 AI(Anthropic 또는 Google 키)가 필요합니다. 노란 줄로 표시된 칸은 꼭 직접 확인하세요.
@@ -143,7 +147,7 @@ AI를 쓰는 기능은 설정에 넣은 본인 API 키로 실행됩니다. 키�
 브라우저에서만 돌아가는 단일 HTML 파일입니다. 서버, 데이터베이스, 로그인 기능이 없습니다.
 
 **연결하는 공개 서비스**
-OpenAlex · Europe PMC · PubMed · Crossref · Semantic Scholar · PubChem · UniProt · ClinicalTrials.gov · NCBI E-utilities(Gene, Nucleotide, ClinVar, dbSNP, GEO) · Ensembl · RCSB PDB · Reactome · KEGG · NCI GDC · cBioPortal · Open Targets
+OpenAlex · Europe PMC · PubMed · Crossref · Semantic Scholar · PubChem · UniProt · ClinicalTrials.gov · NCBI E-utilities(Gene, Nucleotide, ClinVar, dbSNP, GEO) · Ensembl · RCSB PDB · Reactome · KEGG · NCI GDC · cBioPortal · Open Targets · Cellosaurus · Antibody Registry · Alliance of Genome Resources · openFDA · ChEMBL · g:Profiler · STRING · Human Protein Atlas · CDK Depict(구조 그림)
 
 **쓰는 오픈소스 라이브러리**
 PDF.js · mammoth.js · JSZip · SheetJS · PptxGenJS

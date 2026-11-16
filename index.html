@@ -263,7 +263,7 @@ a{color:var(--accent)}
 .libbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:var(--surface);border-bottom:1px solid var(--line)}
 .libbar .count{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-right:auto}
 /* home */
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,420px);gap:20px;align-items:end}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,500px);gap:20px;align-items:end}
 .hero h2{font-family:var(--f-display);font-size:28px;letter-spacing:-.01em;margin-bottom:6px}
 .hero p{margin:0;color:var(--muted);max-width:60ch}
 .hero p b{color:var(--ink);font-weight:500}
@@ -296,8 +296,8 @@ a{color:var(--accent)}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button{padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px}
 .seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
-.qform{display:flex;gap:8px}
-.qform input{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;font-size:16px}
+.qform{display:flex;gap:8px}.qform .btn{flex:none;white-space:nowrap}.dbhint{margin:8px 0 0;font-size:13px;color:var(--muted);word-break:break-word}
+.qform{flex-wrap:wrap}.qform input{flex:1 1 220px;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px;font-size:16px}
 .sstat{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
 .sstat b{color:var(--ink)}
 .srcs{display:flex;gap:6px;flex-wrap:wrap}
@@ -546,7 +546,7 @@ details.fmt>summary{cursor:pointer;font-size:14.5px;font-weight:500}
 .pg.pgq{background:var(--accent);color:var(--accent-ink)}
 hr.sep{border:0;border-top:1px solid var(--line);width:100%;margin:4px 0}
 @media (max-width:860px){
-  .sgrid,.rgrid,.hero{grid-template-columns:1fr}
+  .sgrid,.rgrid,.hero{grid-template-columns:1fr}.qform input{flex:1 1 100%}.qform .btn{width:100%;justify-content:center}
   .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hero h2{font-size:23px}
   .tgroup{flex-direction:row;flex-wrap:wrap}.tgroup h3{width:100%}
@@ -723,7 +723,7 @@ hr.sep{border:0;border-top:1px solid var(--line);width:100%;margin:4px 0}
 .pjh{display:flex;gap:8px;align-items:center}.pjh b{font-size:16px;flex:1;min-width:0;overflow-wrap:anywhere}
 .pjstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:6px}.pjstats button{display:flex;flex-direction:column;gap:1px;align-items:flex-start;text-align:left;font:inherit;color:inherit;background:var(--sunk);border:1px solid transparent;border-radius:8px;padding:7px 9px;cursor:pointer;min-width:0}.pjstats button:hover{border-color:var(--accent)}.pjstats b{font-family:var(--f-mono);font-size:18px;font-weight:500}.pjstats span{font-size:12px;color:var(--muted)}.pjstats em{font-style:normal;font-size:11.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .pchip.pjchip{background:color-mix(in srgb,var(--pc) 20%,var(--surface));color:var(--ink);border-left:3px solid var(--pc)}
-.dbseg{display:flex;flex-direction:column;gap:6px}.dbgrp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.dbgrp>span{font-size:12.5px;color:var(--muted);min-width:168px}
+/* show full text where it used to be cut */.item .t{display:block;-webkit-line-clamp:unset;overflow:visible}.item .s{white-space:normal;overflow-wrap:anywhere}.terms td:nth-child(2),.terms th:nth-child(2){min-width:6.5em;word-break:keep-all}.fig .cap{display:block;-webkit-line-clamp:unset;overflow:visible}.pjrecent{display:grid;gap:4px;font-size:12.5px;line-height:1.5}.pjrecent p{margin:0;overflow-wrap:anywhere}.pjrecent span{color:var(--muted);margin-right:6px;font-size:11.5px}.fname code{overflow-wrap:anywhere;word-break:break-all;white-space:normal}label.btn{white-space:normal;text-align:center;max-width:100%}@media(max-width:520px){.mgrid{grid-template-columns:1fr}.mgrid>label{grid-column:auto!important}}.sxhint{margin:4px 0 10px;font-size:12px;color:var(--muted)}.mdt td{min-width:6.5em;overflow-wrap:break-word;word-break:normal}.mdt td:first-child{min-width:7.5em}.sktbl td{min-width:0}.gsteps{list-style:none;counter-reset:gs;margin:0;padding:0;display:grid;gap:10px}.gsteps li{counter-increment:gs;position:relative;padding:12px 12px 12px 42px;border:1px solid var(--line);border-radius:10px}.gsteps li::before{content:counter(gs);position:absolute;left:12px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:600;display:grid;place-items:center}.gsteps li>b{display:block;font-size:15px}.gsteps .gw{display:inline-block;font-size:11.5px;color:var(--accent);margin:2px 0 6px}.gsteps p{margin:0 0 6px;font-size:13.5px}.molfig{display:inline-block;width:auto;margin:6px 10px 10px 0;padding:8px;border:1px solid var(--line,#ddd);border-radius:10px;background:#fff;vertical-align:top}.molfig img{display:block;max-width:300px;max-height:220px}.molfig figcaption{font-size:12px;color:#444;text-align:center;margin-top:4px}.specfig{margin:10px 0 12px;padding:10px 12px;border:1px solid var(--line,#ddd);border-radius:10px;background:var(--card,transparent);color:var(--ink,inherit)}.chip.sm{font-size:12px;padding:3px 9px;max-width:100%;overflow:hidden;text-overflow:ellipsis}#dbOut .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#dbOut .actions .btn{white-space:normal;text-align:left}.dbseg{display:flex;flex-direction:column;gap:6px}.dbgrp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.dbgrp>span{font-size:12.5px;color:var(--muted);min-width:168px}
 @media (max-width:760px){.dbgrp>span{min-width:100%}}
 .gpdoc{display:flex;flex-direction:column;gap:12px}.gpnotice{border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--sunk)}.gpnotice summary{cursor:pointer;font-size:14px;font-weight:600}.gpnotice textarea{width:100%;margin-top:8px}
 .gpsecs{display:flex;flex-direction:column;gap:14px}.gpsec{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}.gph{display:flex;gap:8px;align-items:center}.gph>.mono:first-child{color:var(--accent);font-size:15px}.gph input[data-gps=name]{flex:1;min-width:0;font-weight:600;font-size:15.5px;border:1px solid transparent;background:none;padding:4px 6px;border-radius:6px;color:var(--ink)}.gph input[data-gps=name]:hover,.gph input[data-gps=name]:focus{border-color:var(--line);background:var(--paper)}
@@ -765,7 +765,7 @@ html{scrollbar-gutter:stable}
   <div class="brand"><h1>나의 연구 허브</h1></div>
   <nav class="nav" id="nav" aria-label="화면 이동">
     <button type="button" data-go="home">홈</button>
-    <button type="button" data-go="search">검색</button>
+    <button type="button" data-go="search">문헌 검색</button>
     <button type="button" data-go="library">라이브러리<span class="n" id="navLib"></span></button>
     <button type="button" data-go="graph">관계도</button>
     <button type="button" data-go="research">리서치</button>
@@ -814,7 +814,7 @@ html{scrollbar-gutter:stable}
       <label class="ck"><input type="checkbox" id="sOA"><span>오픈액세스만</span></label></div>
   </aside>
   <section class="scol" aria-live="polite">
-    <form class="qform" id="sForm"><label class="sr" for="sq">검색 키워드</label><input id="sq" type="search" placeholder="영문 키워드 예: tumor immunotherapy biomarker" autocomplete="off"><button class="btn primary" type="submit" id="sGo">검색</button><button class="btn" type="button" id="sWatch" title="이 검색어로 새로 나오는 논문을 홈에서 알려 줘요">이 검색어 구독</button></form>
+    <form class="qform" id="sForm"><label class="sr" for="sq">검색 키워드</label><input id="sq" type="search" placeholder="영문 키워드 예: tumor immunotherapy" autocomplete="off"><button class="btn primary" type="submit" id="sGo">검색</button><button class="btn" type="button" id="sWatch" title="이 검색어로 새로 나오는 논문을 홈에서 알려 줘요">이 검색어 구독</button></form>
     <div class="note-bar warn" id="sBlocked" hidden>claude.ai 안에서는 논문 DB에 직접 연결할 수 없어요. 내려받은 HTML 파일을 브라우저로 열어 검색한 뒤, 거기서 저장한 결과 JSON을 <button class="linkbtn" type="button" id="sImport" style="font-size:13px">여기로 가져오세요</button>.<input type="file" id="sImpFile" accept=".json" hidden></div>
     <div class="sstat" id="sStatus" hidden></div>
     <div class="stools" id="sTools" hidden>
@@ -883,9 +883,20 @@ html{scrollbar-gutter:stable}
 
 <div id="v-graph" hidden></div>
 <div id="v-lookup" hidden><div class="page">
+  <div class="card pad dbask">
+    <h3 class="cap" style="margin-top:0">질문으로 찾기</h3>
+    <form class="qform" id="dbAskForm"><label class="sr" for="dbAskQ">질문</label><input id="dbAskQ" type="search" autocomplete="off" placeholder="예: HK-2 세포는 어디서 분양받아?"><button class="btn primary" type="submit">AI가 골라 찾기</button></form>
+    <div class="row" id="dbAskEx" style="gap:6px;flex-wrap:wrap;margin-top:8px"><span class="muted" style="font-size:.85em">예시</span><button type="button" class="chip" data-ex="아플라톡신의 독성값과 최근 식품 회수 사례">아플라톡신 독성·회수</button><button type="button" class="chip" data-ex="펜타닐을 LC-MS로 검출할 때 볼 m/z는?">펜타닐 검출 m/z</button><button type="button" class="chip" data-ex="카페인의 LC-MS 이온과 실측 MS/MS 봉우리">카페인 질량 스펙트럼</button><button type="button" class="chip" data-ex="CD68 면역조직화학용 항체 추천">CD68 항체</button><button type="button" class="chip" data-ex="살부타몰은 도핑 금지약물이야?">살부타몰 도핑</button><button type="button" class="chip" data-ex="이마티닙의 표적별 IC50">이마티닙 IC50</button><button type="button" class="chip" data-ex="이부프로펜과 에탄올아민을 아마이드로 붙이면 생성물 분자량과 질량 스펙트럼은?">생성물 예측</button></div>
+    <div class="note-bar warn" id="dbAskBlocked" hidden style="margin-top:10px">claude.ai 안에서는 외부 DB에 연결할 수 없어서 조회가 실패해요. 내려받은 HTML 파일에서 쓰세요.</div>
+    <p class="muted" style="margin:8px 0 0;font-size:.85em">AI가 질문에 맞는 DB를 1–3개 골라 조회하고, 그 결과만 근거로 답해요. 어느 DB를 어떤 검색어로 찾았는지 같이 보여줘요.</p>
+  </div>
   <div class="card pad">
+    <h3 class="cap" style="margin-top:0">DB 직접 고르기</h3>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:10px"><label class="sr" for="dbFilter">데이터베이스 찾기</label><input id="dbFilter" class="search" type="search" placeholder="데이터베이스 찾기" style="flex:1;min-width:180px"><button class="btn sm" type="button" id="dbCheck" title="이 브라우저에서 각 DB 서버에 연결되는지 확인해요">연결 점검</button></div>
+    <div class="row" id="dbHist" style="gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
     <div id="dbSeg" class="dbseg"></div><div class="row" style="justify-content:flex-end"><span class="tag" id="dbFrom"></span></div>
     <form class="qform" id="dbForm"><label class="sr" for="dbQ">찾을 이름</label><input id="dbQ" type="search" autocomplete="off"><button class="btn primary" type="submit">조회</button></form>
+    <p class="dbhint" id="dbHint"></p>
     <div class="note-bar warn" id="dbBlocked" hidden>claude.ai 안에서는 외부 DB에 연결할 수 없어요. 내려받은 HTML 파일에서 조회하세요.</div>
   </div>
   <div class="card" id="dbOut"></div>
@@ -946,7 +957,7 @@ html{scrollbar-gutter:stable}
       <label class="field" for="setContext">내 연구 주제 (연구 노트의 관련도·아이디어를 이 기준으로 씁니다)
         <textarea id="setContext" placeholder="예: 장내 미생물과 대사 질환의 관계. 관심 키워드: gut microbiome, metabolism, obesity"></textarea></label>
       <label class="field" for="setKw">검색에 쓰는 주제 키워드 (영문 · 쉼표로 구분 · 검색 결과를 내 주제에 맞춰 정렬하고 거르는 데 써요)
-        <input id="setKw" autocomplete="off" placeholder="비워 두면 저장할 때 연구 주제에서 자동으로 뽑아요"></label>
+        <input id="setKw" autocomplete="off" placeholder="비우면 연구 주제에서 자동으로 뽑아요"></label>
       <div class="row" style="margin:-6px 0 14px"><button class="btn sm" type="button" id="setKwAuto">연구 주제에서 자동으로 뽑기</button></div>
       <label class="field" for="setLinks">바로가기 (맨 위에 버튼으로 뜨고 새 탭에서 열려요 · 한 줄에 하나씩 "이름 | 주소")
         <textarea id="setLinks" style="min-height:64px" placeholder="실험 도구모음 | https://claude.ai/artifact/…"></textarea></label>
@@ -973,7 +984,7 @@ html{scrollbar-gutter:stable}
       <hr class="sep">
       <div class="field"><span>설정 옮기기 — 여기 입력한 값(API 키 포함)을 다른 곳의 연구 허브로 그대로 가져가요. claude.ai 페이지와 내려받은 HTML 파일은 저장 공간이 달라서 한 번은 옮겨 줘야 해요.</span>
         <div class="row"><button class="btn" type="button" id="cfgCodeCopy">지금 설정을 코드로 복사</button></div>
-        <label class="sr" for="cfgCode">설정 코드</label><input id="cfgCode" autocomplete="off" placeholder="다른 쪽에서 복사한 설정 코드(HUB1.…) 붙여넣기">
+        <label class="sr" for="cfgCode">설정 코드</label><input id="cfgCode" autocomplete="off" placeholder="복사한 설정 코드(HUB1.…) 붙여넣기">
         <div class="row"><button class="btn" type="button" id="cfgCodeApply">붙여넣은 코드 적용</button><span style="font-size:12.5px">코드에 API 키가 들어 있으니 다른 사람에게 보내지 마세요.</span></div></div>
       <div class="row" id="cfgMigRow" hidden><button class="btn" type="button" id="cfgMig">이전 저장소의 자료 다시 가져오기</button><span style="font-size:12.5px">예전에 쌓은 논문·보고서가 안 보일 때만 누르세요.</span></div>
     </div>
@@ -1038,7 +1049,7 @@ H.storage="browser";
 let toastT;
 H.toast=(msg,ms=3200)=>{const t=$("#toast");if(!t)return;t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,ms);};
 H.copy=async text=>{try{await navigator.clipboard.writeText(text);H.toast("복사했어요");}catch(e){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");H.toast("복사했어요");}catch(_){H.toast("복사가 막혀 있어요. 직접 선택해 복사해 주세요.");}ta.remove();}};
-H.getJson=async(url,opt)=>{let r;try{r=await fetch(url,opt);}catch(e){throw new Error(H.embedded?"claude.ai 화면에서는 외부 DB 연결이 막혀 있어요":"연결하지 못했어요 (네트워크 또는 서버 차단)");}
+H.getJson=async(url,opt)=>{let r;try{r=await fetch(url,opt);}catch(e){throw new Error(H.embedded?"claude.ai 화면에서는 외부 DB 연결이 막혀 있어요":"연결하지 못했어요 — 서버가 브라우저에서 오는 요청을 막았거나(CORS) 응답이 없어요");}
   if(!r.ok)throw new Error(r.status===429?"요청 한도 초과 (429)":r.status===404?"찾지 못했어요 (404)":"서버 오류 ("+r.status+")");return r.json();};
 
 /* ---------- IndexedDB (used outside claude.ai, or when cloud storage is missing) ---------- */
@@ -1226,7 +1237,7 @@ H.aiErr=e=>{const c=e&&e.code;return c==="not_granted"?"Claude 사용이 허용�
 /* ---------- markdown ---------- */
 H.md=function(src){
   const lines=String(src||"").replace(/\r/g,"").split("\n");let out="",i=0,list=null,m;
-  const inl=s=>esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*)\*/g,"$1<i>$2</i>").replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  const inl=s=>esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*)\*/g,"$1<i>$2</i>").replace(/\[([^\]]+)\]\((https?:\/\/(?:[^\s()]|\([^\s()]*\))+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
   const close=()=>{if(list){out+="</"+list+">";list=null;}};
   const isRow=s=>/^\s*\|.*\|\s*$/.test(s),cells=s=>s.trim().replace(/^\||\|$/g,"").split("|").map(c=>c.trim());
   while(i<lines.length){const l=lines[i];
@@ -1514,7 +1525,7 @@ H.renderHome=function(){
     ["저장",H.storage!=="memory",H.storage==="cloud"?"claude.ai 계정에 저장돼 어느 기기에서 열어도 같아요. 이 사이트를 공유받은 사람과 자료가 섞이지 않고, 각자 자기 것만 보여요.":H.storage==="browser"?"이 브라우저에만 저장돼요. 설정에서 백업 파일을 내보내 두세요.":"이 창에서는 저장이 안 돼요. 닫으면 사라져요."]];
   el.innerHTML=`<div class="page">
     <section class="hero"><div><h2>찾고, 읽고, 분석하고, 쓰고, 그리기</h2><p>논문 검색부터 정리, 리서치, 원고 작성, 그림까지 한 곳에 모았어요. 기준 연구 주제: <b>${esc((H.lib&&H.lib.context)||"")}</b> <button class="btn sm ghost" type="button" id="homeSet">바꾸기</button></p></div>
-      <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="영문 키워드 예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">검색</button></form></section>
+      <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">문헌 검색 GO</button></form></section>
     <div class="steps">
       <button class="step" type="button" data-go="search"><span class="mono">1 찾기</span><b>다중 DB 검색</b><span>하위 질의로 나눠 5개 DB에서 찾고, 중복을 합쳐 5계층 점수로 줄 세워요.</span><em class="mono">${ns?ns+"편 찾아 둠":"아직 검색 전"}</em></button>
       <button class="step" type="button" data-go="search"><span class="mono">2 고르기</span><b>고IF 저널 필터</b><span>IF 기준과 저널 묶음으로 걸러 읽을 논문만 라이브러리에 담아요.</span><em class="mono">저널 ${H.search?H.search.jcount():0}개 선택됨</em></button>
@@ -1523,6 +1534,7 @@ H.renderHome=function(){
       <button class="step" type="button" data-go="write"><span class="mono">5 쓰기</span><b>원고</b><span>섹션별로 쓰고 라이브러리 논문을 바로 인용해요. 원고 하나로 근거 대조·통계 점검·저널 추천을 이어 돌려요.</span><em class="mono">${cols.drafts.list.length?"원고 "+cols.drafts.list.length+"개":"아직 원고 없음"}</em></button>
       <button class="step" type="button" data-go="illust"><span class="mono">6 그리기</span><b>일러스트레이터</b><span>원고나 한 줄 설명으로 그래피컬 초록, 기전 모식도, 막대그래프를 그려요.</span><em class="mono">그림 ${cols.figs.list.length}개</em></button>
     </div>
+    ${H.guideHtml()}
     <div id="homeLab"></div>
     <div id="homeToday"></div>
     <div id="homeWatch"></div>
@@ -1533,11 +1545,12 @@ H.renderHome=function(){
       <p class="muted" style="margin:0 0 10px;font-size:13.5px">연구 흐름 순서로 묶었어요. '어디서'의 <b>모두</b>는 claude.ai 화면과 내려받은 파일 양쪽, <b>파일</b>은 외부 DB나 외부 AI에 연결해야 해서 내려받은 HTML 파일(또는 GitHub 주소)에서만 되는 기능이에요.</p>
       <div class="mdt sktbl"><table><thead><tr><th>화면</th><th>할 수 있는 일</th><th>어디서</th><th>바탕이 된 것</th></tr></thead><tbody>
       <tr class="skst"><td colspan="4">① 찾기</td></tr>
-      <tr><td><b>검색</b></td><td>5개 DB 동시 검색과 중복 병합, 5계층 점수와 목적별 프로필, 내 연구 주제에 맞춘 정렬·거르기, 고IF 저널 필터(JCR 2026), 인용망 확장, RISS·KCI 바로가기</td><td>파일</td><td>scholar-megasearch · science-skills · k-skill</td></tr>
+      <tr><td><b>문헌 검색</b></td><td>5개 DB 동시 검색과 중복 병합, 5계층 점수와 목적별 프로필, 내 연구 주제에 맞춘 정렬·거르기, 고IF 저널 필터(JCR 2026), 인용망 확장, RISS·KCI 바로가기</td><td>파일</td><td>scholar-megasearch · science-skills · k-skill</td></tr>
+      <tr><td><b>홈 · 찾는 순서 안내</b></td><td>하고 싶은 일을 한 문장으로 쓰면 어느 탭·어느 DB를 어떤 순서로 쓸지 단계별로 안내하고, 각 단계에서 바로 조회·이동. AI가 없으면 일반적인 순서를 보여 줌</td><td>모두</td><td>직접 만듦</td></tr>
       <tr><td><b>홈 · 새 논문 알림</b></td><td>검색어를 구독하면 새로 나온 논문만 모아 보기</td><td>파일</td><td>직접 만듦</td></tr>
       <tr><td><b>관계도</b></td><td>논문 중심 선행·후속·비슷한 연구, 여러 논문에서 놓친 핵심 논문 찾기</td><td>파일</td><td>ResearchRabbit 방식 참고</td></tr>
       <tr><td><b>관계도 · 라이브러리 지도</b></td><td>내 논문을 키워드가 겹치는 것끼리 이어 주제 묶음 보기</td><td>모두</td><td>직접 만듦</td></tr>
-      <tr><td><b>DB 조회</b></td><td>공개 DB 조회와 AI 해석: 유전자·서열(NCBI Gene, GenBank·RefSeq, Ensembl), 단백질·구조(UniProt, PDB), 변이(ClinVar, dbSNP), 경로(Reactome·KEGG), 암·면역·오믹스(GEO, GDC·TCGA, cBioPortal, Open Targets), 화합물(PubChem), 문헌·임상(PubMed, ClinicalTrials.gov), 그 밖의 공공데이터 바로가기(ENA, DDBJ, EGA, JGA, ImmPort, IEDB, 국내 포털 등)</td><td>파일</td><td>science-skills · scientific-agent-skills</td></tr>
+      <tr><td><b>DB 조회</b></td><td>공개 DB 조회와 AI 해석: 유전자·서열(NCBI Gene, GenBank·RefSeq, Ensembl), 단백질·구조(UniProt, PDB), 변이(ClinVar, dbSNP), 경로(Reactome·KEGG), 암·면역·오믹스(GEO, GDC·TCGA, cBioPortal, Open Targets), 질문 한 줄로 AI가 알맞은 DB를 1–3개 골라 조회하고 결과를 근거로 답하기, 이름으로 DB 찾기·최근 조회·관련 DB로 넘기기, 연결 점검(어느 DB가 이 브라우저에서 되는지), 조회 실패 시 그 자리에서 대체 사이트 바로가기, 독성·식품 위해(PubChem 독성·GHS, openFDA 식품 회수, EFSA·JECFA·식품안전나라 바로가기), 스포츠 도핑(약리 분류로 WADA 금지 범주 추정, Global DRO·KADA 확인), 유전자 목록 농축 분석(g:Profiler — GO·KEGG·Reactome·WikiPathways·전사인자, 보정 p와 겹친 유전자), 단백질 상호작용망(STRING — 망 그림, 허브 단백질, 근거 종류별 점수, 기능 농축), 조직·단일세포 발현(Human Protein Atlas — 신장 발현량과 세포 유형, KPMP 바로가기), 생물활성(ChEMBL·PubChem BioAssay의 EC50·IC50·Ki·Kd를 표적별로 묶어 가장 강한 값·중앙값·건수, 값 분포, 원 기록 링크), 합성 생성물 예측(반응물 + 반응물 | 반응 종류 → 부산물을 뺀 분자식·분자량, AI가 예측한 생성물 구조 그림과 SMILES, 분자식 교차 확인, 예측 질량 스펙트럼), 질량·스펙트럼(분자식·이름·펩타이드 서열로 이론 m/z, 흔한 이온 표, [M+H]⁺ 동위원소 분포 그림, PubChem에 모인 실측 LC-MS/MS·GC-MS 봉우리 그림, UV 흡수, 역상 HPLC 참고), 마약류 검출(정확 질량과 [M+H]⁺ 등 이론 m/z, DEA 규제 기록, MassBank·SWGDRUG 스펙트럼), 세포주(Cellosaurus — ATCC·DSMZ·JCRB·KCLB 분양 번호, 오염·오인 경고, RRID), 항체(Antibody Registry — RRID, 판매처·카탈로그, 용도, 인용 수), 동물 모델(Alliance — 질환·유전자별 마우스·렛드·제브라피시 모델, IMSR·JAX·MMRRC 분양 찾기), 화합물(PubChem), 문헌·임상(PubMed, ClinicalTrials.gov), 그 밖의 공공데이터 바로가기(ENA, DDBJ, EGA, JGA, ImmPort, IEDB, 국내 포털 등)</td><td>파일</td><td>science-skills · scientific-agent-skills</td></tr>
       <tr class="skst"><td colspan="4">② 모으고 읽기</td></tr>
       <tr><td><b>라이브러리</b></td><td>파일(PDF·Word·한글·PPT·엑셀)을 넣으면 요약·연구 노트·핵심 용어·Figure·표 정리, 주제 폴더 자동 분류, 관련 논문, 즐겨찾기, 읽기 상태와 읽기 노트, 용어집</td><td>모두</td><td>paper-curation · hwpx</td></tr>
       <tr><td><b>원문 읽기</b></td><td>설명·번역·질문, 근거 문장 표시, 여러 색 형광펜, 참고문헌 찾기, 창 너비 조절</td><td>모두</td><td>Moonlight 방식 참고</td></tr>
@@ -1580,6 +1593,71 @@ document.addEventListener("click",e=>{
   if(e.target.closest("#cfgMig")){H.migrate(true);return;}
   const c=e.target.closest("[data-close]");if(c){const m=$("#"+c.dataset.close);if(m)m.hidden=true;}
 });
+/* ---------- home: "어디서부터 찾지?" — a step-by-step plan across tabs and databases ---------- */
+let GD=null;
+const GEX=["세포 모델로 질환 기전을 보고 싶어","질환 마우스 모델에 쓸 바이오마커를 고르고 싶어","내 RNA-seq 상위 유전자 30개가 무슨 경로인지 보고 싶어","신약 후보 물질의 표적과 독성을 한번에 보고 싶어"];
+const GSTEPS=[
+ {t:"1. 남들이 쓴 조건부터 모으기",w:"search",why:"같은 모델을 쓴 논문을 모아 두면 세포·자극·농도·시간을 그대로 따라갈 수 있어요.",how:"영문 키워드로 찾아 라이브러리에 담으세요."},
+ {t:"2. 논문에서 조건을 표로 뽑기",w:"research",why:"논문마다 흩어진 실험 조건을 한 표로 모아 비교해요.",how:"리서치 탭 → '증거 표 (조건·결과 추출)' → 뽑을 항목에 '세포주, 자극 물질, 농도, 처리 시간, 대조군, 측정 지표'를 넣으세요."},
+ {t:"3. 세포·동물 모델 고르기",w:"lookup",db:"cello",why:"분양 번호와 오염·오인 경고를 먼저 확인해요.",how:"세포주 이름을 넣어 보세요. 동물 모델은 '동물 모델' DB에서 질환명으로 찾고요."},
+ {t:"4. 자극 물질 농도 잡기",w:"lookup",db:"bioact",why:"표적에 듣는 농도(IC50)와 세포독성이 갈리는 농도를 함께 봐야 해요.",how:"물질 이름을 넣고, 독성은 '화합물 독성'에서 같이 확인하세요."},
+ {t:"5. 기전 경로와 표적 찾기",w:"lookup",db:"pathway",why:"어느 신호 경로를 볼지 정하고, 질환과 표적의 연관 근거도 확인해요.",how:"경로 이름으로 찾고, 'Open Targets 질환–표적'에서 질환명으로도 찾아보세요."},
+ {t:"6. 마커와 항체 고르기",w:"lookup",db:"abreg",why:"측정할 마커를 정하고 그 마커에 쓸 수 있는 항체를 RRID까지 챙겨요.",how:"마커 이름을 넣으면 용도(WB·IHC)와 반응 종, 인용 수가 나와요."},
+ {t:"7. 내 결과를 경로로 해석",w:"lookup",db:"enrich",why:"실험에서 나온 유전자 목록이 어느 경로에 몰려 있는지 봐요.",how:"유전자 기호를 쉼표로 이어 넣으세요. 이어서 'STRING 상호작용망'에 같은 목록을 넣으면 누가 허브인지 보여요."},
+ {t:"8. 공개 데이터와 대조",w:"lookup",db:"geo",why:"환자 조직이나 다른 모델의 공개 데이터와 비교하면 내 모델이 얼마나 닮았는지 알 수 있어요.",how:"질환명으로 찾아 쓸 만한 데이터셋을 고르세요."}];
+const gWhere={search:["문헌 검색","문헌 검색 탭 열기"],research:["리서치","리서치 탭 열기"],lookup:["DB 조회","조회 화면 열기"],library:["라이브러리","라이브러리 열기"],write:["원고","원고 탭 열기"],mat:["실험실","실험실 열기"],illust:["일러스트레이터","그리기 열기"]};
+function guideHtml(){
+  const ai=H.ai.auto;
+  const body=GD?(GD.busy?`<p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>질문에 맞는 순서를 짜는 중…</p>`:GD.err?`<div class="note-bar warn">${esc(GD.err)}</div>`:
+    `<p class="muted" style="margin:0 0 10px">${esc(GD.q)}${GD.generic?" — 일반적인 순서예요":""}</p><ol class="gsteps">`+GD.steps.map((s,i)=>{const w=gWhere[s.w]||gWhere.lookup,dbn=s.db&&H.lookup&&(H.lookup.list().find(x=>x.k===s.db)||{}).label;
+      return `<li><b>${esc(s.t.replace(/^\d+\.\s*/,""))}</b><span class="gw">${esc(w[0])}${dbn?" · "+esc(dbn):""}</span>
+        <p>${esc(s.why||"")}</p>${s.how?`<p class="muted">${esc(s.how)}</p>`:""}
+        <div class="row" style="gap:6px;flex-wrap:wrap">${s.db&&s.q?`<button class="btn sm primary" type="button" data-gdo="${esc(s.db)}" data-gq="${esc(s.q)}">'${esc(String(s.q).slice(0,40))}' 바로 조회</button>`:""}<button class="btn sm" type="button" data-ggo="${esc(s.w)}"${s.db?` data-gdb="${esc(s.db)}"`:""}${s.q?` data-gq="${esc(s.q)}"`:""}>${esc(w[1])}</button></div></li>`;}).join("")+`</ol>${GD.watch&&GD.watch.length?`<div class="note-bar">챙길 것: ${esc(GD.watch.join(" · "))}</div>`:""}${H.embedded&&GD.steps.some(s=>s.w==="lookup"||s.w==="search")?`<div class="note-bar warn">claude.ai 안에서는 DB 조회와 논문 검색이 막혀 있어요. 그 단계는 내려받은 HTML 파일에서 하세요.</div>`:""}
+    <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:10px"><button class="btn sm" type="button" id="gdSave">보고서로 저장</button><button class="btn sm ghost" type="button" id="gdClear">지우기</button></div>`)
+   :`<p class="muted" style="margin:0 0 8px">무엇을 하고 싶은지 한 문장으로 쓰면, 이 사이트에서 어느 탭·어느 DB를 어떤 순서로 쓰면 되는지 알려 줘요.${ai?"":" (AI 연결이 없어 일반적인 순서를 보여 줘요.)"}</p>
+     <div class="row" style="gap:6px;flex-wrap:wrap">${GEX.map(x=>`<button type="button" class="chip" data-gex="${esc(x)}">${esc(x.length>28?x.slice(0,27)+"…":x)}</button>`).join("")}</div>`;
+  return `<section class="card pad" id="homeGuide"><h3 class="cap" style="margin-top:0">어디서부터 찾을지 안내</h3>
+    <form class="qform" id="homeAskF"><label class="sr" for="homeAskI">연구에서 하고 싶은 일</label><input id="homeAskI" type="search" autocomplete="off" placeholder="예: 세포 모델로 기전 보기" value="${GD&&!GD.busy?esc(GD.q):""}"><button class="btn primary" type="submit">순서 알려 줘</button></form>
+    <div id="homeAskOut" style="margin-top:12px">${body}</div></section>`;}
+function guideRedraw(){const el=$("#homeGuide");if(!el)return;const d=document.createElement("div");d.innerHTML=guideHtml();el.replaceWith(d.firstElementChild);}
+async function guideRun(q){
+  if(!q)return;GD={q,busy:true};guideRedraw();
+  if(!H.ai.auto){GD={q,generic:true,steps:GSTEPS.map(s=>({...s})),watch:["AI 연결이 없어 일반적인 순서예요. 각 단계의 검색어는 직접 넣으세요."]};guideRedraw();return;}
+  const dbs=(H.lookup?H.lookup.list():[]).filter(x=>x.k!=="portals").map(x=>`  - ${x.k}: ${x.label} (${x.g})`).join("\n");
+  try{const j=await H.ai.json(`연구자가 이 연구 사이트에서 무엇부터 해야 할지 묻습니다. 이 사이트의 기능만으로 순서를 짜 주세요. JSON 객체 하나로만 답하세요.
+하고 싶은 일: "${q}"
+연구자의 연구 주제(참고만): "${(H.lib&&H.lib.context)||""}"
+쓸 수 있는 화면:
+  - search: 문헌 검색 (영문 키워드로 5개 논문 DB 동시 검색, 라이브러리에 담기)
+  - library: 라이브러리 (담은 논문·파일 요약, 연구 노트, Figure 정리)
+  - research: 리서치 도구 (문헌 리뷰, 증거 표(조건·결과 추출), 가설 생성, 실험 설계 점검, 체계적 선별, 비판적 읽기)
+  - lookup: DB 조회 (아래 DB들)
+  - write: 원고 · mat: 실험실(프로젝트·재료·실험노트·일정) · illust: 그림
+쓸 수 있는 DB (키: 설명):
+${dbs}
+형식: {"steps":[{"t":"단계 제목(한국어)","w":"search|library|research|lookup|write|mat|illust","db":"lookup일 때 DB 키, 아니면 빈 문자열","q":"그 DB나 검색에 넣을 검색어(영문 권장, 없으면 빈 문자열)","why":"왜 이 단계가 필요한지 한국어 한두 문장","how":"구체적으로 무엇을 넣고 무엇을 볼지 한국어 한두 문장"}],"watch":["빠뜨리기 쉬운 것 한국어, 최대 3개"]}
+규칙: 단계는 4~8개, 실제로 할 일의 순서대로. 문헌에서 조건을 모으는 단계를 앞에 두고, 내 결과를 해석하는 단계는 뒤에 두세요. 이 사이트에 없는 도구(통계 프로그램, 실험 장비)는 단계로 만들지 말고 watch에 적으세요.`,{modelTier:"default"});
+    const steps=((j&&j.steps)||[]).filter(s=>s&&s.t&&gWhere[s.w]).slice(0,8);
+    if(!steps.length)throw new Error("순서를 만들지 못했어요");
+    GD={q,steps:steps.map(s=>({...s,db:s.db&&H.lookup&&H.lookup.list().some(x=>x.k===s.db)?s.db:""})),watch:(j.watch||[]).slice(0,3)};}
+  catch(e){GD=(e&&e.code==="cancelled")?null:{q,generic:true,steps:GSTEPS.map(s=>({...s})),watch:["AI로 순서를 짜지 못해 일반적인 순서를 보여 줘요: "+H.aiErr(e)]};}
+  guideRedraw();}
+const guideMd=()=>`# 찾는 순서 — ${GD.q}\n\n`+GD.steps.map((s,i)=>`## ${i+1}. ${s.t.replace(/^\d+\.\s*/,"")}\n- 어디서: ${(gWhere[s.w]||["—"])[0]}${s.db?` · ${(H.lookup&&(H.lookup.list().find(x=>x.k===s.db)||{}).label)||s.db}`:""}${s.q?`\n- 넣을 것: ${s.q}`:""}\n${s.why?`- 왜: ${s.why}\n`:""}${s.how?`- 어떻게: ${s.how}\n`:""}`).join("\n")+(GD.watch&&GD.watch.length?`\n## 챙길 것\n`+GD.watch.map(x=>"- "+x).join("\n"):"");
+document.addEventListener("submit",e=>{if(e.target.id==="homeAskF"){e.preventDefault();guideRun($("#homeAskI").value.trim());}});
+document.addEventListener("click",e=>{
+  const x=e.target.closest("[data-gex]");if(x){const v=x.dataset.gex;const i=$("#homeAskI");if(i)i.value=v;guideRun(v);return;}
+  const d=e.target.closest("[data-gdo]");if(d&&H.lookup){H.lookup.open(d.dataset.gdo,d.dataset.gq||"",true);return;}
+  const g=e.target.closest("[data-ggo]");if(g){const w=g.dataset.ggo;if(w==="lookup"&&g.dataset.gdb&&H.lookup)H.lookup.open(g.dataset.gdb,g.dataset.gq||"",false);
+    else{H.go(w);if(w==="search"&&g.dataset.gq){const i=$("#sq");if(i)i.value=g.dataset.gq;}}return;}
+  if(e.target.id==="gdClear"){GD=null;guideRedraw();return;}
+  if(e.target.id==="gdSave"&&GD&&GD.steps){H.col("reports").set(uid(),{title:"찾는 순서 — "+GD.q.slice(0,50),tool:"guide",md:guideMd(),addedAt:Date.now()}).then(()=>H.toast("보고서에 저장했어요"),()=>H.toast("저장하지 못했어요"));}
+});
+H.guideHtml=guideHtml;
+/* wide tables: tell the reader the table continues sideways */
+(()=>{let t=0;const mark=()=>{t=0;document.querySelectorAll(".mdt").forEach(m=>{if(!m.isConnected||m.closest("[hidden]"))return;const wide=m.scrollWidth>m.clientWidth+4,nx=m.nextElementSibling,has=nx&&nx.classList&&nx.classList.contains("sxhint");
+  if(wide&&!has){const p=document.createElement("p");p.className="sxhint";p.textContent="표가 화면보다 넓어요 — 옆으로 밀면 나머지 열이 보여요 →";m.after(p);}else if(!wide&&has)nx.remove();});};
+  const kick=()=>{if(!t)t=setTimeout(mark,250);};
+  new MutationObserver(kick).observe(document.documentElement,{childList:true,subtree:true});addEventListener("resize",kick);})();
 document.addEventListener("submit",e=>{if(e.target.id==="homeQ"){e.preventDefault();const q=$("#homeQi").value.trim();H.go("search");if(q&&H.search)H.search.run(q);}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&bridgeCancel)bridgeCancel();});
 
@@ -3762,7 +3840,7 @@ function wadd(q){q=String(q||"").trim();if(!q){HUB.toast("먼저 검색어를 �
   HUB.toast(`'${q}' 구독을 시작했어요. 홈의 '새 논문 알림'에서 새로 나온 논문만 모아 보여 줘요.`,6000);}
 function drawWatch(){const el=$("#homeWatch");if(!el)return;const total=WL.reduce((s,w)=>s+(w.items||[]).length,0);
   el.innerHTML=`<section class="card pad watch"><div class="row" style="justify-content:space-between;gap:10px;flex-wrap:wrap"><h3 class="cap" style="margin:0">새 논문 알림${total?` <span class="wn">${total}</span>`:""}</h3>${WL.length?`<button class="btn sm" type="button" data-w="all" ${wbusy||HUB.embedded?"disabled":""}>${wbusy?"확인하는 중…":"지금 모두 확인"}</button>`:""}</div>
-    ${!WL.length?`<p class="muted" style="margin:8px 0 0;font-size:14px">검색 탭에서 검색한 뒤 '이 검색어 구독'을 누르면, 그 주제로 새로 나온 논문만 여기에 모여요.${HUB.embedded?" 새 논문 확인은 내려받은 HTML 파일에서 돼요.":""}</p>`
+    ${!WL.length?`<p class="muted" style="margin:8px 0 0;font-size:14px">문헌 검색 탭에서 검색한 뒤 '이 검색어 구독'을 누르면, 그 주제로 새로 나온 논문만 여기에 모여요.${HUB.embedded?" 새 논문 확인은 내려받은 HTML 파일에서 돼요.":""}</p>`
     :WL.map(w=>`<div class="witem"><div class="whead"><b>${esc(w.q)}</b>${w.hif?`<span class="pill if">고IF 저널만</span>`:""}<span class="muted">${w.last?"마지막 확인 "+new Date(w.last).toLocaleDateString("ko-KR"):"아직 확인 전"}${w.err?" · "+esc(w.err):""}</span><span class="wops"><button class="linkbtn" type="button" data-w="run" data-id="${w.id}">검색 열기</button>${(w.items||[]).length?`<button class="linkbtn" type="button" data-w="clear" data-id="${w.id}">모두 넘기기</button>`:""}<button class="linkbtn" type="button" data-w="del" data-id="${w.id}">구독 끊기</button></span></div>
       ${(w.items||[]).length?w.items.slice(0,w.open?60:5).map(it=>`<div class="wpaper"><div><a href="${esc(it.url||"#")}" target="_blank" rel="noopener">${esc(it.title)}</a><span class="muted">${esc([it.journal,it.date].filter(Boolean).join(" · "))}${it.IF?` · IF ${it.IF.toFixed(1)}`:""}</span></div><span class="wops"><button class="btn sm" type="button" data-w="add" data-id="${w.id}" data-k="${esc(it.k)}">담기</button><button class="btn sm ghost" type="button" data-w="skip" data-id="${w.id}" data-k="${esc(it.k)}">넘기기</button></span></div>`).join("")+(w.items.length>5?`<button class="linkbtn" type="button" data-w="more" data-id="${w.id}">${w.open?"접기":`나머지 ${w.items.length-5}편 더 보기`}</button>`:"")
         :`<p class="muted" style="margin:4px 0 0;font-size:13.5px">새로 나온 논문이 없어요.</p>`}</div>`).join("")}
@@ -4329,7 +4407,7 @@ Object.assign(DB,{
    return out.join("\n\n");}},
  pubmed:{g:"문헌·임상",label:"PubMed",name:"PubMed",ph:"검색어 예: CRISPR base editing review",from:"NCBI PubMed",async run(q){
    const r=await ncbi("pubmed",q,12);if(!r.rows.length)return NONE;
-   return head("PubMed",r.total,r.rows.length,q)+`| PMID | 제목 | 저자 | 저널 | 발행 |\n|---|---|---|---|---|\n`+r.rows.map(x=>`| [${x.uid}](https://pubmed.ncbi.nlm.nih.gov/${x.uid}/) | ${cellT(x.title).slice(0,170)} | ${cellT((x.authors||[]).slice(0,3).map(a=>a.name).join(", "))}${(x.authors||[]).length>3?" 외":""} | ${cellT(x.source)} | ${cellT(x.pubdate)} |`).join("\n")+`\n\n저널 IF로 거르고 라이브러리에 담으려면 검색 탭을 쓰세요.`;}},
+   return head("PubMed",r.total,r.rows.length,q)+`| PMID | 제목 | 저자 | 저널 | 발행 |\n|---|---|---|---|---|\n`+r.rows.map(x=>`| [${x.uid}](https://pubmed.ncbi.nlm.nih.gov/${x.uid}/) | ${cellT(x.title).slice(0,170)} | ${cellT((x.authors||[]).slice(0,3).map(a=>a.name).join(", "))}${(x.authors||[]).length>3?" 외":""} | ${cellT(x.source)} | ${cellT(x.pubdate)} |`).join("\n")+`\n\n저널 IF로 거르고 라이브러리에 담으려면 문헌 검색 탭을 쓰세요.`;}},
  portals:{g:"문헌·임상",label:"그 밖의 공공데이터 바로가기",name:"공공데이터 포털",ph:"찾을 말 (영어) 예: lupus, EGFR, single cell lung",from:"직접 연결 없이 각 사이트 검색으로 이동",local:true,async run(q){const e=encodeURIComponent(q);
    const L=[["서열·유전체","ENA (EMBL-EBI)","GenBank·DDBJ와 같은 서열 기록, 원시 리드","https://www.ebi.ac.uk/ena/browser/text-search?query="+e],["서열·유전체","DDBJ","일본 서열 데이터뱅크","https://ddbj.nig.ac.jp/search?query="+e],["서열·유전체","SRA","차세대 시퀀싱 원자료","https://www.ncbi.nlm.nih.gov/sra/?term="+e],["서열·유전체","UCSC Genome Browser","유전체 브라우저","https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&position="+e],
      ["변이·표현형","EGA","유럽 게놈-표현형 아카이브 (승인 후 이용)","https://ega-archive.org/search/"+e],["변이·표현형","JGA","일본 게놈-표현형 아카이브 (승인 후 이용)","https://ddbj.nig.ac.jp/search?query="+e+"&db=jga-study"],["변이·표현형","dbGaP","미국 유전형-표현형 (승인 후 이용)","https://www.ncbi.nlm.nih.gov/gap/?term="+e],["변이·표현형","GWAS Catalog","전장유전체 연관 분석 결과","https://www.ebi.ac.uk/gwas/search?query="+e],["변이·표현형","gnomAD","집단 대립유전자 빈도","https://gnomad.broadinstitute.org/search/"+e],["변이·표현형","OMIM","유전 질환과 유전자","https://www.omim.org/search?search="+e],
@@ -4339,8 +4417,309 @@ Object.assign(DB,{
    return `## '${q}'로 찾아볼 수 있는 공공데이터\n여기 있는 곳은 이 화면에서 바로 조회하지 않고, 누르면 해당 사이트의 검색 결과나 첫 화면이 열려요.\n\n| 분야 | 데이터베이스 | 담긴 것 | 열기 |\n|---|---|---|---|\n`+L.map(r=>`| ${r[0]} | ${r[1]} | ${r[2]} | [열기](${r[3]}) |`).join("\n");}}
 });
 Object.assign(DB.pubchem,{g:"화합물",label:"PubChem 화합물"});Object.assign(DB.uniprot,{g:"단백질·구조",label:"UniProt 단백질"});Object.assign(DB.trials,{g:"문헌·임상",label:"ClinicalTrials.gov"});
-const DBGROUPS=["유전자·서열","단백질·구조","변이·질병","경로·기능","암·면역·오믹스 공공데이터","화합물","문헌·임상"];
-let dbCur=(k=>DB[k]?k:"pubchem")(ls.get("dbcur","pubchem")),dbOut=null;
+/* ---------- cell lines, antibodies, animal models ---------- */
+const stripTags=s=>String(s==null?"":s).replace(/<sup>(.*?)<\/sup>/gi,"‹$1›").replace(/<[^>]+>/g,"");
+Object.assign(DB,{
+ cello:{g:"세포주·항체·동물 모델",label:"세포주 (Cellosaurus · ATCC 등)",name:"Cellosaurus",ph:"세포주 이름 예: HK-2, HeLa, RAW 264.7, CVCL_0030",from:"Cellosaurus API (SIB) — ATCC·DSMZ·JCRB·KCLB 등 분양 번호 포함",async run(q){
+   const qq=/^CVCL_\w+$/i.test(q.trim())?"ac:"+q.trim().toUpperCase():/^[\w.\- ]+$/.test(q.trim())&&!/\s/.test(q.trim())?`id:"${q.trim()}" OR sy:"${q.trim()}" OR ${q.trim()}`:q;
+   const d=await HUB.getJson("https://api.cellosaurus.org/search/cell-line?format=json&rows=10&q="+encodeURIComponent(qq));
+   const L=(d&&d.Cellosaurus&&(d.Cellosaurus["cell-line-list"]||d.Cellosaurus.cellLineList))||[];if(!L.length)return NONE;
+   const nm=c=>{const n=c["name-list"]||[];return (n.find(x=>x.type==="identifier")||n[0]||{}).value||"—";},ac=c=>((c["accession-list"]||[]).find(x=>x.type==="primary")||(c["accession-list"]||[])[0]||{}).value||"";
+   return `## Cellosaurus · '${q}' — ${L.length}건\n`+L.map(c=>{const a=ac(c),xr=c["xref-list"]||[],coll=xr.filter(x=>/collection/i.test(x.category||"")||/^(ATCC|DSMZ|ECACC|JCRB|RCB|KCLB|CLS|IZSLER|BCRC|NCBI_Iran|TKG|CCLV|ICLC)$/.test(x.database||""));
+     const prob=(c["comment-list"]||[]).filter(x=>/problematic|misidentif|contamin/i.test((x.category||"")+" "+(x.value||"")));const syn=(c["name-list"]||[]).filter(x=>x.type==="synonym").map(x=>x.value).slice(0,5);
+     return `### ${nm(c)} (${a})${prob.length?" ⚠":""}\n- 종: ${cellT((c["species-list"]||[]).map(s=>s.label).join(", "))} · 분류: ${cellT(c.category)} · 성별: ${cellT(c.sex)}${c.age?" · 나이: "+c.age:""}\n- 질환: ${cellT((c["disease-list"]||[]).map(s=>s.label).join("; "))}${syn.length?"\n- 다른 이름: "+cellT(syn.join(", ")):""}${(c["derived-from"]||c["hierarchy"])?"\n- 유래: "+cellT(((c["derived-from"]||c["hierarchy"])||[]).map(x=>x.label||x.value).join(", ")):""}
+- 분양처: ${coll.length?coll.slice(0,8).map(x=>x.url?`[${x.database} ${x.accession}](${x.url})`:`${x.database} ${x.accession}`).join(" · "):"등록된 분양 번호 없음"}${prob.length?"\n- **주의: "+cellT(prob.map(x=>x.value).join(" ")).slice(0,400)+"**":""}
+- [Cellosaurus에서 열기](https://www.cellosaurus.org/${a})${a?` · RRID:${a}`:""}`;}).join("\n\n")+`\n\n분양 번호(예: ATCC CRL-2190)와 RRID(RRID:CVCL_…)는 논문 Methods에 그대로 쓰면 돼요. ⚠ 표시는 오염되었거나 잘못 알려진 세포주라는 기록이 있다는 뜻이에요.`;}},
+ abreg:{g:"세포주·항체·동물 모델",label:"항체 (Antibody Registry · RRID)",name:"Antibody Registry",ph:"표적·카탈로그 번호 예: KIM-1, CD68 rabbit, ab190085",from:"Antibody Registry (SciCrunch)",async run(q){
+   const d=await HUB.getJson("https://www.antibodyregistry.org/api/fts-antibodies?size=20&page=1&q="+encodeURIComponent(q));
+   const L=(d&&(d.items||d.data||d.results))||[];if(!L.length)return NONE;const tot=d.totalElements||d.total||L.length;
+   return `## Antibody Registry · '${q}' — 전체 ${(+tot).toLocaleString()}건 중 ${L.length}건\n| RRID | 항체 | 표적 | 숙주 · 클론 | 반응 종 | 용도 | 판매처 · 카탈로그 | 인용 |\n|---|---|---|---|---|---|---|---|\n`+L.map(x=>{const id=x.abId||x.ab_id||x.id;const rr=id?"AB_"+String(id).replace(/^AB_/i,""):"—";
+     return `| ${id?`[${rr}](https://antibodyregistry.org/${rr})`:"—"} | ${cellT(x.abName).slice(0,90)} | ${cellT(x.abTarget)} | ${cellT([x.sourceOrganism,x.clonality,x.cloneId].filter(Boolean).join(", "))} | ${cellT(x.targetSpecies).slice(0,60)} | ${cellT(x.applications).slice(0,70)} | ${x.vendorUrl||x.url?`[${cellT(x.vendorName)} ${cellT(x.catalogNum)}](${x.url||x.vendorUrl})`:cellT([x.vendorName,x.catalogNum].filter(Boolean).join(" "))} | ${cellT(x.numOfCitation)} |`;}).join("\n")+`\n\n논문에는 '(판매처 Cat# 번호, RRID:AB_…)' 형식으로 쓰면 돼요. 용도와 반응 종은 판매처가 적은 정보라 실제 검증 여부는 판매처 자료와 인용 논문으로 확인하세요.`;}},
+ models:{g:"세포주·항체·동물 모델",label:"동물 모델 (질환·유전자)",name:"Alliance 동물 모델",ph:"질환 또는 유전자 예: tumor immunotherapy, lupus, Havcr1",from:"Alliance of Genome Resources (MGI·RGD·ZFIN 등 통합)",async run(q){
+   const base="https://www.alliancegenome.org/api/";let hit=null,kind="";
+   for(const cat of ["disease","gene"]){try{const s=await HUB.getJson(base+"search?category="+cat+"&limit=5&q="+encodeURIComponent(q));const r=(s.results||[]).find(x=>x&&(x.id||x.primaryKey));if(r){hit=r;kind=cat;break;}}catch(e){if(cat==="gene")throw e;}}
+   if(!hit)return NONE;const id=hit.id||hit.primaryKey,hn=stripTags(hit.name||hit.symbol||id);
+   const m=await HUB.getJson(base+kind+"/"+encodeURIComponent(id)+"/models?limit=25&page=1");const L=(m&&(m.results||m.data))||[];
+   const row=x=>{const o=x.model||x.subject||x.agm||x;const nm=stripTags(o.name||o.modelName||x.name||"—"),cu=o.curie||o.primaryExternalId||o.id||x.id||"",sp=(o.species||x.species||{}).name||(o.taxon||{}).name||"",src=(o.dataProvider||x.dataProvider||{}).abbreviation||o.dataProvider||(cu.split(":")[0]||""),dis=(x.diseaseModels||x.diseases||[]).map(dd=>stripTags(dd.diseaseModel||dd.name||(dd.disease||{}).name||"")).filter(Boolean).slice(0,2).join("; ");
+     const url=/^MGI:/.test(cu)?"https://www.informatics.jax.org/allele/genoview/"+cu:/^RGD:/.test(cu)?"https://rgd.mcw.edu/rgdweb/report/strain/main.html?id="+cu.slice(4):/^ZFIN:/.test(cu)?"https://zfin.org/"+cu.slice(5):"";
+     return `| ${url?`[${cellT(nm).replace(/[\[\]]/g,m=>m=="["?"(":")").slice(0,110)}](${url})`:cellT(nm).slice(0,110)} | ${cellT(sp)} | ${cellT(dis||hn).slice(0,90)} | ${cellT(typeof src==="string"?src:"")} |`;};
+   return `## 동물 모델 · ${kind==="disease"?"질환":"유전자"} '${hn}' (${id}) — ${L.length?(m.total||L.length)+"건 중 "+L.length+"건":"등록된 모델 없음"}\n`+(L.length?`| 모델 (유전형·계통) | 종 | 관련 질환 | 출처 |\n|---|---|---|---|\n`+L.map(row).join("\n"):"")+`\n\n- [Alliance에서 '${hn}' 보기](https://www.alliancegenome.org/${kind}/${id})\n- 분양 가능한 마우스 찾기: [IMSR (findmice.org)](https://www.findmice.org/summary?query=${encodeURIComponent(q)}) · [JAX 마우스](https://www.jax.org/search?q=${encodeURIComponent(q)}) · [MMRRC](https://www.mmrrc.org/catalog/StrainCatalogSearchForm.php?search_query=${encodeURIComponent(q)})\n- 랫드: [RGD](https://rgd.mcw.edu/rgdweb/search/search.html?term=${encodeURIComponent(q)}) · 질환 모델 문헌: [MGI 질환 모델](https://www.informatics.jax.org/diseasePortal?phenotypes=${encodeURIComponent(q)})\n\n유전자 조작·자연 발생 모델 위주예요. 약물·수술로 만드는 모델(예: 시스플라틴, 허혈-재관류)은 PubMed나 문헌 검색 탭에서 찾는 게 좋아요.`;}}
+});
+DB.portals.run=(f=>async q=>{const e=encodeURIComponent(q);let md=await f(q);
+  return md.replace(/\n\| 국내 \|/,`\n| 세포주 | ATCC | 세포주 분양 (미국) | https://www.atcc.org/search#q=${e} |\n| 세포주 | KCLB 한국세포주은행 | 국내 세포주 분양 | https://cellbank.snu.ac.kr/ |\n| 세포주 | DSMZ · ECACC · JCRB | 독일·영국·일본 세포주 분양 | https://www.dsmz.de/collection/catalogue |\n| 항체 | CiteAb · Antibodypedia | 논문 인용 많은 항체, 검증 자료 | https://www.citeab.com/search?q=${e} |\n| 동물 모델 | 한국마우스표현형센터 (KMPC) | 국내 마우스 표현형 분석·자원 | https://www.kmpc.kr/ |\n| 국내 |`).replace(/\| ([^|]+) \| ([^|]+) \| ([^|]+) \| (https:\/\/[^\s|]+) \|/g,(a,b,c2,d2,u)=>`| ${b} | ${c2} | ${d2} | [열기](${u}) |`);})(DB.portals.run);
+/* ---------- toxicology, food safety, doping, controlled substances ---------- */
+const PCV="https://pubchem.ncbi.nlm.nih.gov/rest/";
+async function pcCid(q){const d=await HUB.getJson(PCV+"pug/compound/name/"+encodeURIComponent(q)+"/cids/JSON");const c=(d.IdentifierList&&d.IdentifierList.CID||[])[0];if(!c)throw new Error("PubChem에서 '"+q+"' 화합물을 찾지 못했어요 (영문 이름이나 CAS 번호로 넣어 보세요)");return c;}
+async function pcView(cid,heading){try{const d=await HUB.getJson(PCV+"pug_view/data/compound/"+cid+"/JSON?heading="+encodeURIComponent(heading));const out=[];
+  const str=v=>v&&v.StringWithMarkup?v.StringWithMarkup.map(s=>s.String).join(" "):v&&v.Number?v.Number.join(", ")+(v.Unit?" "+v.Unit:""):"";
+  const walk=(secs,path)=>(secs||[]).forEach(s=>{const h=s.TOCHeading||path;(s.Information||[]).forEach(i=>{const t=str(i.Value);out.push({h,name:i.Name||"",t});});walk(s.Section,h);});
+  walk(d.Record&&d.Record.Section,heading);return out;}catch(e){return [];}}
+const pcGroup=(L,per=3,len=320)=>{const m=new Map();L.forEach(x=>{if(!x.t)return;const a=m.get(x.h)||[];if(a.length<per&&!a.includes(x.t))a.push(x.t);m.set(x.h,a);});return [...m].map(([h,a])=>`**${h}**\n`+a.map(t=>"- "+cellT(t).slice(0,len)+(t.length>len?"…":"")).join("\n")).join("\n\n");};
+const WADA=[[/anabolic|androgen/i,"S1 단백동화제","상시 금지"],[/erythropoie|growth hormone|somatotropin|gonadotropin|hypoxia-inducible/i,"S2 펩티드호르몬·성장인자","상시 금지"],[/beta-2|beta2|β2/i,"S3 베타-2 작용제","상시 금지 (일부 흡입제는 용량 조건부 허용)"],[/aromatase|estrogen receptor modulator|estrogen antagonist|antiestrogen|myostatin|insulin\b|insulins/i,"S4 호르몬·대사 조절제","상시 금지"],[/diuretic/i,"S5 이뇨제·은폐제","상시 금지"],[/central nervous system stimulant|sympathomimetic|amphetamine|psychostimul/i,"S6 흥분제","경기기간 중 금지"],[/opioid|narcotic/i,"S7 마약성 진통제","경기기간 중 금지 (목록에 오른 물질만)"],[/cannabinoid/i,"S8 카나비노이드","경기기간 중 금지"],[/glucocorticoid/i,"S9 글루코코르티코이드","경기기간 중 금지 (투여 경로에 따라)"],[/adrenergic beta-antagonist|adrenergic beta-blocker|beta-blocker/i,"P1 베타차단제","특정 종목에서 금지"]];
+Object.assign(DB,{
+ tox:{g:"독성·도핑·마약류",label:"화합물 독성 (PubChem 독성 정보)",name:"PubChem 독성",ph:"화합물 영문 이름·CAS 예: aflatoxin B1, acrylamide, 50-00-0",from:"PubChem PUG View — 독성 요약, 독성값(LD50 등), GHS 분류",async run(q){
+   const cid=await pcCid(q);const [tx,ghs]=await Promise.all([pcView(cid,"Toxicity"),pcView(cid,"GHS Classification")]);
+   const g=ghs.filter(x=>/hazard statement|signal|pictogram/i.test(x.name)).map(x=>({h:x.name,t:x.t}));
+   const keep=tx.filter(x=>/summary|toxicity values|ld50|lc50|carcinogen|iarc|acute|hepatotox|nephrotox|reproductive|developmental|adverse|exposure limit|adi|tolerable|interactions|antidote/i.test(x.h+" "+x.name));
+   if(!tx.length&&!g.length)return `## ${q} (CID ${cid})\nPubChem에 독성 항목이 없어요.\n\n[PubChem에서 열기](https://pubchem.ncbi.nlm.nih.gov/compound/${cid}#section=Toxicity)`+TOXLINKS(q);
+   return `## ${q} — PubChem 독성 정보 (CID ${cid})\n`+(g.length?`### GHS 위해성 분류\n${pcGroup(g,6,200)}\n\n`:"")+`### 독성 기록 (출처 문헌 요약, 항목별 최대 3개)\n${pcGroup(keep.length?keep:tx)}\n\n[PubChem 독성 항목 전체 보기](https://pubchem.ncbi.nlm.nih.gov/compound/${cid}#section=Toxicity)`+TOXLINKS(q);}},
+ foodrec:{g:"독성·도핑·마약류",label:"식품 회수·위해 사례 (openFDA)",name:"openFDA 식품 회수",ph:"위해 요인·식품 예: aflatoxin, Listeria, undeclared milk, lead",from:"openFDA food/enforcement (미국 FDA 식품 회수 기록)",async run(q){
+   const s=`reason_for_recall:"${q}"`+"+"+`product_description:"${q}"`;let d;
+   try{d=await HUB.getJson("https://api.fda.gov/food/enforcement.json?limit=15&sort=report_date:desc&search="+encodeURIComponent(s).replace(/%2B/g,"+"));}catch(e){if(/404/.test(e.message))return NONE;throw e;}
+   const L=d.results||[];if(!L.length)return NONE;const tot=(d.meta&&d.meta.results&&d.meta.results.total)||L.length,dt=x=>x?String(x).replace(/^(\d{4})(\d\d)(\d\d)$/,"$1-$2-$3"):"—";
+   return `## openFDA 식품 회수 · '${q}' — 전체 ${(+tot).toLocaleString()}건 중 최근 ${L.length}건\n| 보고일 | 등급 | 제품 | 회수 사유 | 회사 · 나라 | 상태 |\n|---|---|---|---|---|---|\n`+L.map(x=>`| ${dt(x.report_date)} | ${cellT(x.classification)} | ${cellT(x.product_description).slice(0,110)} | ${cellT(x.reason_for_recall).slice(0,160)} | ${cellT([x.recalling_firm,x.country].filter(Boolean).join(", "))} | ${cellT(x.status)} |`).join("\n")+`\n\n등급: Class I = 심각한 건강 위해 가능, Class II = 일시적·가역적 위해, Class III = 위해 가능성 낮음. 미국 FDA 기록이라 국내 회수는 식품안전나라에서 확인하세요.`+TOXLINKS(q);}},
+ doping:{g:"독성·도핑·마약류",label:"스포츠 도핑 금지약물",name:"도핑 확인",ph:"약물 영문 이름 예: salbutamol, furosemide, prednisolone",from:"PubChem 약리 분류(MeSH) → WADA 금지목록 범주 추정",async run(q){
+   const cid=await pcCid(q);const [mesh,fda,syn]=await Promise.all([pcView(cid,"MeSH Pharmacological Classification"),pcView(cid,"FDA Pharmacological Classification"),HUB.getJson(PCV+"pug/compound/cid/"+cid+"/synonyms/JSON").catch(()=>null)]);
+   const cls=[...new Set(mesh.map(x=>x.name).concat(fda.map(x=>x.t)).filter(Boolean))];const hits=WADA.filter(([re])=>cls.some(c=>re.test(c)));
+   const sy=((syn&&syn.InformationList&&syn.InformationList.Information[0]||{}).Synonym||[]).slice(0,8);const e=encodeURIComponent(q);
+   return `## ${q} (CID ${cid}) — 도핑 금지약물 확인\n- 다른 이름: ${cellT(sy.join(", "))}\n- 약리 분류 (MeSH·FDA): ${cellT(cls.slice(0,10).join("; "))}\n\n### WADA 금지목록 범주 (약리 분류로 본 추정)\n`+(hits.length?`| 범주 | 금지 시기 |\n|---|---|\n`+hits.map(h=>`| ${h[1]} | ${h[2]} |`).join("\n"):"약리 분류만으로는 금지 범주에 해당하는 것이 보이지 않아요. 그래도 S0(미승인 물질)이나 목록에 이름으로 오른 물질일 수 있어 아래에서 꼭 확인하세요.")+`\n\n**확정 판정이 아니에요.** WADA 금지목록은 해마다 1월 1일 바뀌고, 같은 약이라도 투여 경로·용량·종목에 따라 달라요. 선수에게 쓰기 전에는 아래에서 이름으로 다시 확인하고, 필요하면 치료목적사용면책(TUE)을 신청해야 해요.\n\n- [Global DRO에서 '${q}' 확인](https://www.globaldro.com/) · [WADA 금지목록](https://www.wada-ama.org/en/prohibited-list) · [한국도핑방지위원회 (KADA) 금지약물 검색](https://www.kada-ad.or.kr/)\n- [PubChem에서 열기](https://pubchem.ncbi.nlm.nih.gov/compound/${cid}) · [PubMed: '${q}' doping 문헌](https://pubmed.ncbi.nlm.nih.gov/?term=${e}+AND+(doping+OR+anti-doping))`;}},
+ narc:{g:"독성·도핑·마약류",label:"마약류·검출 정보",name:"마약류 검출 정보",ph:"물질 영문 이름 예: fentanyl, methamphetamine, THC, ketamine",from:"PubChem 질량·구조 정보 + 규제 기록, 질량분석 라이브러리 바로가기",async run(q){
+   const cid=await pcCid(q);const [pp,dea]=await Promise.all([HUB.getJson(PCV+"pug/compound/cid/"+cid+"/property/Title,MolecularFormula,MolecularWeight,MonoisotopicMass,XLogP,InChIKey,CanonicalSMILES/JSON"),pcView(cid,"DEA Controlled Substances")]);
+   const p=(pp.PropertyTable&&pp.PropertyTable.Properties||[])[0]||{},m=parseFloat(p.MonoisotopicMass),f=x=>isFinite(m)?(m+x).toFixed(4):"—",e=encodeURIComponent(q),ik=p.InChIKey||"";
+   return `## ${p.Title||q} (CID ${cid}) — 검출용 정보\n| 항목 | 값 |\n|---|---|\n| 분자식 | ${cellT(p.MolecularFormula)} |\n| 분자량 | ${cellT(p.MolecularWeight)} |\n| 단일동위원소 질량 | ${cellT(p.MonoisotopicMass)} |\n| [M+H]⁺ | ${f(1.007276)} |\n| [M+Na]⁺ | ${f(22.989218)} |\n| [M−H]⁻ | ${f(-1.007276)} |\n| XLogP | ${cellT(p.XLogP)} |\n| InChIKey | ${cellT(ik)} |\n| SMILES | ${cellT(p.CanonicalSMILES||p.ConnectivitySMILES||p.SMILES)} |\n\n[M+H]⁺ 등은 단일동위원소 질량에서 계산한 이론값이에요 (LC-MS 추출 이온 범위 잡을 때 쓰세요).\n\n### 규제 기록\n`+(dea.length?pcGroup(dea,4,240):"PubChem에 미국 DEA 통제 물질 기록이 없어요. 없다고 규제 대상이 아닌 것은 아니에요.")+`\n\n국내 지정 여부는 「마약류 관리에 관한 법률」 시행령 별표와 식약처 임시마약류 지정 고시로 확인하세요.\n\n### 스펙트럼·검출 자료\n- 질량 스펙트럼: [MassBank](https://massbank.eu/MassBank/Search?compound=${e}) · [mzCloud](https://www.mzcloud.org/) · [NIST WebBook](https://webbook.nist.gov/cgi/cbook.cgi?Name=${e}) · [SWGDRUG 질량 스펙트럼 라이브러리](https://swgdrug.org/ms.htm)\n- 신종 물질·분석법: [UNODC 조기경보 (EWA)](https://www.unodc.org/LSS/Page/NPS) · [Cayman 법과학 표준물질](https://www.caymanchem.com/search?q=${e}) · [PubMed: '${q}' 검출 분석법](https://pubmed.ncbi.nlm.nih.gov/?term=${e}+AND+(LC-MS+OR+GC-MS)+AND+detection)\n- 국내: [식약처 마약류 정보](https://www.mfds.go.kr/) · [PubChem에서 열기](https://pubchem.ncbi.nlm.nih.gov/compound/${cid})${ik?` · [InChIKey로 웹 검색](https://www.google.com/search?q=${ik})`:""}`+(p.MolecularFormula?"\n\n"+dmd(await msReport(fParse(p.MolecularFormula),cid,p.Title||q).catch(e=>"질량 스펙트럼 정보를 만들지 못했어요: "+e.message)):"");}}
+});
+const TOXLINKS=q=>{const e=encodeURIComponent(q);return `\n\n### 더 찾아볼 곳\n- 식품 위해: [EFSA OpenFoodTox](https://www.efsa.europa.eu/en/data-report/chemical-hazards-database-openfoodtox) · [JECFA 평가 (WHO)](https://apps.who.int/food-additives-contaminants-jecfa-database/) · [EU RASFF 위해 알림](https://webgate.ec.europa.eu/rasff-window/screen/search) · [식품안전나라 (회수·위해정보)](https://www.foodsafetykorea.go.kr/)\n- 독성 자료: [EPA CompTox 대시보드](https://comptox.epa.gov/dashboard/search-results?input_type=synonym&inputs=${e}) · [IARC 발암성 분류](https://monographs.iarc.who.int/list-of-classifications/) · [T3DB 독소 DB](https://www.t3db.ca/unearth/q?query=${e}&searcher=toxins) · [PubMed: '${q}' toxicity](https://pubmed.ncbi.nlm.nih.gov/?term=${e}+AND+toxicity)`;};
+/* ---------- mass spectra: isotope patterns, adducts, PubChem/MoNA peak records, UV ---------- */
+const ISO={H:[[1.00782503207,.999885],[2.0141017778,.000115]],C:[[12,.9893],[13.0033548378,.0107]],N:[[14.0030740048,.99636],[15.0001088982,.00364]],O:[[15.99491461956,.99757],[16.9991317,.00038],[17.999161,.00205]],S:[[31.972071,.9499],[32.97145876,.0075],[33.9678669,.0425],[35.96708076,.0001]],P:[[30.97376163,1]],F:[[18.99840322,1]],Cl:[[34.96885268,.7576],[36.96590259,.2424]],Br:[[78.9183371,.5069],[80.9162906,.4931]],I:[[126.904473,1]],Na:[[22.9897692809,1]],K:[[38.96370668,.932581],[39.96399848,.000117],[40.96182576,.067302]],Si:[[27.9769265325,.92223],[28.9764947,.04685],[29.97377017,.03092]],B:[[10.012937,.199],[11.0093054,.801]],Se:[[73.9224764,.0089],[75.9192136,.0937],[76.919914,.0763],[77.9173091,.2377],[79.9165213,.4961],[81.9166994,.0873]],Fe:[[53.9396105,.05845],[55.9349375,.91754],[56.935394,.02119],[57.9332756,.00282]],Pt:[[189.959932,.00014],[191.961038,.00782],[193.96268,.32967],[194.964791,.33832],[195.964951,.25242],[197.967893,.07163]],Li:[[6.0151223,.0759],[7.016004,.9241]],Mg:[[23.9850417,.7899],[24.98583692,.1],[25.982592929,.1101]],Ca:[[39.96259098,.96941],[41.95861801,.00647],[42.9587666,.00135],[43.9554818,.02086],[45.9536926,.00004],[47.952534,.00187]],Zn:[[63.9291422,.4863],[65.9260334,.279],[66.9271273,.041],[67.9248442,.1875],[69.9253193,.0062]],Cu:[[62.9295975,.6917],[64.9277895,.3083]],Gd:[[155.9221227,.2047],[157.9241039,.2484],[156.9239601,.1565],[159.9270541,.2186],[154.9226220,.148],[153.9208656,.0218]]};
+const EM=0.00054858,PEP={G:"C2H3NO",A:"C3H5NO",S:"C3H5NO2",P:"C5H7NO",V:"C5H9NO",T:"C4H7NO2",C:"C3H5NOS",L:"C6H11NO",I:"C6H11NO",N:"C4H6N2O2",D:"C4H5NO3",Q:"C5H8N2O2",K:"C6H12N2O",E:"C5H7NO3",M:"C5H9NOS",H:"C6H7N3O",F:"C9H9NO",R:"C6H12N4O",Y:"C9H9NO2",W:"C11H10N2O"};
+const fParse=f=>{const o={},s=String(f).replace(/[+\-]\d*$/,"").replace(/\s/g,"");if(!/^([A-Z][a-z]?\d*)+$/.test(s))throw new Error("분자식을 읽지 못했어요: "+f);s.replace(/([A-Z][a-z]?)(\d*)/g,(m,e,n)=>{if(!ISO[e])throw new Error("동위원소 표에 없는 원소: "+e);o[e]=(o[e]||0)+(n===""?1:+n);});return o;};
+const fAdd=(a,b,k=1)=>{const o={...a};for(const[e,n]of Object.entries(b)){o[e]=(o[e]||0)+k*n;if(!o[e])delete o[e];if(o[e]<0)throw new Error("뺄 원소가 모자라요");}return o;};
+const fStr=o=>["C","H"].filter(e=>o[e]).concat(Object.keys(o).filter(e=>e!=="C"&&e!=="H").sort()).map(e=>e+(o[e]>1?o[e]:"")).join("");
+const monoOf=o=>Object.entries(o).reduce((s,[e,n])=>s+n*ISO[e].reduce((a,b)=>b[1]>a[1]?b:a)[0],0);
+const avgOf=o=>Object.entries(o).reduce((s,[e,n])=>s+n*ISO[e].reduce((a,b)=>a+b[0]*b[1],0),0);
+function isoPattern(o){let d=[[0,1]];const conv=(A,B)=>{const m=new Map();for(const[a,p]of A)for(const[b,q]of B){const x=a+b,pp=p*q;if(pp<1e-9)continue;const k=Math.round(x*50);const c=m.get(k);if(c){c[0]=(c[0]*c[1]+x*pp)/(c[1]+pp);c[1]+=pp;}else m.set(k,[x,pp]);}
+    const L=[...m.values()],mx=Math.max(...L.map(z=>z[1]));return L.filter(z=>z[1]>mx*1e-5);};
+  for(const[e,n]of Object.entries(o)){let base=ISO[e],k=n,acc=[[0,1]];while(k>0){if(k&1)acc=conv(acc,base);k>>=1;if(k)base=conv(base,base);}d=conv(d,acc);}
+  const mono=monoOf(o),g=new Map();for(const[x,p]of d){const k=Math.round(x-mono);const c=g.get(k)||[0,0];c[0]+=x*p;c[1]+=p;g.set(k,c);}
+  const L=[...g].sort((a,b)=>a[0]-b[0]).map(([k,[s,p]])=>[s/p,p]),mx=Math.max(...L.map(z=>z[1]));const K=L.map(([x,p])=>[x,100*p/mx]).filter(z=>z[1]>=0.1);return K.length>12?K.filter(z=>z[1]>=1).sort((a,b)=>b[1]-a[1]).slice(0,14).sort((a,b)=>a[0]-b[0]):K;}
+const ADD=[["[M+H]⁺","H",1,1],["[M+Na]⁺","Na",1,1],["[M+K]⁺","K",1,1],["[M+NH₄]⁺","NH4",1,1],["[M+2H]²⁺","H2",1,2],["[M−H]⁻","H",-1,-1],["[M+Cl]⁻","Cl",1,-1],["[M+HCOO]⁻","CHO2",1,-1]];
+const adductTable=o=>`| 이온 | 이온 분자식 | 이론 m/z |\n|---|---|---|\n| M (중성) | ${fStr(o)} | ${monoOf(o).toFixed(4)} |\n`+ADD.map(([n,f,s,z])=>{try{const io=fAdd(o,fParse(f),s);return `| ${n} | ${fStr(io)} | ${((monoOf(io)-z*EM)/Math.abs(z)).toFixed(4)} |`;}catch(e){return "";}}).filter(Boolean).join("\n");
+const SPEC=[];const specTok=(title,peaks,sub)=>{SPEC.push({title,peaks,sub});return `⟦spec:${SPEC.length-1}⟧`;};
+const SPECRE=/^⟦spec:\d+⟧\s*$/gm;
+function specSvg(sp){const P=sp.peaks.filter(p=>isFinite(p[0])&&isFinite(p[1]));if(!P.length)return"";const W=640,Hh=220,l=44,r=14,t=40,b=34;let lo=Math.min(...P.map(p=>p[0])),hi=Math.max(...P.map(p=>p[0]));const pad=Math.max(2,(hi-lo)*.08);lo-=pad;hi+=pad;
+  const mx=Math.max(...P.map(p=>p[1])),X=x=>l+(x-lo)/(hi-lo)*(W-l-r),Y=y=>t+(1-y/mx)*(Hh-t-b);const lab=[...P].sort((a,c)=>c[1]-a[1]).slice(0,8);
+  const ticks=[];const st=Math.pow(10,Math.floor(Math.log10((hi-lo)/5)));const step=[1,2,5,10].map(k=>k*st).find(s=>(hi-lo)/s<=7)||st*10;for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step)ticks.push(v);
+  return `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${esc(sp.title)}" style="width:100%;max-width:${W}px;height:auto;display:block"><text x="${l}" y="15" font-size="12.5" font-weight="600" fill="currentColor">${esc(sp.title)}</text>${sp.sub?`<text x="${W-r}" y="15" font-size="11" text-anchor="end" fill="currentColor" opacity=".6">${esc(sp.sub)}</text>`:""}
+<line x1="${l}" y1="${Hh-b}" x2="${W-r}" y2="${Hh-b}" stroke="currentColor" opacity=".45"/><line x1="${l}" y1="${t}" x2="${l}" y2="${Hh-b}" stroke="currentColor" opacity=".45"/>
+${ticks.map(v=>`<line x1="${X(v)}" y1="${Hh-b}" x2="${X(v)}" y2="${Hh-b+4}" stroke="currentColor" opacity=".45"/><text x="${X(v)}" y="${Hh-b+16}" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">${+v.toFixed(4)}</text>`).join("")}
+<text x="${(l+W-r)/2}" y="${Hh-4}" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">m/z</text><text x="12" y="${(t+Hh-b)/2}" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7" transform="rotate(-90 12 ${(t+Hh-b)/2})">상대 세기 (%)</text>
+${P.map(p=>`<line x1="${X(p[0]).toFixed(1)}" y1="${Y(0)}" x2="${X(p[0]).toFixed(1)}" y2="${Y(p[1]).toFixed(1)}" stroke="var(--accent,#2f6fdf)" stroke-width="2"><title>m/z ${p[0]} · ${(+p[1]).toFixed(1)}</title></line>`).join("")}
+${lab.map(p=>`<text x="${X(p[0]).toFixed(1)}" y="${(Y(p[1])-4).toFixed(1)}" font-size="10" text-anchor="middle" fill="currentColor">${(+p[0]).toFixed(p[0]>=1000?2:4).replace(/0+$/,"").replace(/\.$/,"")}</text>`).join("")}</svg>`;}
+const peaksOf=strs=>{const P=[];strs.forEach(s=>String(s).split(/\n|,(?=\s*\d)|;/).forEach(t=>{const m=t.trim().match(/^(\d+(?:\.\d+)?)(?:\s*[:\s]\s*(\d+(?:\.\d+)?))?/);if(m)P.push([+m[1],m[2]!=null?+m[2]:NaN]);}));
+  const n=P.length;P.forEach((p,i)=>{if(!isFinite(p[1]))p[1]=100*(1-i/(n+1));});const mx=Math.max(...P.map(p=>p[1]))||1;return P.map(p=>[p[0],100*p[1]/mx]);};
+async function pcMS(cid){let d;try{d=await HUB.getJson(PCV+"pug_view/data/compound/"+cid+"/JSON?heading=Mass+Spectrometry");}catch(e){return [];}
+  const out=[],vals=v=>v&&v.StringWithMarkup?v.StringWithMarkup.map(s=>s.String):v&&v.Number?v.Number.map(String):[];
+  const walk=(secs,path)=>(secs||[]).forEach(s=>{const h=s.TOCHeading||path;if((s.Information||[]).length){const g=new Map();s.Information.forEach(i=>{const k=i.ReferenceNumber||0;const o=g.get(k)||{type:h,f:{}};(o.f[i.Name||""]=o.f[i.Name||""]||[]).push(...vals(i.Value));g.set(k,o);});out.push(...g.values());}walk(s.Section,h);});
+  walk(d.Record&&d.Record.Section,"MS");
+  return out.map(o=>{const f=o.f,pk=f["Top 5 Peaks"]||f["Top 10 Peaks"]||f["Peaks"]||[];let peaks=peaksOf(pk);
+    if(!peaks.length){const gc=["m/z Top Peak","m/z 2nd Highest","m/z 3rd Highest"].map((n,i)=>f[n]&&[+f[n][0],[100,60,35][i]]).filter(Boolean);peaks=gc;}
+    const g=n=>(f[n]||[]).join(", ");return {type:o.type,peaks,inst:g("Instrument Type")||g("Instrument"),ion:g("Ionization Mode")||g("Ion Mode"),prec:g("Precursor m/z"),add:g("Precursor Adduct")||g("Precursor Type"),ce:g("Collision Energy"),lib:g("Library")||g("NIST Number")||g("Spectra ID"),level:g("MS Level")};}).filter(x=>x.peaks.length);}
+async function msReport(o,cid,name,extra){
+  const iso=isoPattern(fAdd(o,{H:1})).map(([x,p])=>[x-EM,p]),parts=[];
+  parts.push(`### 이론 질량과 흔한 이온\n${adductTable(o)}\n\n평균 분자량 ${avgOf(o).toFixed(3)} · 계산값이에요 (측정값과 비교할 때 오차는 ppm = (측정 − 이론) / 이론 × 10⁶).`);
+  parts.push(`### [M+H]⁺ 동위원소 분포 (이론)\n${specTok(`[M+H]⁺ 동위원소 분포 — ${fStr(o)}`,iso.map(p=>[+p[0].toFixed(4),+p[1].toFixed(1)]),"계산값")}\n| m/z | 상대 세기 (%) |\n|---|---|\n`+iso.map(p=>`| ${p[0].toFixed(4)} | ${p[1].toFixed(1)} |`).join("\n")+`\n\nCl·Br·S가 있으면 M+2 봉우리가 커져서 분자식 확인에 도움이 돼요. MALDI-TOF에서는 [M+H]⁺와 함께 [M+Na]⁺·[M+K]⁺가 같이 잘 보이고, 해상도가 낮으면 이 분포가 한 봉우리로 합쳐져 평균 질량 쪽에 가깝게 보여요.`);
+  if(cid){const [ms,uv]=await Promise.all([pcMS(cid),pcView(cid,"UV Spectra")]);
+    if(ms.length){const CAP=40,pick=[...ms.filter(x=>/LC|MS-MS|MS2/i.test(x.type)),...ms.filter(x=>!/LC|MS-MS|MS2/i.test(x.type))].slice(0,CAP);
+      parts.push(`### 실측 스펙트럼 기록 (PubChem에 모인 MassBank·MoNA·NIST 등, ${ms.length>CAP?`${ms.length}건 중 ${pick.length}건`:`${pick.length}건 모두`})\n`+pick.map((x,i)=>{const sub=[x.inst,x.ion,x.prec&&"전구 이온 "+x.prec+(x.add?" "+x.add:""),x.ce&&"CE "+x.ce].filter(Boolean).join(" · ");
+        return `#### ${i+1}. ${x.type}${x.level?" ("+x.level+")":""}\n${sub?"- "+cellT(sub)+"\n":""}${specTok(`${name} — ${x.type}${x.prec?" · 전구 "+x.prec:""}`,x.peaks,"주요 봉우리만 (세기 미기재 시 순위로 표시)")}\n- 주요 봉우리 (m/z · 상대 세기): ${x.peaks.map(p=>`${p[0]}${isFinite(p[1])?" ("+Math.round(p[1])+")":""}`).join(", ")}${x.lib?"\n- 기록: "+cellT(x.lib).slice(0,80):""}`;}).join("\n\n"));}
+    else parts.push("### 실측 스펙트럼 기록\nPubChem에 모인 질량 스펙트럼 기록이 없어요. 아래 MoNA·MassBank·GNPS에서 이름이나 InChIKey로 찾아보세요.");
+    const u=uv.filter(x=>x.t&&/max|nm/i.test(x.t)).slice(0,4);if(u.length)parts.push(`### UV 흡수 (HPLC-UV 검출 파장 참고)\n`+u.map(x=>"- "+cellT(x.t).slice(0,200)).join("\n"));}
+  if(extra)parts.push(extra);
+  const e=encodeURIComponent(name);
+  parts.push(`### 스펙트럼 더 찾기\n- [MoNA](https://mona.fiehnlab.ucdavis.edu/spectra/search) · [MassBank Europe](https://massbank.eu/MassBank/Search?compound=${e}) · [GNPS 라이브러리](https://library.gnps2.org/) · [HMDB](https://hmdb.ca/unearth/q?query=${e}&searcher=metabolites) · [NIST WebBook](https://webbook.nist.gov/cgi/cbook.cgi?Name=${e}) · [mzCloud](https://www.mzcloud.org/) · [SDBS (AIST, NMR·IR·MS)](https://sdbs.db.aist.go.jp/)${cid?` · [PubChem 스펙트럼 항목](https://pubchem.ncbi.nlm.nih.gov/compound/${cid}#section=Spectral-Information)`:""}`);
+  return parts.join("\n\n");}
+DB.spectra={g:"화합물",label:"질량·스펙트럼 (LC-MS·MALDI·UV)",name:"질량·스펙트럼",ph:"이름·CAS·분자식·펩타이드 예: caffeine, C17H19NO3, pep:GLSDGEWQQVLNVWGK",from:"이론 m/z·동위원소 분포(브라우저에서 계산) + PubChem 실측 질량 스펙트럼·UV 기록",async run(q){
+   q=q.trim();let o,cid=null,name=q,info="";
+   const pep=q.match(/^(?:pep(?:tide)?:\s*)([A-Za-z]+)$/i)||(/^[ACDEFGHIKLMNPQRSTVWY]{5,}$/.test(q)?[q,q]:null);
+   if(pep){const sq=pep[1].toUpperCase();const bad=sq.replace(/[ACDEFGHIKLMNPQRSTVWY]/g,"");if(bad)throw new Error("펩타이드 서열에 쓸 수 없는 글자: "+bad);
+     o=fParse("H2O");for(const a of sq)o=fAdd(o,fParse(PEP[a]));name="펩타이드 "+sq;info=`- 서열: ${sq} (${sq.length}잔기) · 분자식: ${fStr(o)} · 단일동위원소 질량: ${monoOf(o).toFixed(4)} · 평균 질량: ${avgOf(o).toFixed(3)}\n- 이황화결합·번역후 변형은 넣지 않은 값이에요 (이황화결합 1개당 −2.0157).`;}
+   else if(/^([A-Z][a-z]?\d*)+$/.test(q)&&/\d/.test(q)&&/^[A-Z]/.test(q)){o=fParse(q);info=`- 분자식만으로 계산했어요. 이름으로 넣으면 PubChem 실측 스펙트럼도 같이 찾아요.`;}
+   else{cid=await pcCid(q);const pp=await HUB.getJson(PCV+"pug/compound/cid/"+cid+"/property/Title,MolecularFormula,MonoisotopicMass,XLogP,TPSA,InChIKey/JSON");const p=(pp.PropertyTable.Properties||[])[0]||{};name=p.Title||q;o=fParse(p.MolecularFormula);
+     const xl=+p.XLogP;info=`- 분자식: ${p.MolecularFormula} · 단일동위원소 질량: ${p.MonoisotopicMass} · XLogP: ${cellT(p.XLogP)} · TPSA: ${cellT(p.TPSA)} · InChIKey: ${cellT(p.InChIKey)}\n- 역상(C18) HPLC 참고: ${isFinite(xl)?xl<0?"XLogP가 0보다 낮아 아주 일찍 나오거나 잘 붙지 않을 수 있어요 (HILIC이나 이온쌍 조건 고려)":xl<3?"중간 극성이라 일반적인 물–아세토니트릴(0.1% 포름산) 기울기로 무난해요":"소수성이 커서 늦게 나오고, 유기 용매 비율을 높게 가져가야 해요":"XLogP 값이 없어요"} (일반적 경향이고 실제 머무름 시간은 컬럼·조건마다 달라요).`;}
+   return `## ${name} — 질량·스펙트럼\n${info}\n\n`+await msReport(o,cid,name);}};
+/* ---------- predicted products of a reaction ---------- */
+const RXN={auto:["AI가 판단","",""],amide:["아마이드 결합 (카복실산 + 아민, EDC/HATU 등)","H2O","−H₂O"],nhs:["NHS 에스터 + 아민","C4H5NO3","−N-하이드록시숙신이미드"],ester:["에스터화 (카복실산 + 알코올)","H2O","−H₂O"],maleimide:["말레이미드 + 싸이올 (Michael 첨가)","","부산물 없음"],click:["클릭 반응 (아자이드 + 알카인, CuAAC·SPAAC)","","부산물 없음"],schiff:["이민·하이드라존·옥심 (알데하이드/케톤 + 아민류)","H2O","−H₂O"],redam:["환원성 아민화 (알데하이드 + 아민 → 아민)","O","−H₂O +H₂"],disulfide:["이황화 결합 (싸이올 + 싸이올)","H2","−H₂"],urea:["아이소(싸이오)사이아네이트 + 아민 → (싸이오)유레아","","부산물 없음"],carbamate:["카보네이트·클로로포메이트 + 아민 → 카바메이트","HCl","−HCl (클로로포메이트 기준)"],salt:["염·이온쌍 (공유결합 없음)","","부산물 없음"]};
+const RXNKEY={"아마이드":"amide","amide":"amide","edc":"amide","nhs":"nhs","에스터":"ester","ester":"ester","말레이미드":"maleimide","maleimide":"maleimide","클릭":"click","click":"click","cuaac":"click","spaac":"click","이민":"schiff","하이드라존":"schiff","옥심":"schiff","schiff":"schiff","환원성":"redam","reductive":"redam","이황화":"disulfide","disulfide":"disulfide","유레아":"urea","urea":"urea","카바메이트":"carbamate","carbamate":"carbamate","염":"salt","salt":"salt"};
+const IMGS=[];const imgTok=(src,alt)=>{IMGS.push({src,alt});return `⟦img:${IMGS.length-1}⟧`;};
+const IMGRE=/^⟦img:\d+⟧\s*$/gm;
+const depict=smi=>"https://www.simolecule.com/cdkdepict/depict/bow/svg?zoom=1.6&annotate=none&smi="+encodeURIComponent(smi);
+async function resolveMol(t){const m=t.match(/^\s*(\d+)\s*(?:x|×|\*)?\s+(.+)$/i),n=m?+m[1]:1,s=(m?m[2]:t).trim();
+  if(/^([A-Z][a-z]?\d*)+$/.test(s)&&/\d/.test(s))return {n,name:s,formula:s,o:fParse(s)};
+  const cid=await pcCid(s);const pp=await HUB.getJson(PCV+"pug/compound/cid/"+cid+"/property/Title,MolecularFormula,MonoisotopicMass,MolecularWeight,CanonicalSMILES,IsomericSMILES/JSON");const p=(pp.PropertyTable.Properties||[])[0]||{};
+  return {n,name:p.Title||s,cid,formula:p.MolecularFormula,o:fParse(p.MolecularFormula),smiles:p.IsomericSMILES||p.SMILES||p.CanonicalSMILES||p.ConnectivitySMILES||""};}
+DB.rxn={g:"화합물",label:"합성 생성물 예측 (분자량·구조·스펙트럼)",name:"생성물 예측",ph:"반응물 + 반응물 | 반응 종류 예: ibuprofen + ethanolamine | 아마이드",from:"반응 종류별 부산물로 분자식 계산 + AI 구조 예측 + 이론 질량 스펙트럼",async run(q){
+   const [lhs,typ0=""]=q.split("|").map(x=>x.trim());const names=lhs.split(/\s*\+\s*/).map(x=>x.trim()).filter(Boolean);if(names.length<2)throw new Error("반응물을 ' + '로 두 개 이상 넣어 주세요. 예: ibuprofen + ethanolamine | 아마이드");
+   const typ=(RXN[typ0]?typ0:Object.entries(RXNKEY).find(([k])=>typ0.toLowerCase().includes(k))||[0,"auto"])[1]||"auto";
+   const R=[];for(const s of names)R.push(await resolveMol(s));
+   const nmol=R.reduce((a,r)=>a+r.n,0),bonds=nmol-1;let sum={};R.forEach(r=>{sum=fAdd(sum,r.o,r.n);});
+   let ai=null,aiNote="";
+   if(HUB.ai.auto){try{ai=await HUB.ai.json(`유기화학자로서 아래 반응물이 반응했을 때 주 생성물을 예측하세요. JSON 객체 하나로만 답하세요.
+반응물: ${R.map(r=>`${r.n>1?r.n+"× ":""}${r.name} (분자식 ${r.formula}${r.smiles?", SMILES "+r.smiles:""})`).join(" ; ")}
+반응 종류: ${typ==="auto"?"지정 없음 — 작용기를 보고 가장 그럴듯한 반응을 고를 것":RXN[typ][0]}
+형식: {"reaction":"반응 이름(한국어)","site":"어느 작용기끼리 반응하는지 한국어 한 문장","smiles":"주 생성물 SMILES","byproduct":"부산물 분자식 (없으면 빈 문자열, 결합 1개당)","formula":"주 생성물 분자식","side":["가능한 부생성물·주의점 (한국어, 최대 3개)"],"confidence":"높음|중간|낮음"}
+반응할 작용기가 없으면 smiles를 빈 문자열로 하고 site에 이유를 쓰세요.`,{modelTier:"default"});}catch(e){if(e&&e.code==="cancelled")throw e;aiNote="AI 구조 예측을 하지 못했어요: "+HUB.aiErr(e);}}
+   else aiNote="AI가 연결되지 않아 구조 예측은 건너뛰었어요 (설정에서 AI 키를 넣거나 claude.ai 밖 파일에서 쓰세요). 분자식·질량은 반응 종류로 계산했어요.";
+   let by=typ==="auto"?(ai&&ai.byproduct)||"":RXN[typ][1],prod;
+   try{prod=by?fAdd(sum,fParse(by),-bonds):sum;}catch(e){throw new Error("부산물 "+by+"을(를) 뺄 수 없어요. 반응 종류를 확인해 주세요.");}
+   let warn="";if(ai&&ai.formula){try{const af=fStr(fParse(ai.formula));if(af!==fStr(prod))warn=`\n> ⚠ AI가 낸 분자식(${af})과 반응식으로 계산한 분자식(${fStr(prod)})이 달라요. 반응 부위나 몇 군데에서 반응하는지(당량)를 다시 확인하세요. 아래 질량은 계산식 기준이에요.`;}catch(e){}}
+   const sm=ai&&ai.smiles;
+   const head=`## 생성물 예측 — ${R.map(r=>(r.n>1?r.n+"× ":"")+r.name).join(" + ")}\n| 반응물 | 분자식 | 단일동위원소 질량 | 당량 |\n|---|---|---|---|\n`+R.map(r=>`| ${r.cid?`[${cellT(r.name)}](https://pubchem.ncbi.nlm.nih.gov/compound/${r.cid})`:cellT(r.name)} | ${r.formula} | ${monoOf(r.o).toFixed(4)} | ${r.n} |`).join("\n")+
+     `\n\n- 반응: ${typ==="auto"?(ai&&ai.reaction?cellT(ai.reaction)+" (AI 판단)":"지정 안 함"):RXN[typ][0]} · 부산물: ${by?`${by} × ${bonds}`:"없음"}${ai&&ai.site?"\n- 반응 부위: "+cellT(ai.site):""}\n- **예측 생성물 분자식: ${fStr(prod)}** · 단일동위원소 질량 ${monoOf(prod).toFixed(4)} · 평균 분자량 ${avgOf(prod).toFixed(3)}${warn}`;
+   const pics=R.filter(r=>r.smiles).map(r=>imgTok(depict(r.smiles),r.name));
+   const struct=`### 구조\n`+(pics.length?`반응물\n\n${pics.join("\n\n")}\n\n`:"")+(sm?`예측 생성물 (AI, 신뢰도 ${cellT(ai.confidence||"—")})\n\n${imgTok(depict(sm),"예측 생성물")}\n\n- SMILES: \`${sm}\`\n- [이 구조를 PubChem에서 찾아보기](https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(sm)}&input_type=smiles)`:aiNote||(ai&&ai.site)||"AI가 생성물 구조를 내지 않았어요.")+(ai&&ai.side&&ai.side.length?`\n\n**부생성물·주의:**\n`+ai.side.slice(0,3).map(x=>"- "+cellT(x)).join("\n"):"");
+   return `${head}\n\n${struct}\n\n### 예측 질량 스펙트럼\n`+dmd(await msReport(prod,null,fStr(prod)))+`\n\n반응이 덜 된 경우를 대비해 반응물의 [M+H]⁺ (${R.map(r=>`${r.name} ${(monoOf(r.o)+1.007276).toFixed(4)}`).join(", ")})도 같이 확인하세요. 구조는 예측이라 NMR·MS/MS로 확인이 필요해요.`;}};
+/* ---------- bioactivity: EC50 / IC50 / Ki / Kd from PubChem BioAssay and ChEMBL ---------- */
+const ACT=["IC50","EC50","Ki","Kd","AC50","GI50","ED50","Potency","CC50","MIC"];
+const fmtNM=v=>!isFinite(v)?"—":v>=1e6?(v/1e6).toPrecision(3)+" mM":v>=1e3?(v/1e3).toPrecision(3)+" µM":v>=1?(+v.toPrecision(3))+" nM":(v*1e3).toPrecision(3)+" pM";
+const toNM=(v,u)=>{v=+v;u=String(u||"").toLowerCase().replace("µ","u");return !isFinite(v)?NaN:u==="nm"?v:u==="um"?v*1e3:u==="mm"?v*1e6:u==="pm"?v/1e3:u==="m"?v*1e9:NaN;};
+const med=a=>{const s=[...a].sort((x,y)=>x-y),n=s.length;return n?(n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2):NaN;};
+async function chemblActs(name,ik,types){let id="";
+  if(ik){try{const d=await HUB.getJson("https://www.ebi.ac.uk/chembl/api/data/molecule.json?molecule_structures__standard_inchi_key="+ik);id=((d.molecules||[])[0]||{}).molecule_chembl_id||"";}catch(e){}}
+  if(!id){const d=await HUB.getJson("https://www.ebi.ac.uk/chembl/api/data/molecule/search.json?limit=1&q="+encodeURIComponent(name));id=((d.molecules||[])[0]||{}).molecule_chembl_id||"";}
+  if(!id)return {id:"",rows:[]};
+  const d=await HUB.getJson(`https://www.ebi.ac.uk/chembl/api/data/activity.json?limit=500&molecule_chembl_id=${id}&standard_type__in=${types.join(",")}`);
+  return {id,total:(d.page_meta||{}).total_count,rows:(d.activities||[]).map(a=>({src:"ChEMBL",type:a.standard_type,rel:a.standard_relation||"=",nm:toNM(a.standard_value,a.standard_units),p:a.pchembl_value,target:a.target_pref_name||"—",org:a.target_organism||"",tid:a.target_chembl_id,assay:a.assay_chembl_id,desc:a.assay_description||"",doc:a.document_chembl_id,year:a.document_year})).filter(r=>isFinite(r.nm)&&types.some(t=>t.toLowerCase()===String(r.type).toLowerCase()))};}
+async function pubchemActs(cid,types){const d=await HUB.getJson(PCV+"pug/compound/cid/"+cid+"/assaysummary/JSON");const T=d.Table||{},C=((T.Columns||{}).Column)||[],ix=n=>C.findIndex(c=>c===n||c.startsWith(n));
+  const iA=ix("AID"),iO=ix("Activity Outcome"),iV=ix("Activity Value"),iN=ix("Activity Name"),iS=ix("Assay Name"),iT=ix("Target Accession"),iG=ix("Target GeneID"),iP=ix("PubMed ID"),iB=ix("Bioassay Type");
+  const all=(T.Row||[]).map(r=>r.Cell||[]);const act=all.filter(c=>/active/i.test(c[iO])&&!/inactive/i.test(c[iO]));
+  return {tested:all.length,active:act.length,rows:act.map(c=>({src:"PubChem",type:c[iN]||"",rel:"=",nm:+c[iV]*1e3,target:c[iT]||(c[iG]?"GeneID "+c[iG]:"—"),org:"",aid:c[iA],desc:c[iS]||"",pmid:c[iP],kind:c[iB]})).filter(r=>isFinite(r.nm)&&r.nm>0&&(!r.type||types.some(t=>t.toLowerCase()===String(r.type).toLowerCase())||!types.length))};}
+DB.bioact={g:"화합물",label:"생물활성 (EC50·IC50·Ki)",name:"생물활성",ph:"화합물 이름 예: imatinib · 특정 값만: imatinib | IC50",from:"ChEMBL 활성값(논문에서 정리) + PubChem BioAssay 활성 판정",async run(q){
+   const [nm0,tp=""]=q.split("|").map(x=>x.trim());const want=ACT.filter(t=>new RegExp("\\b"+t+"\\b","i").test(tp));const types=want.length?want:ACT;
+   const cid=await pcCid(nm0);const pp=await HUB.getJson(PCV+"pug/compound/cid/"+cid+"/property/Title,InChIKey/JSON");const p=(pp.PropertyTable.Properties||[])[0]||{},name=p.Title||nm0;
+   const [ch,pc]=await Promise.allSettled([chemblActs(name,p.InChIKey,types),pubchemActs(cid,types)]);
+   const C=ch.status==="fulfilled"?ch.value:{rows:[],err:ch.reason},P=pc.status==="fulfilled"?pc.value:{rows:[],err:pc.reason};
+   const rows=C.rows.concat(P.rows);if(!rows.length)return `## ${name} (CID ${cid}) — 생물활성\n${C.err&&P.err?"두 DB 모두 조회하지 못했어요: "+(C.err.message||C.err):`${types.join("·")} 값이 기록되어 있지 않아요.`}${P.tested?`\n\nPubChem에서 ${P.tested}개 분석에 시험되었고 ${P.active}개에서 활성이었지만 수치가 없어요.`:""}\n\n[PubChem 생물활성](https://pubchem.ncbi.nlm.nih.gov/compound/${cid}#section=Biological-Test-Results)`;
+   const g=new Map();rows.forEach(r=>{const k=(r.target+"|"+r.type).toLowerCase();const o=g.get(k)||{target:r.target,org:r.org,type:r.type,v:[],src:new Set(),rows:[]};o.v.push(r.nm);o.src.add(r.src);o.rows.push(r);if(!o.org&&r.org)o.org=r.org;g.set(k,o);});
+   const G=[...g.values()].map(o=>({...o,best:Math.min(...o.v),med:med(o.v)})).sort((a,b)=>a.best-b.best);
+   const top=[...rows].sort((a,b)=>a.nm-b.nm).slice(0,12);
+   const link=r=>r.src==="ChEMBL"?`[${r.assay}](https://www.ebi.ac.uk/chembl/explore/assay/${r.assay})${r.doc?` · [논문 ${r.year||""}](https://www.ebi.ac.uk/chembl/explore/document/${r.doc})`:""}`:`[AID ${r.aid}](https://pubchem.ncbi.nlm.nih.gov/bioassay/${r.aid})${r.pmid?` · [PMID ${r.pmid}](https://pubmed.ncbi.nlm.nih.gov/${r.pmid})`:""}`;
+   const hist=[["≤10 nM",0,10],["10–100 nM",10,100],["0.1–1 µM",100,1e3],["1–10 µM",1e3,1e4],["> 10 µM",1e4,Infinity]].map(([l,a,b])=>[l,rows.filter(r=>r.nm>a&&r.nm<=b||(a===0&&r.nm<=b)).length]);
+   return `## ${name} (CID ${cid}) — 생물활성 ${types.length<ACT.length?"("+types.join("·")+")":"(EC50·IC50·Ki·Kd 등)"}
+- ChEMBL: ${C.id?`[${C.id}](https://www.ebi.ac.uk/chembl/explore/compound/${C.id}) · 수치 ${C.rows.length}건${C.total>500?` (전체 ${C.total}건 중 앞 500건만 받음)`:""}`:C.err?"조회 실패 ("+((C.err&&C.err.message)||C.err)+")":"등록 없음"}
+- PubChem BioAssay: ${P.err?"조회 실패 ("+((P.err&&P.err.message)||P.err)+")":`${P.tested}개 분석에서 시험, ${P.active}개에서 활성 · 수치 ${P.rows.length}건`}
+- 값 분포: ${hist.map(([l,n])=>`${l} ${n}건`).join(" · ")}
+
+### 표적별 요약 (가장 강한 값 순, 상위 20)
+| 표적 | 종 | 종류 | 가장 강한 값 | 중앙값 | 건수 | 출처 |
+|---|---|---|---|---|---|---|
+${G.slice(0,20).map(o=>`| ${cellT(o.target).slice(0,100)} | ${cellT(o.org)} | ${cellT(o.type)} | ${fmtNM(o.best)} | ${fmtNM(o.med)} | ${o.v.length} | ${[...o.src].join(", ")} |`).join("\n")}
+
+### 가장 강한 값 12건 (원 기록)
+| 값 | 종류 | 표적 | 분석 설명 | 기록 |
+|---|---|---|---|---|
+${top.map(r=>`| ${r.rel&&r.rel!=="="?r.rel+" ":""}${fmtNM(r.nm)}${r.p?` (pChEMBL ${r.p})`:""} | ${cellT(r.type)} | ${/^[OPQ][0-9][A-Z0-9]{3}[0-9]$|^[A-NR-Z][0-9][A-Z][A-Z0-9]{2}[0-9]$/.test(r.target)?`[${r.target}](https://www.uniprot.org/uniprotkb/${r.target})`:cellT(r.target).slice(0,80)} | ${cellT(r.desc).slice(0,220)} | ${link(r)} |`).join("\n")}
+
+값이 작을수록 강해요. 같은 표적이라도 세포·효소 분석, 조건에 따라 값이 크게 달라서 '가장 강한 값'만 보지 말고 중앙값과 건수를 같이 보세요. PubChem 값은 대량 스크리닝 결과가 섞여 있어 참고용이고, ChEMBL은 논문에서 옮긴 값이에요. '>' '<' 표시는 측정 범위 밖이라는 뜻이에요.
+
+- [PubChem 생물활성 전체](https://pubchem.ncbi.nlm.nih.gov/compound/${cid}#section=Biological-Test-Results)${C.id?` · [ChEMBL 활성 전체](https://www.ebi.ac.uk/chembl/explore/activities/STATE_ID:?molecule_chembl_id=${C.id})`:""} · [BindingDB](https://www.bindingdb.org/rwd/bind/searchby_name.jsp?name=${encodeURIComponent(name)}) · [IUPHAR/BPS 약리](https://www.guidetopharmacology.org/GRAC/DatabaseSearchForward?searchString=${encodeURIComponent(name)}&searchCategories=all)`;}};
+/* ---------- mechanism: gene-set enrichment, interaction network, kidney expression ---------- */
+const geneList=q=>[...new Set(String(q).split(/[\s,;|\t\n]+/).map(s=>s.trim().replace(/^["']|["']$/g,"")).filter(s=>s&&s.length<30))].slice(0,500);
+const ORG={human:"hsapiens",hsapiens:"hsapiens",인간:"hsapiens",사람:"hsapiens",mouse:"mmusculus",mmusculus:"mmusculus",마우스:"mmusculus",생쥐:"mmusculus",rat:"rnorvegicus",rnorvegicus:"rnorvegicus",랫드:"rnorvegicus",쥐:"rnorvegicus"};
+const TAX={hsapiens:9606,mmusculus:10090,rnorvegicus:10116};
+const orgOf=q=>{const m=String(q).match(/\|\s*([^\s|]+)\s*$/);if(!m)return {org:"hsapiens",q};const k=ORG[m[1].toLowerCase()];if(!k)throw new Error("'"+m[1]+"'은(는) 모르는 종이에요. human, mouse, rat 중에서 써 주세요 (예: ACTA2, COL1A1 | mouse).");return {org:k,q:q.slice(0,m.index)};};
+const SRCNAME={"GO:BP":"GO 생물학적 과정","GO:MF":"GO 분자 기능","GO:CC":"GO 세포 내 위치",KEGG:"KEGG 경로",REAC:"Reactome 경로",WP:"WikiPathways",TF:"전사인자 표적",HP:"사람 표현형",CORUM:"단백질 복합체",MIRNA:"miRNA 표적",HPA:"Human Protein Atlas"};
+Object.assign(DB,{
+ enrich:{g:"기전 분석·발현",label:"유전자 목록 농축 분석 (경로·기능)",name:"g:Profiler 농축 분석",ph:"유전자 기호 여러 개 (쉼표·줄바꿈) 예: ACTA2, COL1A1, FN1, TGFB1, SMAD3 | mouse",from:"g:Profiler (GO·KEGG·Reactome·WikiPathways·TF, Benjamini-Hochberg 보정)",async run(q){
+   const {org,q:qq}=orgOf(q),G=geneList(qq);if(G.length<2)throw new Error("유전자를 2개 이상 넣어 주세요 (쉼표나 줄바꿈으로 구분). 종을 바꾸려면 끝에 ' | mouse'를 붙이세요.");
+   const d=await postJson("https://biit.cs.ut.ee/gprofiler/api/gost/profile/",{organism:org,query:G,sources:["GO:BP","GO:MF","GO:CC","KEGG","REAC","WP","TF","HP","CORUM"],user_threshold:0.05,significance_threshold_method:"g_SCS",no_evidences:false,ordered:false});
+   const R=(d.result||[]).filter(x=>x.significant!==false);const miss=(d.meta&&d.meta.genes_metadata&&d.meta.genes_metadata.failed)||[];
+   if(!R.length)return `## 농축 분석 — ${G.length}개 유전자 (${org})\n통계적으로 몰려 있는 경로·기능이 없어요. 유전자 수가 적거나 기호가 맞지 않을 수 있어요.${miss.length?`\n\n못 찾은 기호: ${miss.join(", ")}`:""}\n\n`+ENRICHLINKS(G,org);
+   const ORD=G.filter(g=>!miss.some(m=>String(m).toUpperCase()===g.toUpperCase()));
+   const by=new Map();R.forEach(x=>{(by.get(x.source)||by.set(x.source,[]).get(x.source)).push(x);});
+   const sec=[...by].map(([s,L])=>{const T=L.sort((a,b)=>a.p_value-b.p_value).slice(0,10);
+     return `### ${SRCNAME[s]||s} (상위 ${T.length} / ${L.length}건)\n| 항목 | 보정 p | 내 유전자 / 전체 | 겹친 유전자 |\n|---|---|---|---|\n`+T.map(x=>{const hit=(x.intersections&&x.intersections.length===ORD.length?ORD.filter((g,i)=>x.intersections[i]&&x.intersections[i].length):[]).slice(0,12);
+       const url=/^GO:/.test(x.native)?`https://amigo.geneontology.org/amigo/term/${x.native}`:/^KEGG:/.test(x.native)?`https://www.kegg.jp/pathway/map${x.native.slice(5)}`:/^REAC:/.test(x.native)?`https://reactome.org/content/detail/${x.native.slice(5)}`:/^WP:/.test(x.native)?`https://www.wikipathways.org/pathways/${x.native.slice(3).replace(/^:/,"")}.html`:"";
+       return `| ${url?`[${cellT(x.name).slice(0,120)}](${url})`:cellT(x.name).slice(0,120)} | ${(+x.p_value).toExponential(2)} | ${x.intersection_size} / ${x.term_size} | ${cellT(hit.join(", ")).slice(0,90)} |`;}).join("\n");}).join("\n\n");
+   return `## 농축 분석 — ${G.length}개 유전자 (${org==="hsapiens"?"사람":org==="mmusculus"?"마우스":"랫드"})\n- 넣은 유전자: ${cellT(G.join(", ")).slice(0,400)}${miss.length?`\n- 못 찾은 기호: ${cellT(miss.join(", "))}`:""}\n- 유의한 항목 ${R.length}건 (보정 p < 0.05, g:SCS 보정)\n\n${sec}\n\n보정 p가 작을수록 우연히 몰릴 확률이 낮아요. '내 유전자 / 전체'는 그 경로의 전체 유전자 중 내 목록에 몇 개가 들어 있는지예요. 경로가 서로 겹치는 경우가 많으니 상위 몇 개를 묶어서 해석하세요.\n\n`+ENRICHLINKS(G,org);}},
+ string:{g:"기전 분석·발현",label:"단백질 상호작용망 (STRING)",name:"STRING 상호작용망",ph:"단백질·유전자 기호 여러 개 예: TGFB1, SMAD3, ACTA2, COL1A1 | mouse",from:"STRING v12 (실험·데이터베이스·문헌 근거 종합)",async run(q){
+   const {org,q:qq}=orgOf(q),G=geneList(qq);if(!G.length)throw new Error("단백질 기호를 하나 이상 넣어 주세요.");const sp=TAX[org],ids=G.join("%0d");
+   const base=`https://string-db.org/api`,par=`identifiers=${encodeURIComponent(G.join("\n"))}&species=${sp}&caller_identity=research-hub`;
+   const N=await HUB.getJson(`${base}/json/network?${par}`+(G.length<4?"&add_nodes=10":"&add_nodes=5"));
+   if(!N||!N.length)return `## STRING — ${G.join(", ")}\n상호작용 기록을 찾지 못했어요. 기호가 맞는지(종이 맞는지) 확인해 주세요.\n\n[STRING에서 직접 찾기](https://string-db.org/cgi/network?identifiers=${encodeURIComponent(G.join("%0d"))}&species=${sp})`;
+   const deg=new Map();N.forEach(e=>{[e.preferredName_A,e.preferredName_B].forEach(n=>deg.set(n,(deg.get(n)||0)+1));});
+   const hub=[...deg].sort((a,b)=>b[1]-a[1]).slice(0,10);
+   let enr=[];try{const E=await HUB.getJson(`${base}/json/enrichment?${par}`);enr=(E||[]).filter(x=>x.fdr<0.05).sort((a,b)=>a.fdr-b.fdr);}catch(e){}
+   const byc=new Map();enr.forEach(x=>{(byc.get(x.category)||byc.set(x.category,[]).get(x.category)).push(x);});
+   const CN={Process:"GO 생물학적 과정",Function:"GO 분자 기능",Component:"GO 세포 내 위치",KEGG:"KEGG 경로",RCTM:"Reactome 경로",WikiPathways:"WikiPathways",PMID:"문헌",InterPro:"도메인",Pfam:"도메인(Pfam)",SMART:"도메인(SMART)",NetworkNeighborAL:"이웃 단백질"};
+   const img=imgTok(`${base}/highres_image/network?${par}&network_flavor=evidence`,`STRING 상호작용망 — ${G.slice(0,4).join(", ")}${G.length>4?" 외":""}`);
+   const top=[...N].sort((a,b)=>b.score-a.score).slice(0,20);
+   return `## STRING 상호작용망 — ${cellT(G.join(", ")).slice(0,120)} (${org==="hsapiens"?"사람":org==="mmusculus"?"마우스":"랫드"})\n- 넣은 단백질 ${G.length}개 · 자동으로 가까운 단백질을 더해 상호작용 ${N.length}건\n\n${img}\n\n### 연결이 많은 단백질 (허브 후보)\n| 단백질 | 연결 수 |\n|---|---|\n${hub.map(([n,c])=>`| [${n}](https://string-db.org/cgi/network?identifiers=${encodeURIComponent(n)}&species=${sp}) | ${c} |`).join("\n")}\n\n### 근거가 강한 상호작용 상위 ${top.length}건\n| A | B | 종합 점수 | 실험 | 데이터베이스 | 문헌 |\n|---|---|---|---|---|---|\n${top.map(e=>`| ${e.preferredName_A} | ${e.preferredName_B} | ${(+e.score).toFixed(3)} | ${(+e.escore||0).toFixed(2)} | ${(+e.dscore||0).toFixed(2)} | ${(+e.tscore||0).toFixed(2)} |`).join("\n")}\n\n종합 점수 0.7 이상이면 근거가 꽤 강한 편이에요. 문헌(text mining) 점수만 높은 쌍은 같은 논문에 함께 나왔다는 뜻이라 직접 결합을 뜻하지 않아요.${byc.size?`\n\n### 이 묶음에서 몰려 있는 기능 (FDR < 0.05)\n`+[...byc].filter(([c])=>["Process","KEGG","RCTM","WikiPathways","Component"].includes(c)).slice(0,4).map(([c,L])=>`**${CN[c]||c}**\n`+L.slice(0,6).map(x=>`- ${cellT(x.description).slice(0,140)} — FDR ${(+x.fdr).toExponential(2)} (${x.number_of_genes}개: ${cellT(String(x.inputGenes||"").split(",").slice(0,8).join(", ")).slice(0,70)})`).join("\n")).join("\n\n"):""}\n\n- [STRING에서 열기](https://string-db.org/cgi/network?identifiers=${encodeURIComponent(G.join("%0d"))}&species=${sp}) · [이 그림 원본](${base}/highres_image/network?${par}) · [Cytoscape로 보내기](https://cytoscape.org/)`;}},
+ hpa:{g:"기전 분석·발현",label:"조직·단일세포 발현 (신장 중심)",name:"Human Protein Atlas",ph:"유전자 기호 예: HAVCR1, LRP2, NPHS2, SLC34A1",from:"Human Protein Atlas (조직 RNA, 신장 단일세포, 항체 염색)",async run(q){
+   const G=geneList(q).slice(0,8);if(!G.length)throw new Error("유전자 기호를 넣어 주세요.");
+   const cols="g,gs,gd,eg,rnatsm,rnatd,rnassm,rnascs,scl,ab,up,di";const rows=[];
+   for(const g of G){try{const d=await HUB.getJson(`https://www.proteinatlas.org/api/search_download.php?search=${encodeURIComponent(g)}&format=json&columns=${cols}&compress=no`);
+     const r=(d||[]).find(x=>String(x.Gene||"").toUpperCase()===g.toUpperCase())||(d||[])[0];if(r)rows.push({g,r});}catch(e){}}
+   if(!rows.length)return `## Human Protein Atlas — ${G.join(", ")}\n기록을 받지 못했어요. HPA가 브라우저 요청을 막았을 수 있어요.\n\n`+G.map(g=>`- [${g} HPA에서 열기](https://www.proteinatlas.org/search/${encodeURIComponent(g)})`).join("\n");
+   const pick=(r,keys)=>{for(const k of Object.keys(r))if(keys.some(x=>k.toLowerCase().includes(x)))return r[k];return "";};
+   const kid=v=>{if(v==null)return "—";if(typeof v==="object"){const e=Object.entries(v).filter(([k])=>/kidney/i.test(k));if(e.length)return e.map(([k,x])=>`${k}: ${typeof x==="object"?JSON.stringify(x).slice(0,40):x}`).join("; ");
+     const t=Object.entries(v).sort((a,b)=>(+b[1]||0)-(+a[1]||0)).slice(0,4).map(([k,x])=>`${k} ${x}`).join(", ");return t||"—";}return String(v).slice(0,160);};
+   return `## Human Protein Atlas — ${rows.length}개 유전자\n`+rows.map(({g,r})=>{const name=pick(r,["gene description"])||"",spec=pick(r,["rna tissue specificity"])||"",dist=pick(r,["rna tissue distribution"])||"",sc=pick(r,["single cell type specificity","rna single cell"])||"",loc=pick(r,["subcellular location"])||"",ts=r["RNA tissue specific nTPM"]||r["RNA tissue nTPM"],scn=r["RNA single cell type specific nTPM"];
+     return `### ${g}${name?" — "+cellT(name).slice(0,90):""}\n- 조직 특이성: ${cellT(spec)} · 분포: ${cellT(dist)}\n- 신장 조직 발현(nTPM): ${cellT(kid(ts))}\n- 단일세포: ${cellT(sc)}${scn?` · 세포 유형별: ${cellT(kid(scn)).slice(0,200)}`:""}\n- 세포 내 위치: ${cellT(loc).slice(0,120)}\n- [HPA 조직](https://www.proteinatlas.org/search/${g}) · [신장 단일세포 지도 (KPMP)](https://atlas.kpmp.org/explorer/?gene=${encodeURIComponent(g)}) · [Kidney Interactive Transcriptomics](http://humphreyslab.com/SingleCell/)`;}).join("\n\n")+`\n\nnTPM은 RNA 발현량이에요. 사람 조직 기준이라 HK-2 같은 세포주나 마우스 모델과는 다를 수 있어요. 단일세포 항목으로 근위세뇨관·족세포 등 어느 세포에서 나오는지 확인하세요.`;}}
+});
+const ENRICHLINKS=(G,org)=>{const t=G.join("%0A");return `### 다른 도구로도 확인\n- [Enrichr](https://maayanlab.cloud/Enrichr/) · [DAVID](https://david.ncifcrf.gov/) · [g:Profiler 웹](https://biit.cs.ut.ee/gprofiler/gost?organism=${org}&query=${t}) · [Metascape](https://metascape.org/) · [GSEA·MSigDB](https://www.gsea-msigdb.org/gsea/msigdb)\n- 단백질 상호작용은 아래 '같은 목록으로 STRING 상호작용망 보기' 버튼으로 바로 볼 수 있어요.`;};
+const DBGROUPS=["유전자·서열","단백질·구조","변이·질병","경로·기능","기전 분석·발현","암·면역·오믹스 공공데이터","세포주·항체·동물 모델","독성·도핑·마약류","화합물","문헌·임상"];
+let dbCur=(k=>DB[k]?k:"pubchem")(ls.get("dbcur","pubchem")),dbOut=null,dbF="",dbHist=(ls.get("dbhist",[])||[]).filter(h=>h&&DB[h.db]).slice(0,8);
+const DBLINKS={
+ abreg:q=>`- [Antibody Registry에서 '${q}' 검색](https://www.antibodyregistry.org/search?q=${encodeURIComponent(q)})\n- [CiteAb (논문 인용 많은 항체)](https://www.citeab.com/search?q=${encodeURIComponent(q)}) · [Antibodypedia (검증 점수)](https://www.antibodypedia.com/explore/${encodeURIComponent(q)}) · [Biocompare](https://www.biocompare.com/Search-Antibodies/?search=${encodeURIComponent(q)})\n- [PubMed에서 '${q}' 항체 쓴 논문](https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(q)}+antibody)`,
+ cello:q=>`- [Cellosaurus에서 '${q}' 검색](https://www.cellosaurus.org/search?input=${encodeURIComponent(q)})\n- [ATCC](https://www.atcc.org/search#q=${encodeURIComponent(q)}) · [KCLB 한국세포주은행](https://cellbank.snu.ac.kr/) · [DSMZ](https://www.dsmz.de/collection/catalogue) · [JCRB](https://cellbank.nibiohn.go.jp/english/)`,
+ string:q=>`- [STRING에서 직접 보기](https://string-db.org/cgi/network?identifiers=${encodeURIComponent(String(q).split(/[\s,;]+/).filter(Boolean).join("%0d"))})\n- [GeneMANIA](https://genemania.org/search/human/${encodeURIComponent(String(q).split(/[\s,;]+/).filter(Boolean).join("/"))}) · [BioGRID](https://thebiogrid.org/)`,
+ enrich:q=>`- [g:Profiler 웹에서 같은 목록 넣기](https://biit.cs.ut.ee/gprofiler/gost?query=${encodeURIComponent(String(q).split(/[\s,;|]+/).filter(Boolean).join("\n"))})\n- [Enrichr](https://maayanlab.cloud/Enrichr/) · [DAVID](https://david.ncifcrf.gov/) · [Metascape](https://metascape.org/)`,
+ hpa:q=>String(q).split(/[\s,;]+/).filter(Boolean).slice(0,8).map(g=>`- [${g} — Human Protein Atlas](https://www.proteinatlas.org/search/${encodeURIComponent(g)}) · [KPMP 신장 단일세포](https://atlas.kpmp.org/explorer/?gene=${encodeURIComponent(g)})`).join("\n"),
+ bioact:q=>`- [ChEMBL에서 '${q}' 검색](https://www.ebi.ac.uk/chembl/explore/compounds/STATE_ID:?search=${encodeURIComponent(q)}) · [BindingDB](https://www.bindingdb.org/rwd/bind/searchby_name.jsp?name=${encodeURIComponent(q)}) · [IUPHAR/BPS](https://www.guidetopharmacology.org/GRAC/DatabaseSearchForward?searchString=${encodeURIComponent(q)}&searchCategories=all)`,
+ foodrec:q=>`- [FDA 회수 목록](https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts) · [EU RASFF](https://webgate.ec.europa.eu/rasff-window/screen/search) · [식품안전나라](https://www.foodsafetykorea.go.kr/)`,
+ models:q=>`- [IMSR (findmice.org)](https://www.findmice.org/summary?query=${encodeURIComponent(q)}) · [JAX](https://www.jax.org/search?q=${encodeURIComponent(q)}) · [MMRRC](https://www.mmrrc.org/catalog/StrainCatalogSearchForm.php?search_query=${encodeURIComponent(q)}) · [RGD](https://rgd.mcw.edu/rgdweb/search/search.html?term=${encodeURIComponent(q)})`,
+ tox:q=>`- [PubChem에서 '${q}' 검색](https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(q)}) · [EPA CompTox](https://comptox.epa.gov/dashboard/search-results?input_type=synonym&inputs=${encodeURIComponent(q)}) · [T3DB](https://www.t3db.ca/unearth/q?query=${encodeURIComponent(q)}&searcher=toxins)`,
+ spectra:q=>`- [MassBank Europe](https://massbank.eu/MassBank/Search?compound=${encodeURIComponent(q)}) · [MoNA](https://mona.fiehnlab.ucdavis.edu/spectra/search) · [NIST WebBook](https://webbook.nist.gov/cgi/cbook.cgi?Name=${encodeURIComponent(q)})`};
+Object.assign(DBLINKS,{
+ cbio:q=>`- [cBioPortal에서 '${q}' 검색](https://www.cbioportal.org/) · [cBioPortal 연구 목록](https://www.cbioportal.org/datasets)\n- [GEPIA2 (TCGA·GTEx 발현 비교)](http://gepia2.cancer-pku.cn/) · [UALCAN](https://ualcan.path.uab.edu/)`,
+ gdc:q=>`- [GDC 데이터 포털](https://portal.gdc.cancer.gov/) · [TCGA 프로젝트 목록](https://portal.gdc.cancer.gov/projects) · [ICGC ARGO](https://platform.icgc-argo.org/)`,
+ geo:q=>`- [GEO에서 '${q}' 검색](https://www.ncbi.nlm.nih.gov/gds/?term=${encodeURIComponent(q)}) · [ArrayExpress](https://www.ebi.ac.uk/biostudies/arrayexpress/studies?query=${encodeURIComponent(q)}) · [Single Cell Portal](https://singlecell.broadinstitute.org/single_cell)`,
+ gene:q=>`- [NCBI Gene에서 '${q}' 검색](https://www.ncbi.nlm.nih.gov/gene/?term=${encodeURIComponent(q)}) · [GeneCards](https://www.genecards.org/Search/Keyword?queryString=${encodeURIComponent(q)})`,
+ nuccore:q=>`- [NCBI Nucleotide에서 '${q}' 검색](https://www.ncbi.nlm.nih.gov/nuccore/?term=${encodeURIComponent(q)}) · [ENA](https://www.ebi.ac.uk/ena/browser/text-search?query=${encodeURIComponent(q)})`,
+ ensembl:q=>`- [Ensembl에서 '${q}' 검색](https://www.ensembl.org/Multi/Search/Results?q=${encodeURIComponent(q)}) · [UCSC Genome Browser](https://genome.ucsc.edu/cgi-bin/hgGateway)`,
+ uniprot:q=>`- [UniProt에서 '${q}' 검색](https://www.uniprot.org/uniprotkb?query=${encodeURIComponent(q)}) · [AlphaFold DB](https://alphafold.ebi.ac.uk/search/text/${encodeURIComponent(q)})`,
+ pdb:q=>`- [RCSB PDB에서 '${q}' 검색](https://www.rcsb.org/search?request=%7B%22query%22%3A%7B%22type%22%3A%22terminal%22%2C%22service%22%3A%22full_text%22%2C%22parameters%22%3A%7B%22value%22%3A%22${encodeURIComponent(q)}%22%7D%7D%7D) · [PDBe](https://www.ebi.ac.uk/pdbe/)`,
+ clinvar:q=>`- [ClinVar에서 '${q}' 검색](https://www.ncbi.nlm.nih.gov/clinvar/?term=${encodeURIComponent(q)}) · [gnomAD](https://gnomad.broadinstitute.org/) · [OMIM](https://www.omim.org/search?search=${encodeURIComponent(q)})`,
+ snp:q=>`- [dbSNP에서 '${q}' 검색](https://www.ncbi.nlm.nih.gov/snp/?term=${encodeURIComponent(q)}) · [gnomAD](https://gnomad.broadinstitute.org/)`,
+ pathway:q=>`- [KEGG에서 '${q}' 검색](https://www.genome.jp/dbget-bin/www_bfind_sub?mode=bfind&max_hit=50&dbkey=pathway&keywords=${encodeURIComponent(q)}) · [Reactome](https://reactome.org/content/query?q=${encodeURIComponent(q)}) · [WikiPathways](https://www.wikipathways.org/search.html?query=${encodeURIComponent(q)})`,
+ ot:q=>`- [Open Targets에서 '${q}' 검색](https://platform.opentargets.org/search?q=${encodeURIComponent(q)}) · [DisGeNET](https://www.disgenet.org/search)`,
+ pubmed:q=>`- [PubMed에서 '${q}' 검색](https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(q)}) · [Europe PMC](https://europepmc.org/search?query=${encodeURIComponent(q)}) · [Google Scholar](https://scholar.google.com/scholar?q=${encodeURIComponent(q)})`,
+ trials:q=>`- [ClinicalTrials.gov에서 '${q}' 검색](https://clinicaltrials.gov/search?term=${encodeURIComponent(q)}) · [WHO ICTRP](https://trialsearch.who.int/) · [한국 CRIS](https://cris.nih.go.kr/)`,
+ pubchem:q=>`- [PubChem에서 '${q}' 검색](https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(q)}) · [ChemSpider](https://www.chemspider.com/Search.aspx?q=${encodeURIComponent(q)}) · [DrugBank](https://go.drugbank.com/unearth/q?query=${encodeURIComponent(q)}&searcher=drugs)`});
+DBLINKS.narc=DBLINKS.spectra;DBLINKS.doping=q=>`- [Global DRO](https://www.globaldro.com/) · [WADA 금지목록](https://www.wada-ama.org/en/prohibited-list) · [한국도핑방지위원회 (KADA)](https://www.kada-ad.or.kr/)`;DBLINKS.rxn=DBLINKS.spectra;
+const dbFail=(k,q,err)=>{const why=String((err&&err.message)||err||"");const f=DBLINKS[k];
+  return `## 조회하지 못했어요 — ${DB[k]?DB[k].name:k} · '${q}'\n> ${why}\n\n이 사이트는 브라우저에서 바로 DB 서버로 연결해요. 그래서 서버가 브라우저 요청을 받지 않도록 막아 두었거나(CORS), 잠시 응답이 없거나, 인터넷이 끊기면 이렇게 돼요. 내 컴퓨터나 검색어 문제가 아닐 수 있어요.${location.protocol==="file:"?" 지금은 내려받은 파일(file://)로 열었는데, 파일로 연 페이지는 요청에 주소가 없어서(Origin: null) 거절하는 DB가 있어요. GitHub 주소(https://…)로 열면 되는 경우가 많으니 한 번 해 보세요.":""}${HUB.embedded?" claude.ai 화면에서는 외부 연결이 아예 막혀 있으니 내려받은 HTML 파일에서 써 보세요.":""}\n\n`+(f?`### 대신 이 사이트에서 바로 찾기\n${f(q)}`:"")+`\n\n잠시 뒤 다시 눌러 보고, 계속 안 되면 위 링크로 찾으세요.`;};
+const PROBE=[["NCBI (Gene·GEO·PubMed 등)","https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi?retmode=json",["gene","nuccore","clinvar","snp","geo","pubmed"]],
+ ["PubChem (화합물·독성·스펙트럼)","https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/property/Title/JSON",["pubchem","tox","narc","spectra","doping","rxn"]],
+ ["UniProt","https://rest.uniprot.org/uniprotkb/P04637?fields=accession&format=json",["uniprot"]],
+ ["Ensembl","https://rest.ensembl.org/info/ping?content-type=application/json",["ensembl"]],
+ ["RCSB PDB","https://data.rcsb.org/rest/v1/core/entry/1ABC",["pdb"]],
+ ["Reactome·KEGG","https://reactome.org/ContentService/data/query/R-HSA-1640170",["pathway"]],
+ ["NCI GDC","https://api.gdc.cancer.gov/projects?size=1",["gdc"]],
+ ["cBioPortal","https://www.cbioportal.org/api/cancer-types?pageSize=1",["cbio"]],
+ ["Open Targets","https://api.platform.opentargets.org/api/v4/graphql?query=%7B__typename%7D",["ot"]],
+ ["Cellosaurus (세포주)","https://api.cellosaurus.org/release-info?format=json",["cello"]],
+ ["Antibody Registry (항체)","https://www.antibodyregistry.org/api/fts-antibodies?q=GFAP&size=1&page=1",["abreg"]],
+ ["Alliance (동물 모델)","https://www.alliancegenome.org/api/search?q=kidney&limit=1",["models"]],
+ ["g:Profiler (농축 분석)","https://biit.cs.ut.ee/gprofiler/api/util/organisms_list/",["enrich"]],
+ ["STRING","https://string-db.org/api/json/network?identifiers=TP53&species=9606",["string"]],
+ ["Human Protein Atlas","https://www.proteinatlas.org/api/search_download.php?search=TP53&format=json&columns=g&compress=no",["hpa"]],
+ ["ChEMBL (생물활성)","https://www.ebi.ac.uk/chembl/api/data/status.json",["bioact"]],
+ ["openFDA (식품 회수)","https://api.fda.gov/food/enforcement.json?limit=1",["foodrec"]],
+ ["ClinicalTrials.gov","https://clinicaltrials.gov/api/v2/studies?pageSize=1",["trials"]]];
+async function dbCheck(){
+  const out=$("#dbOut");out.innerHTML=`<div class="pad"><p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>${PROBE.length}곳에 연결해 보는 중…</p></div>`;
+  const one=async u=>{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),12000);
+    try{const r=await fetch(u,{signal:ac.signal});return r.status>=500?["△","서버 오류 "+r.status]:["○","연결됨"+(r.ok?"":" (응답 "+r.status+")")];}
+    catch(e){return ["✕",e&&e.name==="AbortError"?"응답 없음 (12초)":"브라우저가 막음 (CORS) 또는 연결 실패"];}finally{clearTimeout(t);}};
+  const R=await Promise.all(PROBE.map(p=>one(p[1])));
+  const ok=R.filter(x=>x[0]==="○").length;
+  const md=`## 이 브라우저에서 DB 연결 점검\n- 열어 둔 주소: ${location.protocol==="file:"?"내려받은 파일 (file://)":location.origin}\n- ${PROBE.length}곳 중 ${ok}곳 연결됨\n\n| 상태 | 데이터베이스 | 결과 | 쓰는 화면 |\n|---|---|---|---|\n`+
+   PROBE.map((p,i)=>`| ${R[i][0]} | ${p[0]} | ${R[i][1]} | ${p[2].map(k=>DB[k]?DB[k].name:k).join(", ")} |`).join("\n")+
+   `\n\n○ 연결됨 · △ 서버 쪽 오류 · ✕ 막힘. ✕는 그 DB 서버가 브라우저에서 바로 오는 요청을 받지 않는다는 뜻이라 이 사이트에서 고칠 수 없어요. 그 DB는 조회에 실패하면 나오는 바로가기 링크로 찾으세요.${location.protocol==="file:"?"\n\n지금은 내려받은 파일로 열었어요. GitHub 주소(https://…)로 열면 ✕ 중 일부가 ○로 바뀌는 경우가 많아요.":""}`;
+  dbOut={md,title:"DB 연결 점검",db:"check",q:"",local:true};renderLookup();}
+const DBPAIR={enrich:["string","같은 목록으로 STRING 상호작용망 보기"],string:["enrich","같은 목록으로 농축 분석 보기"],bioact:["tox","이 물질의 독성 보기"],tox:["bioact","이 물질의 활성값(IC50) 보기"],spectra:["bioact","이 물질의 활성값(IC50) 보기"],pubchem:["spectra","이 물질의 질량·스펙트럼 보기"],gene:["enrich","이 유전자로 농축 분석"],hpa:["string","같은 목록으로 상호작용망 보기"]};
+const dbRemember=(db,q)=>{dbHist=[{db,q}].concat(dbHist.filter(h=>!(h.db===db&&h.q===q))).slice(0,8);ls.set("dbhist",dbHist);};
 const DBASK={
  pubchem:"이 화합물의 물성 값을 연구자 관점에서 해석하세요. 형식: **한 줄 정리** → '### 값이 뜻하는 것' (분자량·XLogP·TPSA·수소결합 수가 용해도, 막 투과, 경구 흡수 가능성에 주는 의미; Lipinski 위반의 의미) → '### 제형 관점' (소수성·분자 크기로 볼 때 제형화와 전달에 유리한 점과 불리한 점) → '### 내 연구와의 연결'.",
  uniprot:"이 단백질 기록을 해석하세요. 형식: **한 줄 정리** → '### 기능 풀이' (기능 설명을 한국어로 쉽게) → '### 질환·약물 표적 관점' (기록에 나온 범위에서) → '### 내 연구와의 연결'. 여러 항목이 있으면 가장 관련 있는 것부터, 종이 다른 항목은 구분해서.",
@@ -4358,26 +4737,70 @@ const DBASK2={
  cbio:"이 암 연구 목록을 해석하세요. 형식: **한 줄 정리** → '### 쓸 만한 연구' (샘플 수와 자료 종류를 근거로 3건 이내) → '### 할 수 있는 분석' (변이 빈도, 생존, 공발현 등) → '### 내 연구와의 연결'.",
  ot:"이 질환–표적 연관 목록을 해석하세요. 형식: **한 줄 정리** → '### 상위 항목 묶어 보기' (기능·경로가 비슷한 것끼리) → '### 눈여겨볼 항목' (3건 이내와 이유) → '### 내 연구와의 연결'. 점수는 근거의 양이지 인과가 아님을 지킬 것.",
  pathway:"이 경로 목록을 해석하세요. 형식: **한 줄 정리** → '### 경로 묶어 보기' → '### 가장 관련 있는 경로' (3건 이내) → '### 실험으로 확인하려면' (대표 마커나 억제제는 '일반 지식'이라고 밝히고).",
+ cello:"이 세포주 기록을 해석하세요. 형식: **한 줄 정리** → '### 세포주별 풀이' (종, 유래 조직·질환, 분양처와 번호) → '### 주의할 점' (오염·오인 기록, 같은 이름의 다른 세포주) → '### 실험에 쓸 때' (Methods에 쓸 표기, STR 확인 권장 등). 기록에 없는 배양 조건은 '일반 지식'이라고 밝히고 짧게.",
+ abreg:"이 항체 목록을 해석하세요. 형식: **한 줄 정리** → '### 고를 만한 항체' (인용 수, 클론 여부, 용도, 반응 종을 근거로 3개 이내와 이유) → '### 주의할 점' (반응 종·용도가 내 실험과 맞는지, 폴리클로널 로트 차이) → '### Methods 표기' (판매처 Cat# 번호, RRID 형식 예). 표에 없는 검증 결과를 지어내지 말 것.",
+ models:"이 동물 모델 목록을 해석하세요. 형식: **한 줄 정리** → '### 모델 묶어 보기' (종, 유전자 조작 방식별) → '### 연구 질문에 맞는 모델' (3개 이내와 이유) → '### 고려할 점' (배경 계통, 표현형 확인, 약물·수술 유도 모델과의 비교 — 일반 지식이라고 밝히고). 표에 없는 표현형을 지어내지 말 것.",
+ tox:"이 독성 기록을 해석하세요. 형식: **한 줄 정리** → '### 위해성 요약' (GHS 분류와 주요 독성값을 그대로 인용) → '### 표적 장기·작용' (기록 범위에서) → '### 실험·노출 평가에 쓸 때' (용량 설정, 기준치 확인할 곳). 기록에 없는 수치를 지어내지 말 것.",
+ foodrec:"이 식품 회수 기록을 해석하세요. 형식: **한 줄 정리** → '### 회수 경향' (사유, 등급, 식품 종류 분포) → '### 눈여겨볼 사례' (3건 이내) → '### 연구·관리에 쓸 때'. 미국 FDA 기록이라는 점을 밝힐 것.",
+ doping:"이 도핑 확인 결과를 해석하세요. 형식: **한 줄 정리** → '### 금지 가능성' (추정 범주와 금지 시기, 추정일 뿐이라는 점) → '### 주의할 점' (투여 경로·용량·종목, 복합제·보충제 오염) → '### 확인 절차' (Global DRO·KADA 확인, TUE). 확정 판정이나 복용 조언을 하지 말 것.",
+ enrich:"이 농축 분석 결과를 해석하세요. 형식: **한 줄 정리** (이 유전자 묶음이 무엇을 말하는지) → '### 묶이는 주제' (겹치는 경로를 2~4개 주제로 묶고, 보정 p와 겹친 유전자를 그대로 인용) → '### 눈여겨볼 경로' (3개 이내와 이유) → '### 확인할 실험' (대표 마커·억제제는 '일반 지식'이라고 밝히고 짧게) → '### 주의' (경로 겹침, 유전자 수). 표에 없는 경로를 지어내지 말 것.",
+ string:"이 상호작용망을 해석하세요. 형식: **한 줄 정리** → '### 망의 구조' (허브 단백질과 묶음) → '### 근거의 질' (실험·데이터베이스 점수가 높은 쌍과 문헌 점수만 높은 쌍을 구분) → '### 기전 가설' (망에서 읽히는 연결, 추정이라고 밝히고) → '### 다음 실험' (공침강·녹다운 등, 일반 지식이라고 밝히고). 표에 없는 상호작용을 지어내지 말 것.",
+ hpa:"이 발현 기록을 해석하세요. 형식: **한 줄 정리** → '### 유전자별 발현' (조직 특이성, 신장 발현량, 어느 세포 유형인지를 값 그대로 인용) → '### 내 모델에 쓸 때' (세포주·동물에서 다를 수 있는 점, 마커로 쓸 만한지) → '### 더 확인할 곳'. 기록에 없는 발현을 지어내지 말 것.",
+ bioact:"이 생물활성 기록을 약리학자 관점에서 해석하세요. 형식: **한 줄 정리** → '### 주 표적과 세기' (값을 그대로 인용, 중앙값과 건수 함께) → '### 선택성' (표적 간 값 차이, 몇 배인지) → '### 값이 엇갈리는 곳' (분석 종류·종 차이로 볼 수 있는 이유) → '### 실험 농도 잡을 때' (일반 지식이라고 밝히고 짧게). 표에 없는 값을 지어내지 말 것.",
+ rxn:"이 반응 생성물 예측을 합성 화학자 관점에서 검토하세요. 형식: **한 줄 정리** → '### 반응이 맞는지' (반응 부위, 당량, 경쟁 작용기) → '### 생성물 확인 방법' (먼저 볼 이온과 이론 m/z를 그대로 인용, NMR에서 볼 변화는 일반 지식이라고 밝히고) → '### 조건·정제 참고' (일반 지식, 짧게). 구조는 예측일 뿐이라는 점을 지킬 것.",
+ spectra:"이 질량·스펙트럼 정보를 분석화학자 관점에서 해석하세요. 형식: **한 줄 정리** → '### 무엇을 보면 되나' (극성 모드별로 먼저 찾을 이온과 이론 m/z를 그대로 인용, 동위원소 분포로 확인할 점) → '### 실측 스펙트럼 읽기' (기록된 주요 봉우리와 전구 이온; 조각 구조 해석은 '추정'이라고 밝히고) → '### HPLC·MALDI 조건 참고' (일반 지식이라고 밝히고 짧게). 표에 없는 봉우리를 지어내지 말 것.",
+ narc:"이 물질의 검출 정보를 분석화학자 관점에서 해석하세요. 형식: **한 줄 정리** → '### 질량분석에서 볼 이온' (표의 이론 m/z를 그대로 인용, 극성 모드) → '### 시료 전처리·분석 고려' (XLogP로 본 추출 용매 극성 등, 일반 지식이라고 밝히고) → '### 규제 확인'. 합성·입수·사용 방법은 쓰지 말 것.",
  pubmed:"이 논문 목록을 해석하세요. 형식: **한 줄 정리** → '### 흐름' → '### 먼저 읽을 것' (3건 이내와 이유) → '### 내 연구와의 연결'. 제목과 서지만 근거로 삼고 내용을 지어내지 말 것."
 };
+/* ---------- ask in plain words: AI picks the databases ---------- */
+const dmd=s=>s.replace(/^(#{2,5}) /gm,(m,h)=>"#".repeat(Math.min(6,h.length+1))+" ");
+async function askDb(question){
+  const keys=Object.keys(DB).filter(k=>k!=="portals"),list=keys.map(k=>`- ${k}: ${DB[k].label||DB[k].name} (${DB[k].g}) — 입력 예: ${DB[k].ph.replace(/^[^예]*예:\s*/,"")}`).join("\n");
+  const out=$("#dbOut"),prog=t=>{out.innerHTML=`<div class="pad"><p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>${t}</p></div>`;};
+  prog("질문에 맞는 DB를 고르는 중…");let plan=[];
+  try{const j=await HUB.ai.json(`연구자의 질문에 답하려면 아래 공개 DB 중 무엇을 어떤 검색어로 조회해야 하는지 고르세요. JSON 객체 하나로만 답하세요.
+질문: "${question}"
+연구자의 연구 주제(참고만): "${HUB.lib.context}"
+고를 수 있는 DB (키: 설명 — 입력 예):
+${list}
+규칙: 1~3개만 고르고 가장 직접 답이 나오는 DB를 먼저. enrich(농축 분석)·string(상호작용망)의 q는 유전자 기호를 쉼표로 이은 목록(사람 아닌 종이면 끝에 ' | mouse' 또는 ' | rat'). hpa(발현)의 q는 유전자 기호 몇 개. bioact(생물활성)의 q는 '화합물 영문명' 또는 '화합물 영문명 | EC50'처럼 특정 값 종류를 붙인 형식. rxn(생성물 예측)의 q는 '반응물 영문명 + 반응물 영문명 | 반응 종류(아마이드·NHS·에스터·말레이미드·클릭·이민·환원성·이황화·유레아·카바메이트 중 하나, 모르면 비움)' 형식. 그 밖의 q는 그 DB가 알아듣는 짧은 검색어(대개 영문 이름·기호·번호; 한국어 물질명·질환명은 영문으로 바꿀 것). why는 한국어 한 문장.
+형식: {"plan":[{"db":"키","q":"검색어","why":"이유"}]}`,{modelTier:"quick"});
+    plan=((j&&j.plan)||[]).filter(p=>p&&DB[p.db]&&p.db!=="portals"&&String(p.q||"").trim()).slice(0,3);}
+  catch(e){if(e&&e.code==="cancelled"){renderLookup();return;}out.innerHTML=`<div class="pad"><div class="note-bar warn">DB를 고르지 못했어요: ${esc(HUB.aiErr(e))}</div></div>`;return;}
+  if(!plan.length)plan=[{db:"pubmed",q:question,why:"맞는 DB를 정하지 못해 문헌에서 찾아요"}];
+  const parts=[];
+  for(let i=0;i<plan.length;i++){const p=plan[i];prog(`${i+1}/${plan.length} · ${esc(DB[p.db].name)}에서 '${esc(p.q)}' 찾는 중…`);
+    let md;try{md=await DB[p.db].run(String(p.q).trim());dbRemember(p.db,String(p.q).trim());}catch(e){md=dmd(dbFail(p.db,String(p.q).trim(),e));}
+    parts.push(`## ${"①②③"[i]} ${DB[p.db].label||DB[p.db].name} — '${p.q}'\n> 고른 이유: ${p.why||"—"}\n\n${dmd(md)}`);}
+  const md=`**질문:** ${question}\n\nAI가 고른 DB: ${plan.map(p=>`${DB[p.db].name} ('${p.q}')`).join(" · ")}\n\n`+parts.join("\n\n---\n\n");
+  dbOut={md,title:`DB 질문 · ${question.slice(0,60)}`,db:"ask",q:question,plan};renderLookup();
+  if(HUB.ai.auto&&!HUB.embedded)interpret();
+}
 async function interpret(){
   const o=dbOut;if(!o||o.aiBusy)return;o.aiBusy=true;o.ai="";renderLookup();
-  try{const t=await HUB.ai.text(`공개 DB(${DB[o.db].name})에서 '${o.q}'를 조회한 결과입니다. ${DBASK[o.db]||DBASK2[o.db]||"이 결과를 해석하세요. 형식: **한 줄 정리** → '### 핵심' → '### 내 연구와의 연결'."}
+  try{const head=o.db==="ask"?`연구자의 질문: "${o.q}"
+아래는 이 질문에 맞춰 고른 공개 DB들의 조회 결과입니다. 질문에 답하세요. 형식: **답** (두세 문장) → '### 근거' (어느 DB의 어떤 값인지 밝히고 값은 그대로 인용) → '### 결과로 답할 수 없는 부분' (있으면) → '### 더 확인할 곳'. 조회에 실패한 DB가 있으면 그 사실을 밝힐 것. 의료·법률 판정이나 복용·사용 조언은 하지 말 것.`:`공개 DB(${DB[o.db].name})에서 '${o.q}'를 조회한 결과입니다. ${DBASK[o.db]||DBASK2[o.db]||"이 결과를 해석하세요. 형식: **한 줄 정리** → '### 핵심' → '### 내 연구와의 연결'."}`;
+  const t=await HUB.ai.text(head+`
 규칙: 한국어, 전문 용어는 영어 병기, 마크다운, 250단어 안팎. 아래 조회 결과에 있는 값만 근거로 삼고 수치는 그대로 인용할 것. 결과에 없는 사실(효능, 임상 결과, 다른 물성)을 보태야 하면 '일반 지식'이라고 밝힐 것. 연구자의 연구 주제: "${HUB.lib.context}". 관련이 약하면 약하다고 쓸 것.
 
 조회 결과:
-${o.md.slice(0,12000)}`,{modelTier:"quick",onText:x=>{if(dbOut===o){o.ai=x;const el=$("#dbAi");if(el)el.innerHTML=HUB.md(x);}}});
+${o.md.replace(SPECRE,"").replace(IMGRE,"").slice(0,12000)}`,{modelTier:"quick",onText:x=>{if(dbOut===o){o.ai=x;const el=$("#dbAi");if(el)el.innerHTML=HUB.md(x);}}});
     o.ai=t;}
   catch(e){o.ai="";if(!(e&&e.code==="cancelled"))o.aiErr=HUB.aiErr(e);}
   o.aiBusy=false;if(dbOut===o)renderLookup();
 }
-const dbFull=o=>o.md+(o.ai?"\n\n---\n\n## AI 해석 (DB 값이 아니라 해석이에요)\n\n"+o.ai:"");
+const dbFull=o=>o.md.replace(SPECRE,"").replace(IMGRE,"")+(o.ai?"\n\n---\n\n## AI 해석 (DB 값이 아니라 해석이에요)\n\n"+o.ai:"");
 function renderLookup(){
-  $("#dbSeg").innerHTML=DBGROUPS.map(g=>`<div class="dbgrp"><span>${g}</span>${Object.keys(DB).filter(k=>DB[k].g===g).map(k=>`<button type="button" class="chip" data-db="${k}" aria-pressed="${k===dbCur}">${DB[k].label||DB[k].name}</button>`).join("")}</div>`).join("");
-  $("#dbQ").placeholder=DB[dbCur].ph;$("#dbFrom").textContent=DB[dbCur].from;$("#dbBlocked").hidden=!HUB.embedded||!!DB[dbCur].local;
+  const hit=k=>!dbF||((DB[k].label||"")+" "+DB[k].name+" "+DB[k].g+" "+(DB[k].ph||"")).toLowerCase().includes(dbF);
+  const fi=$("#dbFilter");if(fi&&fi.value!==dbF)fi.value=dbF;
+  $("#dbHist").innerHTML=dbHist.length?`<span class="muted" style="font-size:.85em">최근</span>`+dbHist.map((h,i)=>`<button type="button" class="chip sm" data-dbh="${i}" title="${esc(DB[h.db].label||DB[h.db].name)}">${esc(DB[h.db].name)}: ${esc(String(h.q).slice(0,24))}</button>`).join("")+`<button type="button" class="chip sm ghost" data-dbh="x">지우기</button>`:"";
+  $("#dbSeg").innerHTML=DBGROUPS.filter(g=>Object.keys(DB).some(k=>DB[k].g===g&&hit(k))).map(g=>`<div class="dbgrp"><span>${g}</span>${Object.keys(DB).filter(k=>DB[k].g===g&&hit(k)).map(k=>`<button type="button" class="chip" data-db="${k}" aria-pressed="${k===dbCur}">${DB[k].label||DB[k].name}</button>`).join("")}</div>`).join("")||`<p class="muted" style="margin:0">'${esc(dbF)}'에 맞는 데이터베이스가 없어요.</p>`;
+  $("#dbQ").placeholder=DB[dbCur].ph;$("#dbFrom").textContent=DB[dbCur].from;$("#dbBlocked").hidden=!HUB.embedded||!!DB[dbCur].local;$("#dbAskBlocked").hidden=!HUB.embedded;
   $("#dbOut").innerHTML=dbOut?`<div class="pad"><h3 class="cap">DB 원본 기록</h3><div class="md">${HUB.md(dbOut.md)}</div>
-      ${dbOut.ai||dbOut.aiBusy?`<div class="aibox"><h3 class="cap">AI 해석 <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— DB 값이 아니라 위 기록을 풀이한 것이에요</span></h3><div class="md" id="dbAi">${dbOut.ai?HUB.md(dbOut.ai):`<p class="muted"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>해석을 쓰는 중…</p>`}</div></div>`:dbOut.aiErr?`<div class="note-bar warn">해석을 만들지 못했어요: ${esc(dbOut.aiErr)}</div>`:""}
-      <div class="actions">${dbOut.aiBusy||dbOut.local?"":`<button class="btn ${dbOut.ai?"":"primary"}" type="button" id="dbAsk">${dbOut.ai?"해석 다시 쓰기":"AI 해석 보기"}</button>`}<button class="btn" type="button" id="dbSave">보고서로 저장</button><button class="btn" type="button" id="dbCopy">복사</button></div></div>`:`<div class="pad"><p class="muted" style="margin:0">위에서 데이터베이스를 고르고 이름을 넣으면 공개 DB에서 바로 찾아와요. 값은 각 DB의 원본 기록 그대로예요. GenBank·ENA·DDBJ는 같은 서열 기록을 공유하므로 GenBank 조회 결과에서 세 곳 모두로 갈 수 있어요.</p></div>`;
+      ${dbOut.ai||dbOut.aiBusy?`<div class="aibox"><h3 class="cap">${dbOut.db==="ask"?"AI 답":"AI 해석"} <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— DB 값이 아니라 위 기록을 풀이한 것이에요</span></h3><div class="md" id="dbAi">${dbOut.ai?HUB.md(dbOut.ai):`<p class="muted"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>해석을 쓰는 중…</p>`}</div></div>`:dbOut.aiErr?`<div class="note-bar warn">해석을 만들지 못했어요: ${esc(dbOut.aiErr)}</div>`:""}
+      ${dbOut.plan&&dbOut.plan.length?`<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:10px"><span class="muted" style="font-size:.85em">이 DB에서 직접 더 찾기</span>${dbOut.plan.map((p,i)=>`<button type="button" class="chip sm" data-dbgo2="${esc(p.db)}" data-dbq="${esc(p.q)}">${"①②③"[i]} ${esc(DB[p.db]?DB[p.db].name:p.db)}</button>`).join("")}</div>`:""}
+      <div class="actions">${dbOut.aiBusy||dbOut.local?"":`<button class="btn ${dbOut.ai?"":"primary"}" type="button" id="dbAsk">${dbOut.db==="ask"?(dbOut.ai?"답 다시 쓰기":"AI 답 보기"):dbOut.ai?"해석 다시 쓰기":"AI 해석 보기"}</button>`}${dbOut.db&&DBPAIR[dbOut.db]&&dbOut.q?`<button class="btn" type="button" data-dbgo="${DBPAIR[dbOut.db][0]}">${DBPAIR[dbOut.db][1]}</button>`:""}<button class="btn" type="button" id="dbSave">보고서로 저장</button><button class="btn" type="button" id="dbCopy">복사</button></div></div>`:`<div class="pad"><p class="muted" style="margin:0">맨 위 칸에 질문을 쓰면 AI가 맞는 DB를 골라 찾아 주고, 아래에서 데이터베이스를 직접 고르고 이름을 넣어도 돼요. 직접 고르면 공개 DB에서 바로 찾아와요. 값은 각 DB의 원본 기록 그대로예요. GenBank·ENA·DDBJ는 같은 서열 기록을 공유하므로 GenBank 조회 결과에서 세 곳 모두로 갈 수 있어요.</p></div>`;
+  $("#dbOut").querySelectorAll(".md p").forEach(p=>{const m=p.textContent.trim().match(/^⟦spec:(\d+)⟧$/);if(m&&SPEC[+m[1]]){const d=document.createElement("figure");d.className="specfig";d.innerHTML=specSvg(SPEC[+m[1]]);p.replaceWith(d);return;}const g=p.textContent.trim().match(/^⟦img:(\d+)⟧$/);if(g&&IMGS[+g[1]]){const x=IMGS[+g[1]],f=document.createElement("figure");f.className="molfig";f.innerHTML=`<img alt="${esc(x.alt)} 구조" loading="lazy" referrerpolicy="no-referrer"><figcaption>${esc(x.alt)}</figcaption>`;const im=f.querySelector("img");im.onerror=()=>{f.innerHTML=`<figcaption class="muted">${esc(x.alt)} 구조 그림을 불러오지 못했어요 (외부 그림 서버 연결 필요)</figcaption>`;};im.src=x.src;p.replaceWith(f);}});
 }
 
 /* ---------- events ---------- */
@@ -4424,15 +4847,25 @@ function init(){
     else if(k==="copy")HUB.copy(r.md);
     else if(k==="del"){if(!b.classList.contains("armed")){b.classList.add("armed");b.textContent="한 번 더 누르면 삭제";setTimeout(()=>{if(b.isConnected){b.classList.remove("armed");b.textContent="삭제";}},4000);return;}RF.open.delete(r.id);await col.remove(r.id);}
     else HUB.exportDoc(k,r.md,r.title);});
-  $("#dbSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-db]");if(!b)return;dbCur=b.dataset.db;ls.set("dbcur",dbCur);dbOut=null;renderLookup();});
+  $("#dbCheck").addEventListener("click",dbCheck);
+  $("#dbFilter").addEventListener("input",e=>{dbF=e.target.value.trim().toLowerCase();renderLookup();});
+  $("#dbFilter").addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();const b=$("#dbSeg").querySelectorAll("button[data-db]");if(b.length>=1){dbCur=b[0].dataset.db;ls.set("dbcur",dbCur);dbOut=null;dbF="";e.target.value="";renderLookup();const i=$("#dbQ");if(i)i.focus();}});
+  $("#dbHist").addEventListener("click",e=>{const b=e.target.closest("[data-dbh]");if(!b)return;if(b.dataset.dbh==="x"){dbHist=[];ls.set("dbhist",dbHist);renderLookup();return;}const h=dbHist[+b.dataset.dbh];if(h)HUB.lookup.open(h.db,h.q,true);});
+  $("#dbAskForm").addEventListener("submit",e=>{e.preventDefault();const q=$("#dbAskQ").value.trim();if(q)askDb(q);});
+  $("#dbAskEx").addEventListener("click",e=>{const b=e.target.closest("[data-ex]");if(!b)return;$("#dbAskQ").value=b.dataset.ex;askDb(b.dataset.ex);});
+  $("#dbSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-db]");if(!b)return;dbCur=b.dataset.db;ls.set("dbcur",dbCur);dbOut=null;renderLookup();const i=$("#dbQ");if(i)i.focus();});
   $("#dbForm").addEventListener("submit",async e=>{e.preventDefault();const q=$("#dbQ").value.trim();if(!q)return;
     $("#dbOut").innerHTML=`<div class="pad"><p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>${DB[dbCur].name}에서 찾는 중…</p></div>`;
-    try{const md=await DB[dbCur].run(q);dbOut={md,title:`${DB[dbCur].name} · ${q}`,db:dbCur,q,local:!!DB[dbCur].local};renderLookup();if(HUB.ai.auto&&md.length>60&&!DB[dbCur].local&&md!==NONE)interpret();}catch(err){$("#dbOut").innerHTML=`<div class="pad"><div class="note-bar warn">${esc(err.message||"조회하지 못했어요")}</div></div>`;}});
-  $("#dbOut").addEventListener("click",e=>{if(!dbOut)return;if(e.target.id==="dbAsk")interpret();if(e.target.id==="dbCopy")HUB.copy(dbFull(dbOut));if(e.target.id==="dbSave")saveReport(dbOut.title,"lookup",dbFull(dbOut)).then(()=>HUB.toast("보고서에 저장했어요"));});
+    try{const md=await DB[dbCur].run(q);dbOut={md,title:`${DB[dbCur].name} · ${q}`,db:dbCur,q,local:!!DB[dbCur].local};dbRemember(dbCur,q);renderLookup();if(HUB.ai.auto&&md.length>60&&!DB[dbCur].local&&md!==NONE)interpret();}catch(err){const bad=/찾지 못했어요|넣어 주세요|모르는 종|읽지 못했어요|확인해 주세요|쓸 수 없는|모자라요/.test(String(err&&err.message));
+      if(bad)$("#dbOut").innerHTML=`<div class="pad"><div class="note-bar warn">${esc(err.message)}</div></div>`;
+      else{dbOut={md:dbFail(dbCur,q,err),title:`${DB[dbCur].name} · ${q} (연결 실패)`,db:dbCur,q,local:true};renderLookup();}}});
+  $("#dbOut").addEventListener("click",e=>{const g2=e.target.closest("[data-dbgo2]");if(g2){HUB.lookup.open(g2.dataset.dbgo2,g2.dataset.dbq||"",false);return;}
+    const go=e.target.closest("[data-dbgo]");if(go&&dbOut){HUB.lookup.open(go.dataset.dbgo,dbOut.q,true);return;}if(!dbOut)return;if(e.target.id==="dbAsk")interpret();if(e.target.id==="dbCopy")HUB.copy(dbFull(dbOut));if(e.target.id==="dbSave")saveReport(dbOut.title,"lookup",dbFull(dbOut)).then(()=>HUB.toast("보고서에 저장했어요"));});
   const nav=document.querySelector('#nav [data-go="research"]');if(nav)nav.addEventListener("click",()=>{if(!busy){renderCorpus();renderCfg();}});
   HUB.ready.then(()=>{if(!busy){renderCorpus();renderCfg();}});
 }
 function pick(id){const t=TOOLS.find(x=>x.id===id);if(!t)return;cur=t;grp=t.g;renderCorpus();renderTools();renderCfg();const c=$("#rCfg");if(c&&HUB.view==="research")c.scrollIntoView({block:"nearest",behavior:"smooth"});}
+HUB.lookup={list:()=>Object.keys(DB).map(k=>({k,name:DB[k].name,label:DB[k].label||DB[k].name,g:DB[k].g,ph:DB[k].ph})),open(k,q,go){if(!DB[k])return false;dbCur=k;ls.set("dbcur",dbCur);dbOut=null;HUB.go("lookup");renderLookup();const i=$("#dbQ");if(i&&q!=null)i.value=q;if(go&&q)$("#dbForm").dispatchEvent(new Event("submit",{cancelable:true}));else if(i)i.focus();return true;},ask(q){HUB.go("lookup");const i=$("#dbAskQ");if(i){i.value=q;i.focus();}if(q)askDb(q);}};
 HUB.research={send(id,inputs,papers,name){const t=TOOLS.find(x=>x.id===id);if(!t)return;saved[id]=Object.assign(saved[id]||{},inputs||{});ls.set("rin",saved);if(papers&&papers.length){msList=papers;msName=name||"";srcId="ms";}HUB.go("research");pick(id);HUB.toast("원고를 +t.name+에 넣었어요. 내용을 확인하고 실행을 누르세요.",5000);},pick,attach,openReport(id){HUB.go("reports");RF.q="";RF.folder="*";RF.tool="*";RF.star=false;RF.open.add(id);renderReports();setTimeout(()=>{const d=document.querySelector(`details.rep[data-rid="${id}"]`);if(d)d.scrollIntoView({block:"start",behavior:"smooth"});},80);}};
 document.addEventListener("DOMContentLoaded",init);
 })();
@@ -5106,7 +5539,7 @@ function render(){
       <div class="row"><button class="btn sm" type="button" id="ilFileBtn">파일에서 불러오기</button><input type="file" id="ilFile" hidden accept=".pdf,.docx,.pptx,.hwpx,.txt,.md"><label class="sr" for="ilLib">라이브러리 논문에서 가져오기</label><select id="ilLib" class="mini" style="max-width:240px"><option value="">라이브러리 논문에서 가져오기</option>${HUB.lib.papers.slice(0,80).map(p=>`<option value="${esc(p.id)}">${esc(String(p.title||"").slice(0,60))}</option>`).join("")}</select></div>
       <div class="refbox"><div class="row" style="justify-content:space-between;gap:8px"><b style="font-size:14px">스케치·기존 그림에서 시작 <span class="muted" style="font-weight:400">(선택)</span></b><span class="row" style="gap:6px"><button class="btn sm" type="button" id="ilRefBtn">${REF?"다른 이미지":"이미지 올리기"}</button>${REF?`<button class="btn sm ghost" type="button" id="ilRefDel">빼기</button>`:""}</span><input type="file" id="ilRef" hidden accept="image/*"></div>
         ${REF?`<div class="refrow"><img alt="올린 이미지" src="${REF.url}"><div class="vstack" style="flex:1;gap:6px"><span class="muted" style="font-size:12.5px">${esc(REF.name)}</span><label class="sr" for="ilRefMode">무엇을 할지</label><select id="ilRefMode"><option value="sketch" ${REF.mode==="sketch"?"selected":""}>손그림 스케치 → 깔끔한 그림으로</option><option value="vector" ${REF.mode==="vector"?"selected":""}>기존 그림 → 편집 가능한 벡터로 다시 그리기</option></select><span class="muted" style="font-size:12.5px;line-height:1.5">${REF.mode==="vector"?"'벡터 모식도' 방식으로 그리면 요소별로 고칠 수 있는 SVG가 나와요. 원본을 그대로 따라 그리는 것이 아니라 AI가 보고 다시 그리는 방식이에요.":"종이나 화이트보드에 그린 것을 찍어 올리면 돼요. 위 칸에 내용을 적어 두면 글자를 더 정확히 옮겨요."}</span></div></div>`:`<p class="muted" style="font-size:12.5px;margin:6px 0 0;line-height:1.5">손으로 그린 스케치 사진을 올리면 깔끔한 그림으로, 기존 그림을 올리면 편집 가능한 벡터로 다시 그려요.</p>`}</div>
-      <label class="field" for="ilExtra">추가 지시 (선택)<input id="ilExtra" value="${esc(ST.extra)}" placeholder="예: 왼쪽에서 오른쪽으로 3단계, 세포 단면을 크게"></label>`}
+      <label class="field" for="ilExtra">추가 지시 (선택)<input id="ilExtra" value="${esc(ST.extra)}" placeholder="예: 왼쪽→오른쪽 3단계, 세포 단면을 크게"></label>`}
     <div class="opt3">${opt("ilSize","비율",Object.keys(SIZES).map(s=>[s,s]),k.noai&&!ST.sizeSet?"4:3":ST.size)}${opt("ilPal","색",Object.entries(PALS).map(([a,b])=>[a,b[0]]),k.noai&&!ST.palSet?"prism":ST.pal)}${k.noai?"":opt("ilLang","라벨 언어",[["English","English"],["한국어","한국어"]],ST.lang)}</div>
     ${!k.noai&&ST.engine==="svg"&&HUB.ai.kind==="manual"?`<div class="note-bar">지금은 복사·붙여넣기 방식이에요. 프롬프트를 Claude에 넣고 받은 SVG 코드를 붙여넣으면 여기서 그림으로 보여 줘요.</div>`:""}
     <div class="row"><button class="btn primary" type="button" id="ilDraw" ${busy?"disabled":""}>${busy?"그리는 중…":k.noai?"그래프 그리기":"그리기"}</button></div>
@@ -5334,7 +5767,7 @@ function draw(){const el=$("#v-graph");if(!el)return;
   el.innerHTML=`<div class="page"><section class="card pad grtop">
     <div class="seg"><button type="button" data-gmode="seed" aria-pressed="${G.mode==="seed"}">논문 중심 관계도 (선행·후속)</button><button type="button" data-gmode="rec" aria-pressed="${G.mode==="rec"}">놓친 핵심 논문 찾기</button><button type="button" data-gmode="lib" aria-pressed="${G.mode==="lib"}">라이브러리 지도</button></div>
     ${G.mode==="rec"?`<div class="row grctl"><button class="btn primary" type="button" data-gr="rec" ${G.busy?"disabled":""}>${G.busy?"찾는 중…":`라이브러리에 보이는 ${HUB.lib.filtered().filter(p=>p.doi).length}편으로 찾기`}</button><span class="muted" style="font-size:13px">DOI가 있는 논문만 쓰고, 한 번에 40편까지 봐요.</span></div>`:""}
-    ${G.mode==="seed"?`<div class="grseed"><label class="sr" for="grQ">중심 논문</label><input id="grQ" class="search" type="search" placeholder="중심 논문: 라이브러리·검색 결과에서 찾거나 DOI·제목을 직접 입력" value="${esc(G.q)}" autocomplete="off"><button class="btn primary" type="button" data-gr="go" ${G.busy?"disabled":""}>${G.busy?"그리는 중…":"그리기"}</button></div>
+    ${G.mode==="seed"?`<div class="grseed"><label class="sr" for="grQ">중심 논문</label><input id="grQ" class="search" type="search" placeholder="중심 논문 — 제목·DOI로 찾기" value="${esc(G.q)}" autocomplete="off"><button class="btn primary" type="button" data-gr="go" ${G.busy?"disabled":""}>${G.busy?"그리는 중…":"그리기"}</button></div>
       <div class="gropts" id="grOpts" ${G.showOpts?"":"hidden"}>${G.showOpts?seedOptions():""}</div>
       <div class="row grctl"><label>편수 <select id="grN" class="mini">${[10,20,30,50].map(v=>`<option ${+G.n===v?"selected":""}>${v}</option>`).join("")}</select></label>
         <div class="seg sm"><button type="button" data-glay="radial" aria-pressed="${G.layout==="radial"}">방사형</button><button type="button" data-glay="time" aria-pressed="${G.layout==="time"}">연도순</button></div>
@@ -5502,6 +5935,8 @@ async function importFile(f){
 function draw(){const V=$("#v-write");if(!V)return;const list=col().list.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
   if(!list.some(d=>d.id===W.cur))W.cur=list[0]?list[0].id:"";const d=draft();
   if(!d){V.innerHTML=`<div class="page"><section class="card pad wrempty"><h2>원고 작업 공간</h2><p>원고를 섹션별로 써 두고, 라이브러리 논문을 바로 인용하고, 인용 근거 대조·통계 점검·동료 심사·저널 추천을 이 원고 하나에 이어서 돌릴 수 있어요. 도구마다 원고를 다시 붙여넣지 않아도 돼요.</p><div class="row" style="justify-content:center;gap:8px"><button class="btn primary" type="button" data-wr="new">새 원고 시작</button><button class="btn" type="button" data-wr="import">써 둔 원고 파일 가져오기</button></div><p style="font-size:13px">이미 쓴 원고가 있으면 Word·PDF·한글 파일을 올리세요. Abstract, Introduction 같은 섹션 제목을 찾아 나눠 담고, 바로 점검과 투고 준비 도구를 돌릴 수 있어요.</p><input type="file" id="wrFile" hidden accept=".docx,.pdf,.hwpx,.txt,.md,.pptx"></section></div>`;return;}
+  if(!Array.isArray(d.sections)||!d.sections.length)d.sections=[{name:"Manuscript",text:""}];
+  d.sections=d.sections.map(x=>x&&typeof x==="object"?{...x,name:String(x.name||"Section"),text:String(x.text||"")}:{name:"Section",text:String(x||"")});
   if(W.sec>=d.sections.length)W.sec=0;const s=d.sections[W.sec],c=cited(d),bib=HUB.lib.bib,km=bib.keyMap();const total=d.sections.reduce((n,x)=>n+words(x.text),0);
   const q=(W.q||"").toLowerCase(),cand=W.pick?HUB.lib.papers.filter(p=>!q||[p.title,(p.authors||[]).join(" "),p.journal,p.year,km.get(p.id)].join(" ").toLowerCase().includes(q)).slice(0,30):[];
   const tool=(id,n,h)=>`<button type="button" data-wsend="${id}"><b>${n}</b><span>${h}</span></button>`;
@@ -5521,7 +5956,7 @@ function draw(){const V=$("#v-write");if(!V)return;const list=col().list.slice()
       ${W.pick?`<div class="wrpick"><input id="wrQ" type="search" placeholder="인용할 논문 찾기 (제목·저자·저널)" value="${esc(W.q||"")}" autocomplete="off"><div class="rfplist">${cand.map(p=>`<button type="button" data-wins="${esc(km.get(p.id))}"><span><b>${esc(((p.authors||[])[0]||"").split(",")[0])} ${esc(String(p.year||""))}</b> ${esc((p.title||"").slice(0,90))}</span><code>${esc(km.get(p.id))}</code></button>`).join("")||'<p class="muted">맞는 논문이 없어요. 라이브러리에 먼저 담아 주세요.</p>'}</div></div>`:""}
       <label class="sr" for="wrText">${esc(s.name)} 본문</label>${HUB.ebWrap(`<textarea id="wrText" data-ebk="w:${d.id}:${W.sec}" placeholder="${esc(s.name)} 섹션을 여기에 쓰세요. 인용할 자리에서 '인용 넣기'를 누르면 [@키]가 들어가고, 내보낼 때 번호나 (저자, 연도)와 참고문헌 목록으로 바뀌어요.">${esc(s.text||"")}</textarea>`,s.text)}
       <div class="wracts"><span class="muted" style="font-size:12.5px">이 섹션에 AI 쓰기 (글을 드래그해 두면 그 부분만):</span>${Object.entries(ACTS).map(([k,v])=>`<button class="btn sm" type="button" data-wact="${k}" ${busy?"disabled":""}>${v[0]}</button>`).join("")}</div>
-      <div class="wrcustom"><input id="wrAsk" placeholder="직접 지시: 예) 두 번째 문단을 결과 중심으로 다시 써 줘" autocomplete="off"><button class="btn sm" type="button" data-wact="custom" ${busy?"disabled":""}>실행</button></div>
+      <div class="wrcustom"><input id="wrAsk" placeholder="직접 지시 (예: 문단 다시 쓰기)" autocomplete="off"><button class="btn sm" type="button" data-wact="custom" ${busy?"disabled":""}>실행</button></div>
       ${out?`<div class="wrout"><div class="row" style="justify-content:space-between"><b>${esc(out.name)}${out.range?" · 선택한 부분":""}</b><span class="row" style="gap:6px">${busy?`<span class="muted" style="font-size:13px">쓰는 중…</span>`:`${out.repl?`<button class="btn sm primary" type="button" data-wout="replace">${out.range?"선택한 부분과 바꾸기":"이 섹션과 바꾸기"}</button>`:""}${out.name==="이어 쓰기"?`<button class="btn sm primary" type="button" data-wout="append">아래에 붙이기</button>`:""}<button class="btn sm" type="button" data-wout="copy">복사</button><button class="btn sm ghost" type="button" data-wout="close">닫기</button>`}</span></div>
         ${out.repl||out.name==="이어 쓰기"?`<p id="wrOutText" class="wrtxt">${esc(out.text)}</p>`:busy?`<p id="wrOutText" class="wrtxt">${esc(out.text)}</p>`:`<div class="md">${HUB.md(out.text)}</div>`}</div>`:""}
     </section>
@@ -5924,7 +6359,7 @@ function planForm(p,attr){return `<div class="mgrid"><label>할 일<input ${attr
 function planHtml(){const [Y,Mo]=PS.ym.split("-").map(Number),first=new Date(Y,Mo-1,1),start=first.getDay(),dim=new Date(Y,Mo,0).getDate(),td=today();
   const cells=[];for(let i=0;i<start;i++)cells.push("");for(let d=1;d<=dim;d++)cells.push(dstr(Y,Mo,d));while(cells.length%7)cells.push("");
   const cal=cells.map((day,i)=>{if(!day)return `<div class="pcell off"></div>`;const x=dayData(day),n=x.notes.length,o=x.orders.length+x.cells.length;
-    return `<button type="button" class="pcell ${day===td?"ptoday":""} ${day===PS.day?"psel":""} ${i%7===0?"psun":i%7===6?"psat":""}" data-pday="${day}" aria-label="${dlabel(day)}"><span class="pd">${+day.slice(8)}</span>${x.plans.slice(0,3).map(p=>`<span class="pchip ${p.project?"pjchip":kcls(p.kind)} ${p.done?"done":""}" ${p.project?`style="--pc:${pjColor(p.project)}"`:""}>${esc(p.title||"")}</span>`).join("")}${x.plans.length>3?`<span class="pmore">+${x.plans.length-3}</span>`:""}${n||o?`<span class="pdots">${n?`<i class="pn" title="실험노트">노트 ${n}</i>`:""}${o?`<i class="po" title="발주·세포">기록 ${o}</i>`:""}</span>`:""}<span class="pcount">${x.plans.length?`<i class="c1">${x.plans.length}</i>`:""}${n?`<i class="c2">${n}</i>`:""}</span></button>`;}).join("");
+    return `<button type="button" class="pcell ${day===td?"ptoday":""} ${day===PS.day?"psel":""} ${i%7===0?"psun":i%7===6?"psat":""}" data-pday="${day}" aria-label="${dlabel(day)}"><span class="pd">${+day.slice(8)}</span>${x.plans.slice(0,3).map(p=>`<span class="pchip ${p.project?"pjchip":kcls(p.kind)} ${p.done?"done":""}" title="${esc([p.time,p.title,p.project].filter(Boolean).join(" · "))}" ${p.project?`style="--pc:${pjColor(p.project)}"`:""}>${esc(p.title||"")}</span>`).join("")}${x.plans.length>3?`<span class="pmore">+${x.plans.length-3}</span>`:""}${n||o?`<span class="pdots">${n?`<i class="pn" title="실험노트">노트 ${n}</i>`:""}${o?`<i class="po" title="발주·세포">기록 ${o}</i>`:""}</span>`:""}<span class="pcount">${x.plans.length?`<i class="c1">${x.plans.length}</i>`:""}${n?`<i class="c2">${n}</i>`:""}</span></button>`;}).join("");
   const x=dayData(PS.day);
   const up=pcol().list.filter(p=>inProj(p)&&!p.done&&p.date&&(p.end||p.date)>=td&&p.date<=addDays(td,14)).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||""))).slice(0,8);
   const late=pcol().list.filter(p=>inProj(p)&&!p.done&&p.date&&(p.end||p.date)<td).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
@@ -6003,7 +6438,8 @@ function projHtml(){const ns=pjNames();
     ${ns.length?`<div class="pjcards">${ns.map(n=>{const p=pjFind(n),s=pjStat(n),col_=pjColor(n);
       if(p&&PJ.edit===p.id)return `<div class="pjcard mrev" data-pjedit="${p.id}" style="--pc:${col_}"><div class="mgrid"><label>이름 (바꾸면 기록에도 반영돼요)<input data-pje="name" value="${esc(p.name)}" maxlength="40"></label><label style="grid-column:span 2">한 줄 설명<input data-pje="memo" value="${esc(p.memo||"")}"></label></div><div><span class="muted" style="font-size:12px">색</span>${pjSw(p.color,"data-pjec")}</div><div class="row" style="gap:6px"><button class="btn sm primary" type="button" data-pj="editdone">닫기</button><button class="btn sm" type="button" data-pj="toggle" data-id="${p.id}">${p.done?"다시 진행 중으로":"끝난 프로젝트로 표시"}</button><button class="btn sm ghost danger" type="button" data-pj="del" data-id="${p.id}">등록 지우기</button></div><p class="muted" style="margin:0;font-size:12.5px">등록을 지워도 기록은 그대로 남고, 이름만 '등록 안 됨'으로 보여요.</p></div>`;
       return `<div class="pjcard ${p&&p.done?"done":""}" style="--pc:${col_}"><div class="pjh"><b>${esc(n)}</b>${p?(p.done?`<span class="tag">끝남</span>`:""):`<span class="tag">등록 안 됨</span>`}</div>${p&&p.memo?`<p class="muted" style="margin:0;font-size:13px">${esc(p.memo)}</p>`:""}
-        <div class="pjstats"><button type="button" data-pjgo="plan" data-n="${esc(n)}"><b>${s.open}</b><span>남은 일정${s.late?` · 밀림 ${s.late}`:""}</span><em>${s.next?esc(s.next.date.slice(5)+" "+s.next.title):"예정 없음"}</em></button><button type="button" data-pjgo="notes" data-n="${esc(n)}"><b>${s.notes}</b><span>실험노트</span><em>${s.last?esc((s.last.date||"").slice(5)+" "+(s.last.title||"")):"아직 없음"}</em></button><button type="button" data-pjgo="orders" data-n="${esc(n)}"><b>${s.wait}</b><span>기다리는 발주</span><em>전체 ${s.orders}건</em></button><button type="button" data-pjgo="cells" data-n="${esc(n)}"><b>${s.lines}</b><span>세포주</span><em>바이알 ${s.vials}개</em></button><button type="button" data-pjgo="materials" data-n="${esc(n)}"><b>${s.mats}</b><span>재료</span><em>&nbsp;</em></button><button type="button" data-pjgo="grant" data-n="${esc(n)}"><b>${s.docs}</b><span>과제 문서</span><em>${s.docs?"평가 "+s.evald+"건":"아직 없음"}</em></button></div>
+        <div class="pjstats"><button type="button" data-pjgo="plan" data-n="${esc(n)}"><b>${s.open}</b><span>남은 일정${s.late?` · 밀림 ${s.late}`:""}</span><em>${s.next?"다음 "+esc(s.next.date.slice(5)):"예정 없음"}</em></button><button type="button" data-pjgo="notes" data-n="${esc(n)}"><b>${s.notes}</b><span>실험노트</span><em>${s.last?"최근 "+esc((s.last.date||"").slice(5)):"아직 없음"}</em></button><button type="button" data-pjgo="orders" data-n="${esc(n)}"><b>${s.wait}</b><span>기다리는 발주</span><em>전체 ${s.orders}건</em></button><button type="button" data-pjgo="cells" data-n="${esc(n)}"><b>${s.lines}</b><span>세포주</span><em>바이알 ${s.vials}개</em></button><button type="button" data-pjgo="materials" data-n="${esc(n)}"><b>${s.mats}</b><span>재료</span><em>&nbsp;</em></button><button type="button" data-pjgo="grant" data-n="${esc(n)}"><b>${s.docs}</b><span>과제 문서</span><em>${s.docs?"평가 "+s.evald+"건":"아직 없음"}</em></button></div>
+        ${s.next||s.last?`<div class="pjrecent">${s.next?`<p><span>다음 일정</span>${esc(s.next.date.slice(5)+(s.next.time?" "+s.next.time:"")+" · "+(s.next.title||""))}</p>`:""}${s.last?`<p><span>최근 실험노트</span>${esc((s.last.date||"").slice(5)+" · "+(s.last.title||""))}</p>`:""}</div>`:""}
         <div class="pjlinks"><span class="muted">연결</span><button class="chip" type="button" data-pjlink="drafts" data-n="${esc(n)}">원고<span class="n">${s.drafts}</span></button><button class="chip" type="button" data-pjlink="papers" data-n="${esc(n)}">논문<span class="n">${s.papers}</span></button><button class="chip" type="button" data-pjlink="reports" data-n="${esc(n)}">보고서<span class="n">${s.reps}</span></button></div>
         <div class="row" style="gap:6px">${p?`<button class="btn sm ghost" type="button" data-pj="edit" data-id="${p.id}">이름·색 고치기</button>`:`<button class="btn sm" type="button" data-pj="reg" data-n="${esc(n)}">등록하고 색 정하기</button>`}</div></div>`;}).join("")}</div>${linkHtml()}`
       :`<div class="placeholder" style="margin-top:12px">아직 프로젝트가 없어요. 위에서 하나 추가해 보세요.</div>`}</section>`;}
