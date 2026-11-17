@@ -4,7 +4,6 @@
 설치할 것이 없고, 파일 하나(`index.html`)로 돌아갑니다.
 
 **바로 쓰기:** https://tuna616.github.io/research-hub/
-(위 주소를 본인 저장소 주소로 바꿔 적어 주세요.)
 
 ---
 
