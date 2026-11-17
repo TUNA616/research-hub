@@ -801,6 +801,7 @@ html{scrollbar-gutter:stable}
       <div id="sJFit" class="jfit" hidden></div>
       <label class="ck"><input type="checkbox" id="sGA"><span>종합지·대표 저널 <b class="jsn" id="sGAN"></b><small>Nature·Science·Cell 계열, 주요 의학·화학·재료 대표지</small></span></label>
       <label class="ck"><input type="checkbox" id="sGB"><span>분야별 전문지 <b class="jsn" id="sGBN"></b><small>Nature Reviews, 암·면역·심혈관 등 임상, 에너지·화학·재료</small></span></label>
+      <label class="ck" id="sGJL" hidden><input type="checkbox" id="sGJ"><span>JCR 가져온 저널 <b class="jsn" id="sGJN"></b><small>저널 관리에서 올린 JCR·SCImago 목록 (최소 IF 적용)</small></span></label>
       <label for="sMinIF">최소 IF</label><div class="in2"><input id="sMinIF" type="number" step="0.5" min="0" style="width:90px"><span class="muted" id="sJCount" style="font-size:12.5px"></span></div>
       <button class="btn sm" type="button" id="sOpenJ">저널 관리</button></div>
     <div class="fbox"><h3>순위</h3>
@@ -1013,6 +1014,7 @@ html{scrollbar-gutter:stable}
   <div class="body">
     <div class="note-bar">IF 값은 JCR 2026 발표(2025년 IF, 2026년 6월 공개) 기준 참고값이에요. 정확한 값은 JCR에서 확인해 표에서 직접 고치면 이 브라우저에 저장돼요. 체크를 끈 저널은 고IF 필터에서 빠져요.</div>
     <div class="row"><label class="sr" for="jFilter">저널 이름 필터</label><input id="jFilter" class="search" type="search" placeholder="저널 이름 필터" style="flex:1;min-width:160px;width:auto"><button class="btn" type="button" id="jReset">기본값으로 복원</button></div>
+    <div class="note-bar" id="jJcrBox" style="font-size:13.5px"></div><input type="file" id="jJcrFile" accept=".csv,.tsv,.txt,.xlsx,.xls" multiple hidden>
     <div class="note-bar" id="jFitBox" style="font-size:13.5px"></div>
     <div class="mdt"><table><thead><tr><th>사용</th><th>저널</th><th>그룹</th><th>주제</th><th>IF</th><th>ISSN</th><th></th></tr></thead><tbody id="jBody"></tbody></table></div>
     <div class="row"><label class="sr" for="jnName">저널 이름</label><input id="jnName" class="search" placeholder="추가할 저널 정식 이름" style="flex:2;min-width:180px;width:auto"><label class="sr" for="jnIssn">ISSN</label><input id="jnIssn" class="search" placeholder="ISSN (예: 1234-5678)" style="flex:1;min-width:130px;width:auto"><label class="sr" for="jnIF">IF</label><input id="jnIF" class="search" type="number" step="0.1" placeholder="IF" style="width:80px"><button class="btn primary" type="button" id="jAdd">추가</button></div>
@@ -1549,7 +1551,7 @@ H.renderHome=function(){
       <p class="muted" style="margin:0 0 10px;font-size:13.5px">연구 흐름 순서로 묶었어요. '어디서'의 <b>모두</b>는 claude.ai 화면과 내려받은 파일 양쪽, <b>파일</b>은 외부 DB나 외부 AI에 연결해야 해서 내려받은 HTML 파일(또는 GitHub 주소)에서만 되는 기능이에요.</p>
       <div class="mdt sktbl"><table><thead><tr><th>화면</th><th>할 수 있는 일</th><th>어디서</th><th>바탕이 된 것</th></tr></thead><tbody>
       <tr class="skst"><td colspan="4">① 찾기</td></tr>
-      <tr><td><b>문헌 검색</b></td><td>5개 DB 동시 검색과 중복 병합, 5계층 점수와 목적별 프로필, 내 연구 주제에 맞춘 정렬·거르기, 고IF 저널 필터(JCR 2026) — 연구 주제를 적거나 바꾸면 그 주제 논문이 실제로 실리는 저널로 필터를 자동으로 다시 고름(OpenAlex 최근 5년 논문 수 기준, 연결이 안 되면 AI 판단, 목록에 없는 추천 저널 추가), 인용망 확장, RISS·KCI 바로가기</td><td>파일</td><td>scholar-megasearch · science-skills · k-skill</td></tr>
+      <tr><td><b>문헌 검색</b></td><td>5개 DB 동시 검색과 중복 병합, 5계층 점수와 목적별 프로필, 내 연구 주제에 맞춘 정렬·거르기, 고IF 저널 필터(JCR 2026 기본 표 + 내가 받은 Clarivate JCR·SCImago 파일을 올리면 수천 개 저널 전체와 IF·사분위·범주를 한 번에 넣음) — 연구 주제를 적거나 바꾸면 그 주제 논문이 실제로 실리는 저널로 필터를 자동으로 다시 고름(OpenAlex 최근 5년 논문 수 기준, 연결이 안 되면 AI 판단, 목록에 없는 추천 저널 추가), 인용망 확장, RISS·KCI 바로가기</td><td>파일</td><td>scholar-megasearch · science-skills · k-skill</td></tr>
       <tr><td><b>홈 · 찾는 순서 안내</b></td><td>하고 싶은 일을 한 문장으로 쓰면 어느 탭·어느 DB를 어떤 순서로 쓸지 단계별로 안내하고, 각 단계에서 바로 조회·이동. AI가 없으면 일반적인 순서를 보여 줌</td><td>모두</td><td>직접 만듦</td></tr>
       <tr><td><b>홈 · 새 논문 알림</b></td><td>검색어를 구독하면 새로 나온 논문만 모아 보기</td><td>파일</td><td>직접 만듦</td></tr>
       <tr><td><b>관계도</b></td><td>논문 중심 선행·후속·비슷한 연구, 여러 논문에서 놓친 핵심 논문 찾기</td><td>파일</td><td>ResearchRabbit 방식 참고</td></tr>
@@ -3521,14 +3523,32 @@ const J0 = [
 ["ACS Central Science","2374-7943 2374-7951",11.1,"A"],
 // Group B — field journals
 ["Nature Nanotechnology","1748-3387 1748-3395",37.5,"B"],
+["Nature Biomedical Engineering","2157-846X",26.3,"B"],
+["Nature Reviews Drug Discovery","1474-1776 1474-1784",91.2,"B"],
 ["Nature Reviews Materials","2058-8437",83.3,"B"],
+["Nature Reviews Nephrology","1759-5061 1759-507X",46.7,"B"],
 ["Advanced Functional Materials","1616-301X 1616-3028",19.9,"B"],
+["Advanced Healthcare Materials","2192-2640 2192-2659",11.0,"B"],
+["Advanced Drug Delivery Reviews","0169-409X 1872-8294",21.0,"B"],
+["Journal of Controlled Release","0168-3659 1873-4995",12.4,"B"],
 ["ACS Nano","1936-0851 1936-086X",17.3,"B"],
+["Nano Today","1748-0132 1878-044X",10.7,"B"],
 ["Nano Letters","1530-6984 1530-6992",9.1,"B"],
+["Small","1613-6810 1613-6829",11.8,"B"],
+["Nano-Micro Letters","2311-6706 2150-5551",38.5,"B"],
+["Bioactive Materials","2452-199X",23.6,"B"],
 ["Biomaterials","0142-9612 1878-5905",13.6,"B"],
+["Theranostics","1838-7640",14.9,"B"],
+["Journal of Nanobiotechnology","1477-3155",15.0,"B"],
+["Acta Pharmaceutica Sinica B","2211-3835 2211-3843",14.6,"B"],
+["Journal of Extracellular Vesicles","2001-3078",21.7,"B"],
 ["Chemical Society Reviews","0306-0012 1460-4744",48.3,"B"],
 ["Chemical Reviews","0009-2665 1520-6890",64.2,"B"],
+["Kidney International","0085-2538 1523-1755",21.8,"B"],
+["Journal of the American Society of Nephrology","1046-6673 1533-3450",9.7,"B"],
 ["Signal Transduction and Targeted Therapy","2095-9907 2059-3635",81.2,"B"],
+["Molecular Therapy","1525-0016 1525-0024",11.4,"B"],
+["Redox Biology","2213-2317",16.2,"B"],
 ["Cell Metabolism","1550-4131 1932-7420",37.0,"B"],
 ["Nature Reviews Molecular Cell Biology","1471-0072 1471-0080",118.0,"B"],
 ["Nature Reviews Clinical Oncology","1759-4774 1759-4782",94.6,"B"],
@@ -3580,7 +3600,7 @@ const J0 = [
 ];
 const defJ=()=>J0.map(([name,issn,IF,group])=>({name,issn:issn.split(/\s+/),IF,group,on:true}));
 /* saved lists from the JCR 2025 table are replaced by the JCR 2026 table; journals the user added are kept */
-let journals=ls.get("journals26",null)||defJ().concat((ls.get("journals",null)||[]).filter(j=>j.group==="C"));
+let journals=(ls.get("journals26",null)||defJ().concat((ls.get("journals",null)||[]).filter(j=>j.group==="C"))).filter(j=>j.group!=="J");
 const norm=s=>String(s||"").toLowerCase().replace(/^the\s+/,"").replace(/&/g,"and").replace(/[^a-z0-9가-힣]+/g," ").trim();
 let jIssn=new Map(),jName=new Map();
 function indexJ(){jIssn=new Map();jName=new Map();journals.forEach(j=>{j.issn.forEach(i=>i&&jIssn.set(i.toUpperCase(),j));jName.set(norm(j.name),j);});}
@@ -3588,7 +3608,7 @@ indexJ();
 function findJ(r){for(const i of r.issn||[]){const j=jIssn.get(String(i).toUpperCase());if(j)return j;}return jName.get(norm(r.journal))||null;}
 
 const Y=new Date().getFullYear();
-const O=Object.assign({fit:true,depth:1,src:{oa:true,epmc:true,pm:true,cr:true,s2:false},hif:true,gA:true,gB:false,minIF:9,y1:Y-5,y2:"",type:"all",oa:false,minSrc:1,profile:"balanced",sort:"rec",topic:"boost"},ls.get("sopt",{}));if(O.jmode!==undefined){if(O.jmode==="base")O.fit=false;delete O.jmode;}
+const O=Object.assign({fit:true,gJ:true,depth:1,src:{oa:true,epmc:true,pm:true,cr:true,s2:false},hif:true,gA:true,gB:false,minIF:9,y1:Y-5,y2:"",type:"all",oa:false,minSrc:1,profile:"balanced",sort:"rec",topic:"boost"},ls.get("sopt",{}));if(O.jmode!==undefined){if(O.jmode==="base")O.fit=false;delete O.jmode;}
 const PROFILES={ /* weights for Relevance, Impact, Newness, Provenance, Access; ifs = share of journal IF inside Impact */
   balanced:{R:.35,I:.25,N:.15,P:.15,A:.10,ifs:.4},prestige:{R:.30,I:.40,N:.10,P:.10,A:.10,ifs:.8},newest:{R:.30,I:.10,N:.40,P:.10,A:.10,ifs:.4},
   seminal:{R:.25,I:.50,N:.05,P:.15,A:.05,ifs:.2},systematic:{R:.30,I:.15,N:.10,P:.30,A:.15,ifs:.4},pdf:{R:.30,I:.15,N:.10,P:.10,A:.35,ifs:.4}};
@@ -3600,7 +3620,7 @@ let JF=ls.get("jfit",null),jfBusy="",jfErr="";
 const jfKeys=()=>new Set((JF&&JF.keys)||[]);
 /* the filter uses every set that is ticked, together: topic-fitted ∪ field core ∪ general ∪ journals added by hand */
 function activeJ(){const m=parseFloat(O.minIF)||0,k=O.fit?jfKeys():new Set();
-  return journals.filter(j=>j.on&&(j.IF||0)>=m&&(j.group==="C"||(O.gA&&j.group==="A")||(O.gB&&j.group==="B")||k.has(norm(j.name))));}
+  return journals.filter(j=>j.on&&(j.IF||0)>=m&&(j.group==="C"||(O.gA&&j.group==="A")||(O.gB&&j.group==="B")||(O.gJ&&j.group==="J")||k.has(norm(j.name))));}
 const strip=s=>String(s||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
 const qs=o=>Object.entries(o).filter(([,v])=>v!==undefined&&v!==""&&v!==null).map(([k,v])=>encodeURIComponent(k)+"="+encodeURIComponent(v)).join("&");
 
@@ -3618,6 +3638,7 @@ const SRC=[
   f.push("type:"+(o.type==="all"?(o.hif?"article|review":"article|review|preprint"):o.type));if(o.oa)f.push("open_access.is_oa:true");
   if(!o.hif)return oaGet({search:q,filter:f.join(","),"per-page":o.per});
   const issns=o.act.map(j=>j.issn[0]).filter(Boolean);let out=[];
+  if(issns.length>150){for(const pg of [1,2])out=out.concat(await oaGet({search:q,filter:f.join(","),"per-page":200,page:pg}));return out;}
   for(let i=0;i<issns.length;i+=50){out=out.concat(await oaGet({search:q,filter:f.concat("primary_location.source.issn:"+issns.slice(i,i+50).join("|")).join(","),"per-page":o.per}));}
   return out;}},
 {id:"epmc",async fn(q,o){
@@ -3770,12 +3791,12 @@ function render(progress){
 /* ---------- options ---------- */
 function readOpts(){
   O.src={};$$("#sSrc input").forEach(c=>O.src[c.value]=c.checked);
-  Object.assign(O,{hif:$("#sHif").checked,fit:$("#sJFitOn").checked,gA:$("#sGA").checked,gB:$("#sGB").checked,minIF:$("#sMinIF").value,y1:$("#sY1").value,y2:$("#sY2").value,type:$("#sType").value,oa:$("#sOA").checked,minSrc:$("#sMinSrc").value,profile:$("#sProfile").value,topic:$("#sTopic").value});
+  Object.assign(O,{hif:$("#sHif").checked,fit:$("#sJFitOn").checked,gJ:$("#sGJ").checked,gA:$("#sGA").checked,gB:$("#sGB").checked,minIF:$("#sMinIF").value,y1:$("#sY1").value,y2:$("#sY2").value,type:$("#sType").value,oa:$("#sOA").checked,minSrc:$("#sMinSrc").value,profile:$("#sProfile").value,topic:$("#sTopic").value});
   ls.set("sopt",O);$("#sJCount").textContent=`${activeJ().length}개 저널 선택됨`;
 }
 function writeOpts(){
   $$("#sSrc input").forEach(c=>c.checked=!!O.src[c.value]);
-  $("#sHif").checked=O.hif;$("#sJFitOn").checked=!!O.fit;$("#sGA").checked=O.gA;$("#sGB").checked=O.gB;$("#sMinIF").value=O.minIF;$("#sY1").value=O.y1;$("#sY2").value=O.y2;$("#sType").value=O.type;$("#sOA").checked=O.oa;$("#sMinSrc").value=O.minSrc;$("#sProfile").value=O.profile;$("#sTopic").value=O.topic||"boost";topicNote();
+  $("#sHif").checked=O.hif;$("#sJFitOn").checked=!!O.fit;$("#sGJ").checked=!!O.gJ;$("#sGA").checked=O.gA;$("#sGB").checked=O.gB;$("#sMinIF").value=O.minIF;$("#sY1").value=O.y1;$("#sY2").value=O.y2;$("#sType").value=O.type;$("#sOA").checked=O.oa;$("#sMinSrc").value=O.minSrc;$("#sProfile").value=O.profile;$("#sTopic").value=O.topic||"boost";topicNote();
   $$("#sDepth button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.v===+O.depth)));$$("#sSort button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===O.sort)));
   $("#sFacetBox").hidden=O.depth<2;$("#sJCount").textContent=`${activeJ().length}개 저널 선택됨`;drawFit();
 }
@@ -3797,6 +3818,73 @@ async function importJson(f){try{const d=JSON.parse(await f.text());if(!Array.is
   SS={q:d.q||"가져온 검색",pool:[],byDoi:new Map(),byT:new Map(),status:{imp:{n:d.records.length,err:""}},raw:d.raw||d.records.length,shown:25,sel:new Set(),view:[],nq:1,busy:false,notes:[]};
   d.records.forEach(r=>{const e={...r,k:"r"+(SS.pool.length+1),qs:new Set(r.qs||[0]),srcs:r.srcs||{imp:0.5},types:r.types||[r.type||"article"],issn:r.issn||[],authors:r.authors||[],abstract:r.abstract||"",cited:r.cited||0};SS.pool.push(e);if(e.doi)SS.byDoi.set(e.doi,e);});
   SS.nq=Math.max(1,...SS.pool.map(e=>e.qs.size));$("#sq").value=SS.q;render();HUB.toast(`${SS.pool.length}편을 가져왔어요`);}catch(e){HUB.toast("검색 결과 파일을 읽지 못했어요",4000);}}
+
+/* ---------- JCR import: the user's own export from Clarivate JCR (or a free SCImago CSV) ----------
+   Thousands of rows live in IndexedDB, not localStorage. Journals already in the base table get the JCR value;
+   the rest join as group "J" and are switched on/off with their own tick in the search rail. */
+const jdb=(()=>{let p;const open=()=>p||(p=new Promise((res,rej)=>{const r=indexedDB.open("research-hub-jcr",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}));
+  const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const t=db.transaction("kv",mode),r=fn(t.objectStore("kv"));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error);});};
+  return {get:k=>tx("readonly",s=>s.get(k)),set:(k,v)=>tx("readwrite",s=>s.put(v,k)),del:k=>tx("readwrite",s=>s.delete(k))};})();
+let JCR=ls.get("jcrmeta",null),jcrT=0;
+const issnN=x=>{const s=String(x||"").replace(/[^0-9Xx]/g,"").toUpperCase();return s.length===8?s.slice(0,4)+"-"+s.slice(4):"";};
+function mergeJcr(list){
+  journals=journals.filter(j=>j.group!=="J");indexJ();let upd=0;const add=[];
+  for(const x of list){const base=x.issn.map(i=>jIssn.get(i)).find(Boolean)||jName.get(norm(x.name));
+    if(base){if(x.IF>0){base.IF=x.IF;base.ifNote=x.note;}if(x.q)base.q=x.q;if(x.cat)base.cat=x.cat;upd++;}
+    else add.push({name:x.name,issn:x.issn,IF:x.IF,group:"J",on:x.on!==false,q:x.q||"",cat:x.cat||"",ifNote:x.note});}
+  journals=journals.concat(add);indexJ();return {upd,add:add.length};}
+const jcrSave=()=>{clearTimeout(jcrT);jcrT=setTimeout(()=>{jdb.set("list",journals.filter(j=>j.group==="J").map(j=>({name:j.name,issn:j.issn,IF:j.IF,q:j.q,cat:j.cat,note:j.ifNote,on:j.on}))).catch(()=>{});},400);};
+async function jcrLoad(){if(!JCR)return;try{const L=await jdb.get("list");if(L&&L.length){mergeJcr(L);saveJ(true);}}catch(e){}}
+/* plain CSV/TSV reader, so CSV files work even when the spreadsheet library could not be loaded */
+function csvRows(t,d){const R=[];let row=[],cell="",q=false;for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;}
+    else if(c==='"')q=true;else if(c===d){row.push(cell);cell="";}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(cell);R.push(row);row=[];cell="";}else cell+=c;}
+  if(cell||row.length){row.push(cell);R.push(row);}return R;}
+async function parseJcr(files){
+  const out=new Map();let year="",kind="",files_ok=0;const bad=[];
+  for(const f of files){const buf=await f.arrayBuffer();let sheets=[];
+    try{if(/\.(csv|txt|tsv)$/i.test(f.name)){let t=new TextDecoder("utf-8").decode(buf).replace(/^\uFEFF/,"");if(t.split("\uFFFD").length>4){try{t=new TextDecoder("euc-kr").decode(buf);}catch(e){}}
+        const first=t.split(/\r?\n/).slice(0,8).join("\n"),n=ch=>(first.match(ch)||[]).length,d=n(/;/g)>n(/,/g)?";":n(/\t/g)>n(/,/g)?"\t":",";
+        sheets=[csvRows(t,d)];}
+      else{if(!window.XLSX)throw new Error("xlsx");const wb=XLSX.read(new Uint8Array(buf),{type:"array"});sheets=wb.SheetNames.map(sn=>XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:"",raw:false}));}}
+    catch(e){bad.push(f.name+(e.message==="xlsx"?" (엑셀 읽기 도구를 못 불러옴 — CSV로 받아 올려 주세요)":""));continue;}
+    let got=0;
+    for(const rows of sheets){
+      const hi=rows.findIndex(r=>r.some(c=>/^(journal name|full journal title|journal title|title|journal)$/i.test(String(c).trim())));if(hi<0)continue;
+      const Hd=rows[hi].map(c=>String(c).trim()),col=re=>Hd.findIndex(h=>re.test(h));
+      const cN=col(/^(journal name|full journal title|journal title|title|journal)$/i),cI=col(/^(print )?issn$/i),cE=col(/^e-?issn$/i);
+      let cF=col(/^\d{4}\s*jif$/i),proxy=false;if(cF<0)cF=col(/^(\d{4}\s*)?journal impact factor$/i);if(cF<0)cF=col(/^impact factor$/i);
+      if(cF<0){cF=col(/cites\s*\/\s*doc\.?\s*\(\s*2\s*years?\s*\)/i);proxy=cF>=0;}
+      const yM=(cF>=0&&Hd[cF].match(/\d{4}/))||(rows.slice(0,hi).join(" ").match(/\b(20\d\d)\b/));if(yM&&!proxy)year=year||yM[0];
+      const cQ=col(/^jif quartile$|^quartile$|^sjr best quartile$/i),cC=col(/^categor(y|ies)$/i);
+      kind=kind||(proxy?"scimago":"jcr");
+      for(const r of rows.slice(hi+1)){const name=String(r[cN]||"").trim();if(!name||/copyright|clarivate|^\s*$/i.test(name)&&!r[cI])continue;
+        const issn=[...new Set([cI,cE].filter(c=>c>=0).flatMap(c=>String(r[c]||"").split(/[,;\s]+/)).map(issnN).filter(Boolean))];
+        let v=cF>=0?String(r[cF]||"").trim():"";v=v.replace(/^</,"");const IF=parseFloat(proxy?v.replace(",","."):v.replace(/,/g,""))||0;
+        if(!issn.length&&!IF)continue;
+        const key=issn[0]||norm(name),prev=out.get(key);
+        if(!prev||IF>prev.IF)out.set(key,{name,issn,IF:Math.round(IF*10)/10,q:cQ>=0?String(r[cQ]||"").trim():"",cat:cC>=0?String(r[cC]||"").trim().slice(0,160):"",note:proxy?"SCImago 2년 피인용(IF 아님)":"JCR"+(year?" "+year:"")});
+        got++;}}
+    if(got)files_ok++;else bad.push(f.name);}
+  if(!out.size)throw new Error("저널 목록을 찾지 못했어요. JCR이나 SCImago에서 내보낸 CSV·XLSX인지 확인하세요"+(bad.length?" ("+bad.join(", ")+")":""));
+  const list=[...out.values()];if(year)list.forEach(x=>{if(/^JCR$/.test(x.note))x.note="JCR "+year;});
+  return {list,year,kind,files:files_ok,bad};}
+async function jcrImport(files){const say=t=>{const st=$("#jJcrMsg");if(st)st.textContent=t;};
+  try{say("파일 읽는 중…");const r=await parseJcr([...files]);
+    let prev=[];try{prev=(await jdb.get("list"))||[];}catch(e){}
+    const m=new Map(prev.map(x=>[x.issn[0]||norm(x.name),x]));r.list.forEach(x=>m.set(x.issn[0]||norm(x.name),{...(m.get(x.issn[0]||norm(x.name))||{}),...x}));
+    const all=[...m.values()];await jdb.set("list",all);
+    const res=mergeJcr(all);JCR={at:Date.now(),n:all.length,year:r.year||(JCR&&JCR.year)||"",kind:r.kind,files:((JCR&&JCR.files)||0)+r.files};ls.set("jcrmeta",JCR);
+    O.gJ=true;ls.set("sopt",O);writeOpts();saveJ(true);renderJ();
+    say(`${all.length.toLocaleString()}개 저널을 넣었어요 (기존 표 IF 갱신 ${res.upd}개, 새로 추가 ${res.add.toLocaleString()}개)`+(r.bad.length?` · 못 읽은 파일: ${r.bad.join(", ")}`:""));
+    HUB.toast(`${r.kind==="scimago"?"SCImago":"JCR"} 목록 ${all.length.toLocaleString()}개를 넣었어요`,4500);}
+  catch(e){say("");HUB.toast(e.message||String(e),6000);}}
+function jcrHtml(){const n=journals.filter(j=>j.group==="J").length;
+  return JCR?`<p style="margin:0 0 6px"><b>${JCR.kind==="scimago"?"SCImago":"Clarivate JCR"} 목록</b> ${JCR.n.toLocaleString()}개 저널${JCR.year?` · ${JCR.year} JIF`:""} · ${new Date(JCR.at).toLocaleDateString("ko-KR",{month:"numeric",day:"numeric"})} 가져옴 · 기본 표에 없던 ${n.toLocaleString()}개는 'JCR 가져온 저널'로 들어가요</p>
+    <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm" type="button" id="jJcrBtn">파일 더 올리기</button><button class="btn sm ghost" type="button" id="jJcrDel">가져온 목록 지우기</button></div><p class="muted" id="jJcrMsg" style="margin:6px 0 0;font-size:12.5px"></p>`
+   :`<p style="margin:0 0 6px"><b>Clarivate JCR 저널 전체를 넣으려면</b> JCR에서 내보낸 파일을 올리세요. 기관 계정으로 <a href="https://jcr.clarivate.com/jcr/browse-journals" target="_blank" rel="noopener">jcr.clarivate.com</a> → Journals → (필요하면 Edition·Category로 거르기) → Export → CSV 또는 XLSX. 한 번에 내보낼 수 있는 줄 수가 모자라면 범주별로 여러 번 받아서 한꺼번에 올리면 합쳐져요.</p>
+    <p class="muted" style="margin:0 0 8px;font-size:12.5px">JCR 계정이 없으면 <a href="https://www.scimagojr.com/journalrank.php" target="_blank" rel="noopener">SCImago</a>의 무료 CSV(오른쪽 위 Download data)도 돼요. 이때는 IF 대신 2년 피인용 지표가 들어가요.</p>
+    <div class="row" style="gap:6px"><button class="btn sm primary" type="button" id="jJcrBtn">JCR·SCImago 파일 올리기</button></div><p class="muted" id="jJcrMsg" style="margin:6px 0 0;font-size:12.5px"></p>`;}
 
 /* ---------- journals that fit the research topic ----------
    OpenAlex: for each topic keyword, which journals published papers on it in the last five years (counted per journal).
@@ -3857,7 +3945,7 @@ function addSugg(i){const s=JF&&JF.sugg&&JF.sugg[i];if(!s)return;if(jName.has(no
 function drawFit(){
   const box=$("#sJFit");if(!box)return;box.hidden=!O.fit;
   const cnt=g=>journals.filter(j=>j.on&&j.group===g).length,setN=(id,t)=>{const e=$(id);if(e)e.textContent=t;};
-  setN("#sJFitN",JF&&JF.keys?`${JF.keys.length}개`:"아직 안 고름");setN("#sGAN",cnt("A")+"개");setN("#sGBN",cnt("B")+"개");
+  setN("#sJFitN",JF&&JF.keys?`${JF.keys.length}개`:"아직 안 고름");setN("#sGAN",cnt("A")+"개");setN("#sGBN",cnt("B")+"개");const nJ=journals.filter(j=>j.group==="J").length;setN("#sGJN",nJ.toLocaleString()+"개");const lj=$("#sGJL");if(lj)lj.hidden=!nJ;
   const ctx=String(HUB.lib.topic||""),stale=JF&&JF.topic!==ctx;
   const ed=`<form class="jftopic" id="sJTopicF" hidden><label class="sr" for="sJTopicIn">연구 주제</label><textarea id="sJTopicIn" rows="3">${esc(ctx)}</textarea><div class="row" style="gap:6px"><button class="btn sm primary" type="submit">저장하고 저널 다시 고르기</button><button class="btn sm ghost" type="button" data-jf="edit">취소</button></div></form>`;
   box.innerHTML=jfBusy?`<p class="muted jfline"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>${esc(jfBusy)}</p>`
@@ -3870,11 +3958,14 @@ function drawFit(){
 }
 
 /* ---------- journal manager ---------- */
-function renderJ(){const f=norm($("#jFilter").value),gl={A:"분야 중심",B:"전반",C:"직접 추가"},K=jfKeys(),sc=(JF&&JF.scores)||{};
+function renderJ(){const f=norm($("#jFilter").value),gl={A:"분야 중심",B:"전반",C:"직접 추가",J:"JCR"},K=jfKeys(),sc=(JF&&JF.scores)||{};
+  const jb=$("#jJcrBox");if(jb)jb.innerHTML=jcrHtml();
+  const CAP=400,fr=$("#jFilter").value.trim().toUpperCase();let shown=0,hit=0;
   const fb=$("#jFitBox");if(fb)fb.innerHTML=!JF?`<p style="margin:0">연구 주제에 맞는 저널을 아직 고르지 않았어요. <button class="btn sm primary" type="button" data-jf="run">내 주제로 저널 고르기</button></p>`:`<p style="margin:0 0 6px"><b>주제 맞춤</b> ${K.size}개 · ${esc(JF.topic.slice(0,80))} ${O.fit?`<span class="tag">필터에 쓰는 중</span>`:`<span class="tag">지금은 꺼 둠</span>`} <button class="btn sm" type="button" data-jf="run">다시 고르기</button></p>`+(JF.sugg&&JF.sugg.length?`<p class="muted" style="margin:6px 0 4px;font-size:12.5px">목록에 없지만 이 주제 논문이 많이 실린 저널${JF.method==="openalex"?" (괄호: OpenAlex 2년 평균 인용 — IF와 비슷하지만 같지 않아요)":" (AI 추천 — IF는 직접 확인해 주세요)"}</p><div class="row" style="gap:6px;flex-wrap:wrap">${JF.sugg.map((s,i)=>`<button class="chip" type="button" data-jsug="${i}" title="${esc([s.pub,s.issn&&s.issn.join(" "),s.why,s.n?"주제 논문 "+s.n+"편":""].filter(Boolean).join(" · "))}">+ ${esc(s.name)}${s.cites?` (${s.cites})`:""}${s.n?` · ${s.n}편`:""}</button>`).join("")}</div>`:"");
-  $("#jBody").innerHTML=journals.map((j,i)=>(f&&!norm(j.name).includes(f))?"":`<tr><td><input type="checkbox" data-jon="${i}" ${j.on?"checked":""} aria-label="${esc(j.name)} 사용"></td><td>${esc(j.name)}${j.ifNote?`<br><small class="muted">IF: ${esc(j.ifNote)}</small>`:""}</td><td><span class="tag">${gl[j.group]||j.group}</span></td><td>${K.has(norm(j.name))||(j.group==="C"&&JF)?`<span class="tag ok">맞춤</span>${sc[norm(j.name)]?`<small class="muted"> ${sc[norm(j.name)]}편</small>`:""}`:""}</td>
-    <td><input class="jif" type="number" step="0.1" data-jif="${i}" value="${j.IF}" aria-label="${esc(j.name)} IF"></td><td class="mono" style="font-size:12px">${esc(j.issn.join(" "))}</td><td>${j.group==="C"?`<button class="btn sm" type="button" data-jdel="${i}">삭제</button>`:""}</td></tr>`).join("");}
-function saveJ(){ls.set("journals26",journals);indexJ();$("#sJCount").textContent=`${activeJ().length}개 저널 선택됨`;drawFit();if(SS.pool.length&&!SS.busy)render();}
+  const rowsHtml=journals.map((j,i)=>{if(f&&!norm(j.name).includes(f)&&!(fr.length>=4&&j.issn.some(x=>x.includes(fr))))return "";hit++;if(++shown>CAP)return "";return `<tr><td><input type="checkbox" data-jon="${i}" ${j.on?"checked":""} aria-label="${esc(j.name)} 사용"></td><td>${esc(j.name)}${j.ifNote||j.q?`<br><small class="muted">${esc([j.ifNote&&"IF: "+j.ifNote,j.q,j.cat].filter(Boolean).join(" · ").slice(0,140))}</small>`:""}</td><td><span class="tag">${gl[j.group]||j.group}</span></td><td>${K.has(norm(j.name))||(j.group==="C"&&JF)?`<span class="tag ok">맞춤</span>${sc[norm(j.name)]?`<small class="muted"> ${sc[norm(j.name)]}편</small>`:""}`:""}</td>
+    <td><input class="jif" type="number" step="0.1" data-jif="${i}" value="${j.IF}" aria-label="${esc(j.name)} IF"></td><td class="mono" style="font-size:12px">${esc(j.issn.join(" "))}</td><td>${j.group==="C"||j.group==="J"?`<button class="btn sm" type="button" data-jdel="${i}">삭제</button>`:""}</td></tr>`;}).join("");
+  $("#jBody").innerHTML=rowsHtml+(hit>CAP?`<tr><td colspan="7" class="muted" style="text-align:center">${hit.toLocaleString()}개 중 ${CAP}개만 보여요 — 위 칸에 저널 이름이나 ISSN을 넣어 찾으세요</td></tr>`:"");}
+function saveJ(jcr){ls.set("journals26",journals.filter(j=>j.group!=="J"));indexJ();if(jcr!==true&&journals.some(j=>j.group==="J"))jcrSave();$("#sJCount").textContent=`${activeJ().length}개 저널 선택됨`;drawFit();if(SS.pool.length&&!SS.busy)render();}
 
 /* ---------- events ---------- */
 function init(){
@@ -3910,7 +4001,11 @@ function init(){
   $("#jFilter").addEventListener("input",renderJ);
   $("#jBody").addEventListener("change",e=>{const d=e.target.dataset;if(d.jon!==undefined)journals[+d.jon].on=e.target.checked;if(d.jif!==undefined)journals[+d.jif].IF=parseFloat(e.target.value)||0;saveJ();});
   $("#jBody").addEventListener("click",e=>{const d=e.target.closest("[data-jdel]");if(d){journals.splice(+d.dataset.jdel,1);saveJ();renderJ();}});
-  $("#jReset").addEventListener("click",()=>{journals=defJ().concat(journals.filter(j=>j.group==="C"));saveJ();renderJ();HUB.toast("기본 목록으로 복원했어요");});
+  $("#jModal").addEventListener("click",async e=>{if(e.target.id==="jJcrBtn"){$("#jJcrFile").click();return;}
+    if(e.target.id==="jJcrDel"){if(!confirm("가져온 JCR 목록을 지울까요? (기본 표에서 JCR 값으로 바뀐 IF는 그대로 남아요)"))return;try{await jdb.del("list");}catch(err){}JCR=null;ls.set("jcrmeta",null);journals=journals.filter(j=>j.group!=="J");saveJ(true);renderJ();HUB.toast("가져온 목록을 지웠어요");}});
+  $("#jJcrFile").addEventListener("change",e=>{const fs=e.target.files;if(fs&&fs.length)jcrImport(fs).then(()=>{e.target.value="";});});
+  jcrLoad();
+  $("#jReset").addEventListener("click",()=>{journals=defJ().concat(journals.filter(j=>j.group==="C"||j.group==="J"));saveJ();renderJ();HUB.toast("기본 목록으로 복원했어요");});
   $("#jAdd").addEventListener("click",()=>{const name=$("#jnName").value.trim(),issn=$("#jnIssn").value.trim(),IF=parseFloat($("#jnIF").value)||0;if(!name){$("#jnName").focus();return;}
     journals.push({name,issn:issn?issn.split(/[\s,]+/):[],IF,group:"C",on:true});$("#jnName").value=$("#jnIssn").value=$("#jnIF").value="";saveJ();renderJ();HUB.toast(name+" 추가됨");});
   render();
