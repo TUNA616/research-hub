@@ -769,8 +769,8 @@ html{scrollbar-gutter:stable}
     <button type="button" data-go="library">라이브러리<span class="n" id="navLib"></span></button>
     <button type="button" data-go="graph">관계도</button>
     <button type="button" data-go="research">리서치</button>
-    <button type="button" data-go="write">원고</button>
     <button type="button" data-go="mat">프로젝트·재료·방법·일정</button>
+    <button type="button" data-go="write">원고</button>
     <button type="button" data-go="illust">일러스트레이터</button>
     <button type="button" data-go="lookup">DB 조회</button>
     <button type="button" data-go="reports">보고서<span class="n" id="navRep"></span></button>
@@ -1498,7 +1498,7 @@ H.exportDoc=async function(kind,md,title){
 };
 
 /* ---------- navigation ---------- */
-const VIEWS=["home","search","library","graph","research","write","mat","illust","lookup","reports"];
+const VIEWS=["home","search","library","graph","research","mat","write","illust","lookup","reports"];
 H.view="home";
 H.go=function(v,silent){if(!VIEWS.includes(v))v="home";H.view=v;
   VIEWS.forEach(n=>{const el=$("#v-"+n);if(el)el.hidden=n!==v;});
