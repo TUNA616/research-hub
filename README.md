@@ -27,12 +27,12 @@
 | 찾는 순서 안내 | 홈에서 "in vitro에서 CKD 모델로 섬유화 기전을 보고 싶어"처럼 쓰면, 이 사이트의 어느 탭·어느 DB를 어떤 순서로 쓰면 되는지 4~8단계로 안내하고 각 단계에서 바로 조회·이동. AI가 없으면 일반적인 순서를 보여 줌. 보고서로 저장 가능 |
 | 새 논문 알림 | 검색어를 구독하면 그 주제로 새로 나온 논문만 홈에 모아 보여 줌 |
 | 관계도 | 논문 한 편을 중심으로 선행 연구, 후속 연구, 비슷한 연구를 한 장에 표시. 여러 논문을 한꺼번에 놓고 놓친 핵심 논문 찾기. 내 라이브러리를 키워드로 이은 지도 |
-| DB 조회 | 질문 한 줄을 쓰면 AI가 맞는 DB를 1~3개 골라 조회하고 그 결과를 근거로 답함(어느 DB를 어떤 검색어로 찾았는지 함께 표시). DB를 직접 골라 조회할 수도 있음(29종 · 이름으로 DB 찾기, 최근 조회 다시 보기, 같은 검색어로 관련 DB에 넘기기 포함). 조회가 실패하면 그 자리에서 같은 내용을 찾을 수 있는 사이트 바로가기를 보여 주고, '연결 점검' 버튼으로 어느 DB가 이 브라우저에서 연결되는지 한 번에 확인 가능. 독성·식품 위해(PubChem 독성·GHS, openFDA 식품 회수), 스포츠 도핑(약리 분류로 WADA 금지 범주 추정 — 확정 판정 아님), 마약류 검출 정보(이론 m/z, DEA 규제 기록, 스펙트럼 라이브러리 바로가기), 질량·스펙트럼(이름·분자식·펩타이드 서열로 이론 m/z와 흔한 이온 표, 동위원소 분포 그림, PubChem에 모인 실측 LC-MS/MS·GC-MS 봉우리 그림, UV 흡수, 역상 HPLC 참고), 기전 분석·발현(g:Profiler 유전자 목록 농축 분석, STRING 상호작용망과 망 그림, Human Protein Atlas 신장 조직·단일세포 발현), 생물활성(ChEMBL·PubChem BioAssay의 EC50·IC50·Ki·Kd를 표적별로 요약), 합성 생성물 예측(반응물 + 반응물 | 반응 종류로 생성물 분자식·분자량 계산, AI가 예측한 구조 그림과 SMILES, 예측 질량 스펙트럼). 유전자·서열(NCBI Gene, GenBank·RefSeq, Ensembl), 단백질·구조(UniProt, PDB), 변이(ClinVar, dbSNP), 경로(Reactome, KEGG), 암·면역·오믹스(GEO, GDC·TCGA, cBioPortal, Open Targets), 세포주(Cellosaurus: ATCC·DSMZ·JCRB·KCLB 분양 번호와 오염 경고), 항체(Antibody Registry: RRID, 판매처·카탈로그), 동물 모델(Alliance: 질환·유전자별 모델, IMSR·JAX 분양 찾기), 화합물(PubChem), 문헌·임상(PubMed, ClinicalTrials.gov). 그 밖에 ENA, DDBJ, EGA, JGA, dbGaP, GWAS Catalog, COSMIC, DepMap, ImmPort, IEDB, 국내 공공 바이오 데이터 포털 등은 검색 화면으로 바로 이동 |
+| DB 조회 | 질문 한 줄을 쓰면 AI가 맞는 DB를 1~3개 골라 조회하고 그 결과를 근거로 답함(어느 DB를 어떤 검색어로 찾았는지 함께 표시). DB를 직접 골라 조회할 수도 있음(34종 · 이름으로 DB 찾기, 최근 조회 다시 보기, 같은 검색어로 관련 DB에 넘기기 포함). 조회가 실패하면 그 자리에서 같은 내용을 찾을 수 있는 사이트 바로가기를 보여 주고, '연결 점검' 버튼으로 어느 DB가 이 브라우저에서 연결되는지 한 번에 확인 가능. 독성·식품 위해(PubChem 독성·GHS, openFDA 식품 회수), 스포츠 도핑(약리 분류로 WADA 금지 범주 추정 — 확정 판정 아님), 마약류 검출 정보(이론 m/z, DEA 규제 기록, 스펙트럼 라이브러리 바로가기), 질량·스펙트럼(이름·분자식·펩타이드 서열로 이론 m/z와 흔한 이온 표, 동위원소 분포 그림, PubChem에 모인 실측 LC-MS/MS·GC-MS 봉우리 그림, UV 흡수, 역상 HPLC 참고), 기전 분석·발현(g:Profiler 유전자 목록 농축 분석, STRING 상호작용망과 망 그림, Human Protein Atlas 신장 조직·단일세포 발현, CELLxGENE 단일세포 데이터셋 목록과 Census 코드, KPMP 신장 조직 지도 바로가기), 표적–리간드 약리(IUPHAR/BPS Guide to PHARMACOLOGY의 pKi·pIC50), PROTAC·분해제(PROTAC-DB 바로가기와 표적·E3별 분해제 논문), 원문 오픈액세스 찾기(Unpaywall 또는 OpenAlex로 DOI·제목에서 읽을 수 있는 PDF 찾기), 생물활성(ChEMBL·PubChem BioAssay의 EC50·IC50·Ki·Kd를 표적별로 요약), 합성 생성물 예측(반응물 + 반응물 | 반응 종류로 생성물 분자식·분자량 계산, AI가 예측한 구조 그림과 SMILES, 예측 질량 스펙트럼). 유전자·서열(NCBI Gene, GenBank·RefSeq, Ensembl), 단백질·구조(UniProt, PDB), 변이(ClinVar, dbSNP), 경로(Reactome, KEGG), 암·면역·오믹스(GEO, GDC·TCGA, cBioPortal, Open Targets), 세포주(Cellosaurus: ATCC·DSMZ·JCRB·KCLB 분양 번호와 오염 경고), 항체(Antibody Registry: RRID, 판매처·카탈로그), 동물 모델(Alliance: 질환·유전자별 모델, IMSR·JAX 분양 찾기), 화합물(PubChem), 문헌·임상(PubMed, ClinicalTrials.gov). 그 밖에 ENA, DDBJ, EGA, JGA, dbGaP, GWAS Catalog, COSMIC, DepMap, ImmPort, IEDB, 국내 공공 바이오 데이터 포털 등은 검색 화면으로 바로 이동 |
 
 ### ② 모으고 읽기
 | 화면 | 할 수 있는 일 |
 |---|---|
-| 라이브러리 | PDF, Word, 한글(HWPX), PPT, 엑셀 파일을 넣으면 요약, 연구 노트, 핵심 용어, Figure, 표를 정리. 주제 폴더 자동 분류, 즐겨찾기, 읽기 상태, 읽기 노트, 용어집 |
+| 라이브러리 | 프로젝트별로 걸러 보기(실험실 탭·리서치와 같은 프로젝트 선택을 함께 써서, 한 곳에서 고르면 다른 곳도 같이 바뀜), 논문마다 프로젝트 지정, 체크해서 여러 편 고른 뒤 리서치로 보내거나 프로젝트에 한꺼번에 넣기. 목록은 따로 스크롤되어 읽던 위치가 유지되고, 읽는 화면에서 이전·다음 논문으로 바로 이동. PDF, Word, 한글(HWPX), PPT, 엑셀 파일을 넣으면 요약, 연구 노트, 핵심 용어, Figure, 표를 정리. 주제 폴더 자동 분류, 즐겨찾기, 읽기 상태, 읽기 노트, 용어집 |
 | 원문 읽기 | PDF를 띄워 놓고 설명, 번역, 질문. 답변의 쪽 버튼을 누르면 근거 문장 표시. 여러 색 형광펜, 참고문헌 찾기 |
 | Figure·표 | 그림과 표 자동 추출, AI 설명, 그래프에서 수치를 읽어 표로 만들기 |
 | 서지 도구 | RIS, BibTeX, EndNote, PubMed(nbib), CSL-JSON 가져오기와 내보내기. 12개 인용 양식(APA, Vancouver, AMA, Nature, Science, Cell, ACS, Wiley, RSC, Elsevier, IEEE, Harvard). 중복 정리, 철회·정정 확인 |
@@ -90,6 +90,8 @@ AI를 쓰는 기능은 설정에 넣은 본인 API 키로 실행됩니다. 키�
 | Anthropic API 키 | 요약, 번역, 질문, 리서치 도구, 원고 다듬기, 벡터 모식도, 재료 사진 읽기, 과제 문서 초안과 평가 | console.anthropic.com |
 | Google AI API 키 | 이미지 생성(Google). Anthropic 키가 없으면 요약·분석도 이 키로 실행 | aistudio.google.com |
 | OpenAI API 키 | 이미지 생성(OpenAI) | platform.openai.com |
+| Unpaywall 이메일 (키 아님) | DB 조회의 원문 오픈액세스 찾기. 비우면 OpenAlex 정보로 찾음 | unpaywall.org/products/api |
+| GtoPdb API 키 | DB 조회의 표적–리간드 약리 (2026년 8월 말부터 키 필요) | guidetopharmacology.org |
 | OpenAlex, Semantic Scholar 키 | 검색이 막히거나 느릴 때만 (선택) | 각 서비스 |
 
 - 키가 하나도 없어도 쓸 수 있습니다. AI가 필요한 곳에서 **복사·붙여넣기 방식**이 뜨고, 프롬프트를 Claude나 다른 AI 대화창에 붙여 넣은 뒤 답을 다시 붙여 넣으면 됩니다.
