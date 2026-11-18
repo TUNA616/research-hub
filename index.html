@@ -1066,7 +1066,7 @@ html{height:100%}body{height:auto;min-height:100%}
       <label class="field" for="cfgAiKey">Anthropic API 키 (선택 · 내려받은 파일에서 요약과 분석을 자동으로 돌릴 때)
         <input id="cfgAiKey" type="password" autocomplete="off" placeholder="sk-ant-… 이 브라우저에만 저장돼요"></label>
       <label class="field" for="cfgAiModel">API 모델 이름<input id="cfgAiModel" autocomplete="off"></label>
-      <label class="field" for="cfgGKey">Google AI API 키 (선택 · 일러스트레이터 이미지 생성에 쓰고, Anthropic 키가 없으면 요약·분석도 이 키로 자동 실행)
+      <label class="field" for="cfgGKey">Google AI API 키 (선택 · 일러스트레이터 이미지 생성에 쓰고, Anthropic 키가 없으면 요약·분석도 이 키로 자동 실행 · 모델 이름은 안 적어도 돼요)
         <input id="cfgGKey" type="password" autocomplete="off" placeholder="이 브라우저에만 저장돼요"></label>
       <label class="field" for="cfgOKey">OpenAI API 키 (선택 · 일러스트레이터의 '이미지 생성 (OpenAI)'에 써요)
         <input id="cfgOKey" type="password" autocomplete="off" placeholder="이 브라우저에만 저장돼요"></label>
@@ -1138,6 +1138,8 @@ const ls={get(k,d){try{const v=localStorage.getItem("hub:"+k);return v==null?d:J
 const H={u:{$,$$,esc,uid,ls}};
 H.embedded=!!(window.claude&&window.claude.use);
 H.cfg=Object.assign({aiKey:"",aiModel:"claude-sonnet-5-5",oaKey:"",s2Key:"",gKey:"",gImg:"",gTxt:""},ls.get("cfg",{}));
+/* older builds saved their default Gemini model names into the settings; those names are retired, so let the automatic choice take over */
+if(["gemini-3-pro-image-preview","gemini-2.5-flash-image-preview"].includes(H.cfg.gImg))H.cfg.gImg="";if(H.cfg.gTxt==="gemini-2.5-flash")H.cfg.gTxt="";
 H.storage="browser";
 
 /* ---------- small UI helpers ---------- */
@@ -1286,15 +1288,27 @@ async function viaKey(input,opts){
   const text=(j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");if(opts.onText)opts.onText(text);
   return opts.raw?{text,truncated:j.stop_reason==="max_tokens"}:text;
 }
+/* Google AI: the model name is optional. Empty → the first model below that answers; a retired or mistyped name falls through to the next one. */
+H.GEM={txt:["gemini-3.5-flash","gemini-2.5-flash","gemini-flash-latest"],img:["gemini-3-pro-image","gemini-3.1-flash-image","gemini-2.5-flash-image"]};
+const gemOk={},gemWarned={};
+H.gemFetch=async(kind,body,signal)=>{
+  const want=((kind==="img"?H.cfg.gImg:H.cfg.gTxt)||"").trim();
+  const list=[...new Set([want,gemOk[kind],...H.GEM[kind]].filter(Boolean))];let last;
+  for(const model of list){let r,j;
+    try{r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",{method:"POST",signal,headers:{"content-type":"application/json","x-goog-api-key":H.cfg.gKey},body:JSON.stringify(body)});j=await r.json().catch(()=>null);}
+    catch(e){if(e&&e.name==="AbortError")throw{code:"cancelled",message:"취소했어요"};throw{code:"network",message:H.embedded?"claude.ai 안에서는 Google AI에 연결할 수 없어요. 내려받은 HTML 파일이나 GitHub 주소에서 쓰세요.":"Google AI에 연결하지 못했어요"};}
+    if(r.ok){gemOk[kind]=model;if(want&&model!==want&&!gemWarned[kind]){gemWarned[kind]=1;H.toast(`설정한 모델 '${want}'을 쓸 수 없어서 '${model}'로 대신 썼어요`,6000);}return{j,model};}
+    const msg=(j&&j.error&&j.error.message)||String(r.status);
+    last={code:r.status===429?"rate_limited":"api_error",message:"Google AI 오류 ("+model+"): "+msg};
+    if(r.status===401||r.status===403||(r.status===400&&/api key/i.test(msg)))throw{code:"api_error",message:"Google AI 키가 맞지 않거나 이 키로 쓸 수 없어요: "+msg};
+    if(!(r.status===404||/not found|not supported|deprecat|no longer|not available|unknown model|invalid model|retired|shut ?down/i.test(msg)))throw last;}
+  throw last;};
 async function viaGem(input,opts){
   const msgs=typeof input==="string"?[{role:"user",content:input}]:input;
   const contents=msgs.map(m=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]}));
   if(opts.images&&opts.images.length){const b64=b=>new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(",")[1]);fr.onerror=rej;fr.readAsDataURL(b);});
     const last=contents[contents.length-1];for(const im of opts.images)last.parts.unshift({inline_data:{mime_type:im.type||"image/png",data:await b64(im)}});}
-  let r,j;const model=H.cfg.gTxt||"gemini-2.5-flash";
-  try{r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",{method:"POST",signal:opts.signal,headers:{"content-type":"application/json","x-goog-api-key":H.cfg.gKey},body:JSON.stringify({contents})});j=await r.json();}
-  catch(e){throw{code:"network",message:"Google AI에 연결하지 못했어요"};}
-  if(!r.ok)throw{code:r.status===429?"rate_limited":"api_error",message:"Google AI 오류 ("+model+"): "+((j&&j.error&&j.error.message)||r.status)};
+  const {j}=await H.gemFetch("txt",{contents},opts.signal);
   const text=((((j.candidates||[])[0]||{}).content||{}).parts||[]).filter(p=>p.text&&!p.thought).map(p=>p.text).join("");
   if(!text)throw{code:"api_error",message:"Google AI가 빈 답을 보냈어요"};
   if(opts.onText)opts.onText(text);return opts.raw?{text,truncated:((j.candidates||[])[0]||{}).finishReason==="MAX_TOKENS"}:text;
@@ -5590,14 +5604,12 @@ ${cur.svg}`;
 
 /* ---------- image engine: PaperBanana-style loop (plan + style → render → critique → re-render) on the Gemini API ----------
    Works only where the page may reach Google (the downloaded file), with the person's own Google AI key. */
-const G=()=>({key:HUB.cfg.gKey||"",img:HUB.cfg.gImg||"gemini-3-pro-image-preview",txt:HUB.cfg.gTxt||"gemini-2.5-flash"});
+/* img/txt name the kind of model; the actual Gemini model is picked in HUB.gemFetch (settings value first, then automatic) */
+const G=()=>({key:HUB.cfg.gKey||"",img:"img",txt:"txt"});
 const b64Of=blob=>new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(",")[1]);fr.onerror=rej;fr.readAsDataURL(blob);});
 function blobOf(b64,mime){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:mime||"image/png"});}
-async function gem(model,parts,cfg){
-  let r,j;
-  try{r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",{method:"POST",headers:{"content-type":"application/json","x-goog-api-key":G().key},body:JSON.stringify({contents:[{role:"user",parts}],generationConfig:cfg||{}})});j=await r.json();}
-  catch(e){throw{message:HUB.embedded?"claude.ai 안에서는 Google AI에 연결할 수 없어요. 내려받은 HTML 파일에서 쓰세요.":"Google AI에 연결하지 못했어요"};}
-  if(!r.ok)throw{message:"Google AI 오류 ("+model+"): "+((j&&j.error&&j.error.message)||r.status)};
+async function gem(kind,parts,cfg){
+  const {j}=await HUB.gemFetch(kind,{contents:[{role:"user",parts}],generationConfig:cfg||{}});
   const ps=(((j.candidates||[])[0]||{}).content||{}).parts||[];const ip=ps.map(p=>p.inlineData||p.inline_data).find(Boolean);
   return{text:ps.filter(p=>p.text&&!p.thought).map(p=>p.text).join(""),img:ip?{b64:ip.data,mime:ip.mimeType||ip.mime_type||"image/png"}:null};
 }
@@ -5922,7 +5934,7 @@ function render(){
         <p class="muted" style="margin:0;font-size:13px">설명문은 연결된 글 AI가 짜고, 그림은 OpenAI 이미지 모델이 그려요. '이 그림 고치기'도 같은 모델로 해요. 일부 모델은 OpenAI에서 조직 인증을 해야 쓸 수 있어요.</p>`:""}
       ${ST.engine==="img"?(HUB.embedded?`<div class="note-bar warn">claude.ai 안에서는 Google AI에 연결할 수 없어요. 이미지 생성은 내려받은 HTML 파일에서 쓰세요.</div>`:"")+`${G().key?`<div class="usebar"><b>Google AI 키</b> 입력돼 있어서 바로 써요</div>`:""}
         <details ${G().key?"":"open"}><summary class="muted" style="cursor:pointer;font-size:14px">${G().key?"키·모델 바꾸기":"Google AI 키 넣기"}</summary><div class="vstack" style="margin-top:10px"><label class="field" for="ilGKey">Google AI API 키 (aistudio.google.com에서 발급 · 이 브라우저에만 저장)<input id="ilGKey" type="password" autocomplete="off" value="${esc(G().key)}"></label>
-        <div class="opt3"><label class="field" for="ilGImg">이미지 모델<input id="ilGImg" value="${esc(G().img)}"></label><label class="field" for="ilGTxt">설명·검토 모델<input id="ilGTxt" value="${esc(G().txt)}"></label></div></div></details>
+        <div class="opt3"><label class="field" for="ilGImg">이미지 모델<input id="ilGImg" value="${esc(HUB.cfg.gImg||"")}" placeholder="비워 두면 자동 (${esc(HUB.GEM.img[0])})"></label><label class="field" for="ilGTxt">설명·검토 모델<input id="ilGTxt" value="${esc(HUB.cfg.gTxt||"")}" placeholder="비워 두면 자동 (${esc(HUB.GEM.txt[0])})"></label></div></div></details>
         <div class="opt3">${opt("ilRounds","검토 후 다시 그리기",[["0","안 함"],["1","1번"],["2","2번"],["3","3번"]],String(ST.rounds))}</div>`:""}`}
     ${k.noai?`<div class="opt3">${opt("ilCtype","그래프 종류",[["bar","막대 + 점"],["scatter","점 + 평균선"],["box","상자 그림"],["grouped","묶음 막대 (2요인)"],["line","꺾은선 (시간·농도)"],["fit","곡선 맞춤 (XY)"],["surv","생존 곡선"]],ST.ctype)}
         ${["bar","scatter","box"].includes(ST.ctype)?opt("ilSig","통계 검정",[["none","안 함"],["tukey","분산분석 + Tukey (모든 쌍)"],["dunnett","분산분석 + Dunnett (첫 그룹 대조)"],["ctrl","Welch t + Holm (첫 그룹과)"],["all","Welch t + Holm (모든 쌍)"]],ST.sig):ST.ctype==="grouped"?opt("ilSig","유의성 표시",[["none","분산분석 표만"],["within","그룹 안에서 첫 계열과 비교"]],ST.sig==="none"?"none":"within"):ST.ctype==="fit"?opt("ilModel","모형",Object.entries(MODELS).map(([a,m])=>[a,m.name]),ST.model):""}
