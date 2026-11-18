@@ -795,6 +795,12 @@ html{scrollbar-gutter:stable}
   --accent:#88c4ae;--accent-ink:#0f1d18;--accent-soft:#1c2c26;--mark:#cfae4c;--mark-ink:#1d1600;--ok:#7fc79a;--warn:#e0a640;--err:#ef8a7e;--err-soft:#3a201c;--gold:#e0b55c;--gold-soft:#352b17;--shadow:none}
 html{height:100%}body{height:auto;min-height:100%}
 ::selection{background:var(--mark);color:var(--mark-ink)}
+#rdPages ::selection{color:transparent;background:transparent}
+#rdPages .textLayer span::selection{color:transparent;background:rgba(29,85,70,.28)}
+.textLayer span.hl-me::selection{background:rgba(29,85,70,.38)}
+#rdBar .hlerase{border:1px solid rgba(255,255,255,.35)!important;border-radius:4px!important;margin-left:4px;font-size:12px!important;padding:4px 8px!important}
+#rdBar.onmark>button:not(.hlerase){display:none}#rdBar.onmark .hlpick{border:0}
+.textLayer span.hl-me{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 /* header and tabs: a rule under the page title, the open tab underlined like a ledger index */
 .top{background:var(--surface);border-bottom:1px solid var(--line2)}
@@ -1090,7 +1096,7 @@ html{height:100%}body{height:auto;min-height:100%}
     <aside class="rdside"><div class="seg" id="rdTabs"><button type="button" data-rdtab="help">설명·번역</button><button type="button" data-rdtab="qa">질문</button><button type="button" data-rdtab="trans">쪽 번역</button><button type="button" data-rdtab="marks">핵심 문장</button><button type="button" data-rdtab="refs">참고문헌</button></div>
       <div class="rdpanel" id="rdPanel"></div></aside></div>
 </div></div>
-<div id="rdBar" hidden><button type="button" data-rdsel="explain">설명</button><button type="button" data-rdsel="trans">번역</button><button type="button" data-rdsel="ask">질문</button><span class="hlpick" role="group" aria-label="형광펜 색"><button type="button" class="cdot hlc-y" data-rdsel="mark-y" aria-label="노랑 형광펜"></button><button type="button" class="cdot hlc-g" data-rdsel="mark-g" aria-label="초록 형광펜"></button><button type="button" class="cdot hlc-b" data-rdsel="mark-b" aria-label="파랑 형광펜"></button><button type="button" class="cdot hlc-p" data-rdsel="mark-p" aria-label="분홍 형광펜"></button><button type="button" class="cdot hlc-o" data-rdsel="mark-o" aria-label="주황 형광펜"></button></span><button type="button" data-rdsel="latex">수식</button><button type="button" data-rdsel="cite">인용 찾기</button></div>
+<div id="rdBar" hidden><button type="button" data-rdsel="explain">설명</button><button type="button" data-rdsel="trans">번역</button><button type="button" data-rdsel="ask">질문</button><span class="hlpick" role="group" aria-label="형광펜 색"><button type="button" class="cdot hlc-y" data-rdsel="mark-y" aria-label="노랑 형광펜"></button><button type="button" class="cdot hlc-g" data-rdsel="mark-g" aria-label="초록 형광펜"></button><button type="button" class="cdot hlc-b" data-rdsel="mark-b" aria-label="파랑 형광펜"></button><button type="button" class="cdot hlc-p" data-rdsel="mark-p" aria-label="분홍 형광펜"></button><button type="button" class="cdot hlc-o" data-rdsel="mark-o" aria-label="주황 형광펜"></button><button type="button" class="hlerase" data-rdsel="unmark" title="고른 곳의 내 형광펜 지우기">지우기</button></span><button type="button" data-rdsel="latex">수식</button><button type="button" data-rdsel="cite">인용 찾기</button></div>
 
 <div class="modal" id="jModal" hidden><div class="dialog">
   <header><h2>저널 관리</h2><button class="btn ghost" type="button" data-close="jModal">닫기</button></header>
@@ -2729,6 +2735,7 @@ async function openReader(p,page){
   if(R.doc){try{R.doc.destroy();}catch(e){}}
   if(!TR.has(p.id))TR.set(p.id,{});
   R={p,doc:null,scale:1.3,text:{},tab:R.p&&R.p.id===p.id?R.tab:"help",help:null,trans:TR.get(p.id),refs:null,sel:null,busy:false,gen:R.gen+1};
+  {const d=dedupeMarks(p.marks);if(p.marks&&d.length!==p.marks.length){try{await store.update(p.id,{marks:d});}catch(e){}}}
   R.doc=await pdfjsLib.getDocument({data:new Uint8Array(buf.slice(0)),isEvalSupported:false,useSystemFonts:true}).promise;
   $("#readerModal").hidden=false;$("#rdTitle").textContent=p.title||p.origName;
   const p1=await R.doc.getPage(1);const w=p1.getViewport({scale:1}).width;R.scale=Math.max(0.6,Math.min(1.35,($("#rdPages").clientWidth-30)/w));
@@ -2771,7 +2778,24 @@ function applyMarks(n){
   ((curP()||{}).marks||[]).filter(m=>m.page===n).forEach(m=>{matchSpans(layer,m.quote).forEach(x=>x.classList.add("hl","hl-"+m.kind,...(m.kind==="me"?["hlc-"+(m.color||"y")]:[])));});
 }
 const redrawMarks=()=>$$("#rdPages .rdpage[data-done]").forEach(d=>applyMarks(+d.dataset.p));
-async function saveMarks(marks){const p=curP();await store.update(p.id,{marks:marks.slice(0,80)});setTimeout(()=>{redrawMarks();if(R.tab==="marks")panel();},60);}
+/* the same stroke saved twice is one stroke */
+const markKey=m=>[m.page,m.kind,m.kind==="me"?"":m.color||"",nz(m.quote)].join("|");
+const dedupeMarks=L=>{const seen=new Map();(L||[]).forEach(m=>{if(m&&m.quote)seen.set(markKey(m),m);});return [...seen.values()];};
+/* which of my highlights on this page touch the given text (by the text-layer spans they paint) */
+function meOverlap(marks,page,quote){const layer=$(`#rdPages .rdpage[data-p="${page}"] .textLayer`);
+  const qs=layer?new Set(matchSpans(layer,quote)):null,q=nz(quote);
+  return marks.map((m,i)=>({m,i})).filter(({m})=>m.kind==="me"&&m.page===page).map(o=>{const mq=nz(o.m.quote);
+    if(qs&&qs.size){const ms=new Set(matchSpans(layer,o.m.quote));const inter=[...ms].filter(x=>qs.has(x)).length;return {...o,inter,covers:ms.size>0&&inter===qs.size,inside:ms.size>0&&inter===ms.size};}
+    const inter=mq.includes(q)||q.includes(mq)?1:0;return {...o,inter,covers:mq.includes(q),inside:q.includes(mq)};}).filter(o=>o.inter>0);}
+async function addMine(page,quote,color){const p=curP();let L=dedupeMarks(p.marks);const ov=meOverlap(L,page,quote);
+  const cov=ov.filter(o=>o.covers);
+  if(cov.length){const same=cov.some(o=>(o.m.color||"y")===color);const ids=new Set(cov.map(o=>o.i));
+    L=same?L.filter((_,i)=>!ids.has(i)):L.map((m,i)=>ids.has(i)?{...m,color}:m);await saveMarks(L);toast(same?"형광펜을 지웠어요":"형광펜 색을 바꿨어요");return;}
+  const inner=new Set(ov.filter(o=>o.inside).map(o=>o.i));L=L.filter((_,i)=>!inner.has(i));
+  await saveMarks(L.concat([{page,quote:quote.slice(0,500),kind:"me",color,why:""}]));}
+async function eraseMine(page,quote){const p=curP();const L=dedupeMarks(p.marks),ids=new Set(meOverlap(L,page,quote).map(o=>o.i));
+  if(!ids.size){toast("지울 형광펜이 없어요");return;}await saveMarks(L.filter((_,i)=>!ids.has(i)));toast(`형광펜 ${ids.size}개를 지웠어요`);}
+async function saveMarks(marks){const p=curP();await store.update(p.id,{marks:dedupeMarks(marks).slice(-400)});setTimeout(()=>{redrawMarks();if(R.tab==="marks")panel();},60);}
 async function autoMark(){
   const p=curP();if(R.busy)return;R.busy=true;panel();
   try{const text=await getText(p);if(!text)throw{message:"원문을 찾을 수 없어요"};
@@ -2823,7 +2847,8 @@ ${around.slice(0,3000)}`,q);
 
 같은 쪽 본문:
 ${around}`,q);
-  if(kind.startsWith("mark")){await saveMarks(((p.marks)||[]).concat([{page:s.page,quote:s.text.slice(0,500),kind:"me",color:kind.split("-")[1]||"y",why:""}]));window.getSelection().removeAllRanges();return;}
+  if(kind.startsWith("mark")){await addMine(s.page,s.text,kind.split("-")[1]||"y");window.getSelection().removeAllRanges();R.sel=null;return;}
+  if(kind==="unmark"){await eraseMine(s.page,s.text);window.getSelection().removeAllRanges();R.sel=null;return;}
   if(kind==="ask"){R.tab="qa";panel();const i=$("#rdPanel [data-qaform] input");if(i){i.value=`"${s.text.slice(0,300)}" — 이 부분에서 `;i.focus();}return;}
   if(kind==="cite"){R.tab="refs";await loadRefs();R.refOpen=findRef(s.text);panel();if(!R.refOpen&&R.refs&&R.refs.length)toast(R.refStyle==="ay"?"고른 글자에서 저자 이름을 찾지 못했어요":"고른 글자에 해당하는 참고문헌 번호가 없어요");if(R.refOpen){const el=$(`#rdPanel [data-ref="${R.refOpen}"]`);if(el){el.scrollIntoView({block:"center"});lookupRef(R.refOpen);}}}
 }
@@ -3008,7 +3033,13 @@ function panel(){
 function initReader(){
   const M=$("#readerModal"),bar=$("#rdBar"),box=$("#rdPages");
   box.addEventListener("scroll",()=>{showPg();bar.hidden=true;},{passive:true});
-  const onSel=()=>setTimeout(()=>{const s=window.getSelection();const t=s&&s.toString().trim();
+  let downAt=null;box.addEventListener("mousedown",e=>{downAt=e.target;});
+  const onSel=ev=>setTimeout(()=>{const s=window.getSelection();const t=s&&s.toString().trim();
+    if((!t||t.length<2)&&ev&&ev.target&&ev.target.closest&&ev.target===downAt){const sp=ev.target.closest(".textLayer span.hl-me");
+      if(sp){const pg=sp.closest(".rdpage"),n=+pg.dataset.p,layer=pg.querySelector(".textLayer");const m=dedupeMarks(curP().marks).find(x=>x.kind==="me"&&x.page===n&&matchSpans(layer,x.quote).includes(sp));
+        if(m){R.sel={text:m.quote,page:n,mark:true};const r=sp.getBoundingClientRect();bar.hidden=false;bar.classList.add("onmark");
+          bar.style.top=Math.min(window.innerHeight-bar.offsetHeight-8,r.bottom+8)+"px";bar.style.left=Math.max(8,Math.min(window.innerWidth-bar.offsetWidth-8,r.left))+"px";return;}}}
+    bar.classList.remove("onmark");
     if(!t||t.length<2||!s.rangeCount||!box.contains(s.anchorNode)){bar.hidden=true;return;}
     const pg=(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement).closest(".rdpage");if(!pg){bar.hidden=true;return;}
     R.sel={text:t.replace(/\s+/g," "),page:+pg.dataset.p};const r=s.getRangeAt(0).getBoundingClientRect();bar.hidden=false;
