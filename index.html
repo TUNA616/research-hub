@@ -845,6 +845,28 @@ html{height:100%}body{height:auto;min-height:100%}
 .side{background:var(--surface)}
 .item[aria-current="true"]{background:var(--accent-soft);border-left-color:var(--accent)}
 .item .yr{font-family:var(--f-mono);color:var(--faint)}
+
+#dbHist:empty{display:none}
+/* DB 직접 고르기: one tidy card per group, laid out in balanced columns */
+.dbseg{display:block;columns:4 232px;column-gap:12px}
+.dbgrp{display:flex;flex-direction:column;align-items:stretch;gap:4px;break-inside:avoid;margin:0 0 12px;padding:10px 10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.dbgrp>span{min-width:0!important;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--accent);padding:0 4px 4px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.dbgrp .chip{width:100%;justify-content:flex-start;text-align:left;white-space:normal;line-height:1.35;min-height:34px;padding:6px 10px;border-radius:7px;border-color:transparent;background:transparent}
+.dbgrp .chip:hover{background:var(--surface);border-color:var(--line2)}
+.dbgrp .chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+/* 일러스트레이터: equal-height kind cards, drawing methods as a grouped list */
+.kgrid{grid-auto-rows:1fr}
+.egrp{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.eset{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper)}
+.esub{font-size:12px;font-weight:600;color:var(--accent);padding:8px 12px;border-bottom:1px solid var(--line);background:var(--surface)}
+.erow{display:grid;grid-template-columns:18px 1fr;align-items:center;column-gap:10px;row-gap:1px;padding:10px 12px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left;cursor:pointer;color:inherit;font:inherit}
+.esub+.erow{border-top:0}
+.erow:hover{background:var(--surface)}
+.erow i{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line2);box-sizing:border-box}
+.erow b{font-size:14.5px;white-space:nowrap}
+.erow span{grid-column:2;font-size:12.5px;color:var(--muted);line-height:1.4}
+.erow[aria-pressed="true"]{background:var(--accent-soft)}
+.erow[aria-pressed="true"] i{border:5px solid var(--accent)}
 </style>
 </head>
 <body>
@@ -5275,7 +5297,7 @@ function renderLookup(){
   const hit=k=>!dbF||((DB[k].label||"")+" "+DB[k].name+" "+DB[k].g+" "+(DB[k].ph||"")).toLowerCase().includes(dbF);
   const fi=$("#dbFilter");if(fi&&fi.value!==dbF)fi.value=dbF;
   $("#dbHist").innerHTML=dbHist.length?`<span class="muted" style="font-size:.85em">최근</span>`+dbHist.map((h,i)=>`<button type="button" class="chip sm" data-dbh="${i}" title="${esc(DB[h.db].label||DB[h.db].name)}">${esc(DB[h.db].name)}: ${esc(String(h.q).slice(0,24))}</button>`).join("")+`<button type="button" class="chip sm ghost" data-dbh="x">지우기</button>`:"";
-  $("#dbSeg").innerHTML=DBGROUPS.filter(g=>Object.keys(DB).some(k=>DB[k].g===g&&hit(k))).map(g=>`<div class="dbgrp"><span>${g}</span>${Object.keys(DB).filter(k=>DB[k].g===g&&hit(k)).map(k=>`<button type="button" class="chip" data-db="${k}" aria-pressed="${k===dbCur}">${DB[k].label||DB[k].name}</button>`).join("")}</div>`).join("")||`<p class="muted" style="margin:0">'${esc(dbF)}'에 맞는 데이터베이스가 없어요.</p>`;
+  $("#dbSeg").innerHTML=DBGROUPS.filter(g=>Object.keys(DB).some(k=>DB[k].g===g&&hit(k))).map(g=>`<div class="dbgrp"><span>${g}</span>${Object.keys(DB).filter(k=>DB[k].g===g&&hit(k)).sort((a,b)=>(a==="portals")-(b==="portals")).map(k=>`<button type="button" class="chip" data-db="${k}" aria-pressed="${k===dbCur}">${DB[k].label||DB[k].name}</button>`).join("")}</div>`).join("")||`<p class="muted" style="margin:0">'${esc(dbF)}'에 맞는 데이터베이스가 없어요.</p>`;
   $("#dbQ").placeholder=DB[dbCur].ph;$("#dbFrom").textContent=DB[dbCur].from;$("#dbBlocked").hidden=!HUB.embedded||!!DB[dbCur].local;$("#dbAskBlocked").hidden=!HUB.embedded;
   $("#dbOut").innerHTML=dbOut?`<div class="pad"><h3 class="cap">DB 원본 기록</h3><div class="md">${HUB.md(dbOut.md)}</div>
       ${dbOut.ai||dbOut.aiBusy?`<div class="aibox"><h3 class="cap">${dbOut.db==="ask"?"AI 답":"AI 해석"} <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— DB 값이 아니라 위 기록을 풀이한 것이에요</span></h3><div class="md" id="dbAi">${dbOut.ai?HUB.md(dbOut.ai):`<p class="muted"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>해석을 쓰는 중…</p>`}</div></div>`:dbOut.aiErr?`<div class="note-bar warn">해석을 만들지 못했어요: ${esc(dbOut.aiErr)}</div>`:""}
@@ -5996,7 +6018,7 @@ function render(){
   const opt=(id,label,items,v)=>`<label class="field" for="${id}">${label}<select id="${id}">${items.map(([a,b])=>`<option value="${a}" ${a===v?"selected":""}>${b}</option>`).join("")}</select></label>`;
   el.innerHTML=`<div class="pad">
     <div><h3 class="cap">그림 종류</h3><div class="kgrid">${KINDS.map(x=>`<button class="kbtn" type="button" data-kind="${x.id}" aria-pressed="${x.id===k.id}"><b>${x.name}</b><span>${x.hint}</span></button>`).join("")}</div></div>
-    ${k.noai?"":`<div><h3 class="cap">그리는 방식</h3><div class="kgrid">${[["bio","BioRender","BioRender 아이콘으로. claude.ai 페이지에서"],["svg","벡터 모식도","Claude가 SVG로. 요소별로 고칠 수 있어요"],["img","이미지 생성 (Google)","PaperBanana 방식. 파일에서 Google 키로"],["oai","이미지 생성 (OpenAI)","ChatGPT의 이미지 모델. 파일에서 OpenAI 키로"],["pb","PaperBanana 원본","내 컴퓨터에 설치한 서버로"]].map(([id,n,h])=>`<button class="kbtn" type="button" data-engine="${id}" aria-pressed="${ST.engine===id}"><b>${n}</b><span>${h}</span></button>`).join("")}</div></div>
+    ${k.noai?"":`<div><h3 class="cap">그리는 방식</h3><div class="egrp">${[["Claude가 직접 그리기 · 고칠 수 있는 그림",[["svg","벡터 모식도","SVG로 그려서 요소별로 고칠 수 있어요"],["bio","BioRender","BioRender 아이콘으로 · claude.ai 페이지에서"]]],["이미지 모델로 그리기 · 그림 한 장",[["img","이미지 생성 (Google)","PaperBanana 방식 · Google 키"],["oai","이미지 생성 (OpenAI)","ChatGPT 이미지 모델 · OpenAI 키"],["pb","PaperBanana 원본","내 컴퓨터에 설치한 서버로"]]]].map(([t,L])=>`<div class="eset"><span class="esub">${t}</span>${L.map(([id,n,h])=>`<button class="erow" type="button" data-engine="${id}" aria-pressed="${ST.engine===id}"><i aria-hidden="true"></i><b>${n}</b><span>${h}</span></button>`).join("")}</div>`).join("")}</div></div>
       ${ST.engine==="bio"?(HUB.mcp()?`<div class="note-bar">BioRender 커넥터로 그려요. 처음 누르면 이 페이지가 BioRender를 써도 되는지 묻는 창이 떠요. 만든 그림은 내 BioRender 계정에도 저장돼요.</div>`:`<div class="note-bar warn">BioRender 연결은 claude.ai의 연구 허브 페이지에서만 돼요. 내려받은 파일에서는 '이미지 생성'을 쓰세요.</div>`):""}
       ${ST.engine==="pb"?`<div class="note-bar ${HUB.mcp()?"":"warn"}">GitHub의 PaperBanana(llmsresearch/paperbanana)를 내 컴퓨터에서 MCP 서버로 돌려서 그려요. Claude 데스크톱 앱에서 이 페이지를 열었을 때만 연결돼요.</div>
         <details><summary class="muted" style="cursor:pointer;font-size:14px">설치 방법 보기</summary><div class="md" style="font-size:14.5px;margin-top:8px"><ol><li>컴퓨터에 <code>uv</code>를 설치해요.</li><li>Claude 데스크톱 앱 설정의 개발자 메뉴에서 로컬 MCP 서버 설정 파일을 열고 아래를 넣어요. 서버 이름은 꼭 <code>paperbanana</code>로.</li><li>앱을 다시 켜고, 앱 안에서 연구 허브를 열어 '그리기'를 눌러요.</li></ol><pre><code>{"mcpServers":{"paperbanana":{
@@ -7230,7 +7252,7 @@ function icsMonth(){const pl=pcol().list.filter(p=>p.date&&(p.date.slice(0,7)===
 document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.nmat||!t.value)return;const r=HUB.col("notes").list.find(x=>x.id===t.dataset.nmat),m=col().list.find(x=>x.id===t.value);t.value="";if(!r||!m)return;
   const line=m.name+([m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).length?" ("+[m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).join(", ")+")":"");
   const cur=String(r.mats||"");if(cur.split("\n").includes(line)){HUB.toast("이미 넣은 물품이에요");return;}await HUB.col("notes").update(r.id,{mats:(cur.trim()?cur.trim()+"\n":"")+line});setTimeout(draw,80);});
-const TABS=[["proj","프로젝트"],["grant","과제 계획·평가"],["materials","재료 (물품)"],["cells","세포 stock"],["orders","발주 기록 (물품·동물)"],["notes","실험노트 (합성·세포·동물)"],["plan","실험 일정"]];
+const TABS=[["proj","프로젝트"],["grant","과제 계획·평가"],["materials","재료 (물품)"],["cells","세포 stock"],["orders","발주 기록 (물품·동물)"],["notes","실험노트 (합성, 세포, 동물 등)"],["plan","실험 일정"]];
 const tabBar=()=>`<div class="seg mtabs">${TABS.map(([k,n])=>`<button type="button" data-mtab="${k}" aria-pressed="${M.tab===k}">${n} <span class="mono">${k==="proj"?(prcol().list.length||""):k==="grant"?(gcol().list.filter(inProj).length||""):k==="plan"?(pcol().list.filter(p=>inProj(p)&&!p.done).length||""):(HUB.col(k).list.filter(inProj).length||"")}</span></button>`).join("")}</div>${M.tab==="proj"?"":pjBar()}`;
 function draw(){const V=$("#v-mat");if(!V||HUB.view!=="mat")return;
   if(M.tab==="grant"){const y=window.scrollY;V.innerHTML=`<div class="page">${tabBar()}${grantHtml()}</div>`;window.scrollTo({top:y});return;}
