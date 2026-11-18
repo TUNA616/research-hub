@@ -1236,6 +1236,21 @@ function makeCol(name){
 }
 const cols={papers:makeCol("papers"),reports:makeCol("reports"),figs:makeCol("figs"),drafts:makeCol("drafts"),materials:makeCol("materials"),cells:makeCol("cells"),orders:makeCol("orders"),notes:makeCol("notes"),plans:makeCol("plans"),projects:makeCol("projects"),grants:makeCol("grants"),tpls:makeCol("tpls")};
 H.col=n=>cols[n];
+/* ---------- work on screen kept across reloads until the user clears it: search results, lookups, research output, chat, map, home guide.
+   IndexedDB, because a search pool is too big for localStorage. later() debounces; pending saves are flushed when the page is hidden. ---------- */
+H.keep=(()=>{let p;const open=()=>p||(p=new Promise((res,rej)=>{try{const r=indexedDB.open("research-hub-keep",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}}));
+  const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const t=db.transaction("kv",mode),r=fn(t.objectStore("kv"));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error);});};
+  const P={};
+  const put=(k,fn)=>{let v;try{v=fn();}catch(e){return;}if(v===undefined)return;if(v===null)K.del(k);else tx("readwrite",s=>s.put(v,k)).catch(()=>{try{tx("readwrite",s=>s.put(JSON.parse(JSON.stringify(v)),k)).catch(()=>{});}catch(e){}});};
+  /* a key is written only after it has been read back once, so the empty first screen never overwrites what was kept */
+  const RD={};
+  const K={get:k=>tx("readonly",s=>s.get(k)).catch(()=>undefined).then(v=>{RD[k]=1;return v;}),
+    del:k=>{if(P[k]){clearTimeout(P[k].t);delete P[k];}return tx("readwrite",s=>s.delete(k)).catch(()=>{});},
+    later:(k,fn,ms=500)=>{if(!RD[k])return;if(P[k])clearTimeout(P[k].t);P[k]={fn,t:setTimeout(()=>{const f=P[k]&&P[k].fn;delete P[k];if(f)put(k,f);},ms)};},
+    flush:()=>{Object.keys(P).forEach(k=>{const f=P[k].fn;clearTimeout(P[k].t);delete P[k];put(k,f);});},
+    clear:()=>{Object.keys(P).forEach(k=>{clearTimeout(P[k].t);delete P[k];});return tx("readwrite",s=>s.clear()).catch(()=>{});}};
+  addEventListener("pagehide",K.flush);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")K.flush();});
+  return K;})();
 
 /* ---------- files kept with the library (PDF, figures) ---------- */
 H.assets={
@@ -1592,7 +1607,7 @@ H.view="home";
 H.go=function(v,silent){if(!VIEWS.includes(v))v="home";H.view=v;
   VIEWS.forEach(n=>{const el=$("#v-"+n);if(el)el.hidden=n!==v;});
   $$("#nav button").forEach(b=>b.setAttribute("aria-current",String(b.dataset.go===v)));
-  if(!silent){try{if(location.hash.slice(1)!==v)location.hash=v;}catch(e){}}
+  if(!silent){try{if(location.hash.slice(1)!==v)location.hash=v;}catch(e){}}ls.set("view",v);
   if(v==="home")H.renderHome();window.scrollTo(0,0);H.navFit(true);
   try{document.dispatchEvent(new CustomEvent("hub:view",{detail:v}));}catch(e){}};
 H.navFit=function(center){const nav=$("#nav"),q=$("#quick");if(!nav)return;const narrow=matchMedia("(max-width:760px)").matches;
@@ -1715,7 +1730,7 @@ function guideHtml(){
   return `<section class="card pad" id="homeGuide"><h3 class="cap" style="margin-top:0">어디서부터 찾을지 안내</h3>
     <form class="qform" id="homeAskF"><label class="sr" for="homeAskI">연구에서 하고 싶은 일</label><input id="homeAskI" type="search" autocomplete="off" placeholder="예: 세포 모델로 기전 보기" value="${GD&&!GD.busy?esc(GD.q):""}"><button class="btn primary" type="submit">순서 알려 줘</button></form>
     <div id="homeAskOut" style="margin-top:12px">${body}</div></section>`;}
-function guideRedraw(){const el=$("#homeGuide");if(!el)return;const d=document.createElement("div");d.innerHTML=guideHtml();el.replaceWith(d.firstElementChild);}
+function guideRedraw(){H.keep.later("guide",()=>GD&&!GD.busy?GD:null);const el=$("#homeGuide");if(!el)return;const d=document.createElement("div");d.innerHTML=guideHtml();el.replaceWith(d.firstElementChild);}
 async function guideRun(q){
   if(!q)return;GD={q,busy:true};guideRedraw();
   if(!H.ai.auto){GD={q,generic:true,steps:GSTEPS.map(s=>({...s})),watch:["AI 연결이 없어 일반적인 순서예요. 각 단계의 검색어는 직접 넣으세요."]};guideRedraw();return;}
@@ -1739,6 +1754,7 @@ ${dbs}
   catch(e){GD=(e&&e.code==="cancelled")?null:{q,generic:true,steps:GSTEPS.map(s=>({...s})),watch:["AI로 순서를 짜지 못해 일반적인 순서를 보여 줘요: "+H.aiErr(e)]};}
   guideRedraw();}
 const guideMd=()=>`# 찾는 순서 — ${GD.q}\n\n`+GD.steps.map((s,i)=>`## ${i+1}. ${s.t.replace(/^\d+\.\s*/,"")}\n- 어디서: ${(gWhere[s.w]||["—"])[0]}${s.db?` · ${(H.lookup&&(H.lookup.list().find(x=>x.k===s.db)||{}).label)||s.db}`:""}${s.q?`\n- 넣을 것: ${s.q}`:""}\n${s.why?`- 왜: ${s.why}\n`:""}${s.how?`- 어떻게: ${s.how}\n`:""}`).join("\n")+(GD.watch&&GD.watch.length?`\n## 챙길 것\n`+GD.watch.map(x=>"- "+x).join("\n"):"");
+H.keep.get("guide").then(d=>{if(d&&d.q&&d.steps&&!GD){GD=d;guideRedraw();}});
 document.addEventListener("submit",e=>{if(e.target.id==="homeAskF"){e.preventDefault();guideRun($("#homeAskI").value.trim());}});
 document.addEventListener("click",e=>{
   const x=e.target.closest("[data-gex]");if(x){const v=x.dataset.gex;const i=$("#homeAskI");if(i)i.value=v;guideRun(v);return;}
@@ -1826,7 +1842,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   cols.papers.subscribe(l=>{const n=$("#navLib");if(n)n.textContent=l.length||"";H.renderHome();});
   cols.reports.subscribe(l=>{const n=$("#navRep");if(n)n.textContent=l.length||"";H.renderHome();});
   cols.figs.subscribe(()=>H.renderHome());
-  H.go(location.hash.slice(1)||"home",true);
+  H.go(location.hash.slice(1)||ls.get("view","home")||"home",true);
   H.ready.then(()=>H.renderHome());
 });
 return H;
@@ -3892,7 +3908,7 @@ async function genFacets(q){
 async function run(qIn){
   if(qIn!=null)$("#sq").value=qIn;const q=$("#sq").value.trim();if(!q){$("#sq").focus();return;}
   if(SS.busy)return;readOpts();
-  SS={q,pool:[],byDoi:new Map(),byT:new Map(),status:{},raw:0,shown:25,sel:new Set(),view:[],nq:1,busy:true,notes:[]};
+  SS={q,pool:[],byDoi:new Map(),byT:new Map(),status:{},raw:0,shown:25,sel:new Set(),view:[],nq:1,busy:true,notes:[],at:Date.now()};
   $("#sGo").disabled=true;render("검색 준비 중…");
   try{
     if(/[가-힣]/.test(q))SS.notes.push("한글 키워드는 해외 DB에서 결과가 적어요. 영문 키워드를 권해요. 국내 논문은 아래 RISS·KCI 바로가기를 쓰세요.");
@@ -3922,13 +3938,13 @@ const authorsOf=(e,n=4)=>e.authors.length>n?e.authors.slice(0,n).join(", ")+` �
 function citeOf(e){const au=e.authors.length>3?e.authors.slice(0,3).join(", ")+", et al.":e.authors.join(", ");return `${au} ${e.title}. ${e.journal||""} ${e.year||""}${e.volume?`, ${e.volume}`:""}${e.pages?`, ${e.pages}`:""}.${e.doi?` https://doi.org/${e.doi}`:""}`;}
 const inLib=e=>HUB.lib.papers.some(p=>(e.doi&&p.doi&&p.doi.toLowerCase()===e.doi)||normT(p.title)===normT(e.title));
 function render(progress){
-  const v=progress?SS.view:buildView();const st=$("#sStatus"),list=$("#sList");topicNote();
+  const v=progress?SS.view:buildView();if(!progress&&!SS.busy)keepS();const st=$("#sStatus"),list=$("#sList");topicNote();
   $("#sEmpty").hidden=!!(SS.q);
   $("#sBlocked").hidden=!HUB.embedded;
   const srcs=Object.entries(SS.status).map(([id,s])=>`<span class="src ${s.err?"bad":"ok"}" title="${esc(s.err||"")}">${SNAME[id]} ${s.err?(s.n?s.n+" · 일부 실패":"실패"):s.n}</span>`).join("");
   st.hidden=!SS.q;
   st.innerHTML=progress?`<span><span class="spin" style="display:inline-block;vertical-align:-2px;margin:0 6px 0 0"></span>${esc(progress)}</span><div class="srcs">${srcs}</div>`:
-    `<span>찾은 기록 <b class="mono">${SS.raw.toLocaleString()}</b>건 → 중복 합쳐 <b class="mono">${SS.pool.length.toLocaleString()}</b>편 → 조건에 맞는 <b class="mono">${v.length.toLocaleString()}</b>편${SS.sel.size?` · 선택 ${SS.sel.size}편`:""}</span><div class="srcs">${srcs}</div>`;
+    `<span>찾은 기록 <b class="mono">${SS.raw.toLocaleString()}</b>건 → 중복 합쳐 <b class="mono">${SS.pool.length.toLocaleString()}</b>편 → 조건에 맞는 <b class="mono">${v.length.toLocaleString()}</b>편${SS.sel.size?` · 선택 ${SS.sel.size}편`:""}${SS.saved?` <span class="muted" style="font-size:.88em">· ${esc(SS.saved)} 검색 결과를 다시 불러왔어요</span>`:""} <button class="linkbtn" type="button" id="sClear">결과 지우기</button></span><div class="srcs">${srcs}</div>`;
   const fails=Object.entries(SS.status).filter(([,s])=>s.err).map(([id,s])=>`${SNAME[id]}: ${s.err}`);
   $("#sNotes").innerHTML=SS.notes.concat(fails.length&&!progress?["연결하지 못한 DB가 있어요. 빠진 결과는 채우지 않았어요. "+fails.join(" / ")]:[]).map(n=>`<div class="note-bar warn">${esc(n)}</div>`).join("")+
     (SS.q&&!progress?`<div class="note-bar">국내 논문·다른 검색: <a href="https://www.riss.kr/search/Search.do?query=${encodeURIComponent(SS.q)}" target="_blank" rel="noopener">RISS</a> · <a href="https://www.kci.go.kr/kciportal/po/search/poTotalSearList.kci?searchKeyword=${encodeURIComponent(SS.q)}" target="_blank" rel="noopener">KCI</a> · <a href="https://scholar.google.com/scholar?q=${encodeURIComponent(SS.q)}" target="_blank" rel="noopener">Google Scholar</a></div>`:"");
@@ -3976,6 +3992,13 @@ function exportAs(kind){const l=picked();if(!l.length)return;
     else if(kind==="bib")HUB.save(fname("bib"),bib(l));else if(kind==="ris")HUB.save(fname("ris"),ris(l));
     else if(kind==="json")HUB.save(fname("json"),JSON.stringify({app:"research-hub-search",q:SS.q,raw:SS.raw,records:SS.pool.map(e=>({...e,qs:[...e.qs]}))}));
   }catch(e){HUB.toast(e.message||"내보내지 못했어요",5000);}}
+/* the last result set survives a reload until "결과 지우기" or a new search replaces it */
+function keepS(){HUB.keep.later("search",()=>!SS.q?null:SS.busy?undefined:{q:SS.q,raw:SS.raw,shown:SS.shown,nq:SS.nq,notes:SS.notes,status:SS.status,sel:[...SS.sel],at:SS.at||Date.now(),pool:SS.pool.map(e=>({...e,qs:[...e.qs]}))});}
+function unkeepS(d){if(!d||!d.q||!Array.isArray(d.pool)||SS.q||SS.busy)return;
+  SS={q:d.q,pool:[],byDoi:new Map(),byT:new Map(),status:d.status||{},raw:d.raw||d.pool.length,shown:d.shown||25,sel:new Set(d.sel||[]),view:[],nq:d.nq||1,busy:false,notes:d.notes||[],at:d.at};
+  d.pool.forEach(r=>{const e={...r,qs:new Set(r.qs||[0]),srcs:r.srcs||{},types:r.types||["article"],issn:r.issn||[],authors:r.authors||[],abstract:r.abstract||"",cited:r.cited||0};SS.pool.push(e);if(e.doi)SS.byDoi.set(e.doi,e);const tk=normT(e.title);if(tk.length>24)SS.byT.set(tk,e);});
+  try{SS.saved=new Date(d.at||Date.now()).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});}catch(e){SS.saved="지난";}
+  const q=$("#sq");if(q&&!q.value)q.value=d.q;render();HUB.renderHome();}
 async function importJson(f){try{const d=JSON.parse(await f.text());if(!Array.isArray(d.records))throw 0;
   SS={q:d.q||"가져온 검색",pool:[],byDoi:new Map(),byT:new Map(),status:{imp:{n:d.records.length,err:""}},raw:d.raw||d.records.length,shown:25,sel:new Set(),view:[],nq:1,busy:false,notes:[]};
   d.records.forEach(r=>{const e={...r,k:"r"+(SS.pool.length+1),qs:new Set(r.qs||[0]),srcs:r.srcs||{imp:0.5},types:r.types||[r.type||"article"],issn:r.issn||[],authors:r.authors||[],abstract:r.abstract||"",cited:r.cited||0};SS.pool.push(e);if(e.doi)SS.byDoi.set(e.doi,e);});
@@ -4139,6 +4162,8 @@ function init(){
   $("#sSort").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;O.sort=b.dataset.v;ls.set("sopt",O);writeOpts();if(SS.pool.length&&!SS.busy)render();});
   $("#sFacetAI").addEventListener("click",async e=>{const q=$("#sq").value.trim();if(!q){HUB.toast("먼저 검색 키워드를 써 주세요");return;}e.target.disabled=true;try{$("#sFacets").value=(await genFacets(q)).join("\n");}catch(err){if(err.code!=="cancelled")HUB.toast(HUB.aiErr(err),4500);}e.target.disabled=false;});
   $("#sMore").addEventListener("click",()=>{SS.shown+=25;render();});
+  $("#sStatus").addEventListener("click",e=>{if(e.target.id!=="sClear"||SS.busy)return;SS={q:"",pool:[],byDoi:new Map(),byT:new Map(),status:{},raw:0,shown:25,sel:new Set(),view:[],nq:1,busy:false,notes:[]};HUB.keep.del("search");render();HUB.renderHome();HUB.toast("검색 결과를 지웠어요");});
+  HUB.keep.get("search").then(unkeepS);
   $("#sList").addEventListener("change",e=>{const k=e.target.dataset.sel;if(!k)return;e.target.checked?SS.sel.add(k):SS.sel.delete(k);render();});
   $("#sList").addEventListener("click",async e=>{const b=e.target.closest("[data-s]");if(!b)return;const r=SS.pool.find(x=>x.k===b.dataset.k);if(!r)return;
     if(b.dataset.s==="abs"){const box=b.closest(".rc").querySelector(".abs");box.hidden=!box.hidden;box.textContent=r.abstract||"이 DB들에는 초록이 없어요.";b.textContent=box.hidden?"초록 보기":"초록 접기";}
@@ -4366,7 +4391,13 @@ const BATCH={
   part:a=>`당신은 논문을 비판적으로 읽는 심사자입니다.\n\n${RULE(a.ctx)}\n\n아래 논문 ${a.from}~${a.to}번을 한 편도 빠뜨리지 말고, 논문마다 '### [#번호] 짧은 제목' 아래에 쓰세요: 주장의 핵심 / 근거의 강도 (설계·n수·대조군·통계) / 다른 설명 가능성 / 주어진 정보만으로는 확인할 수 없는 것. 주어진 정보가 초록뿐이면 그 한계를 분명히 적으세요. 종합 평가는 쓰지 마세요.\n\n논문 목록:\n${a.corpus}`,
   final:(a,acc)=>`아래는 논문 ${a.n}편에 대한 비판적 읽기 메모입니다.\n\n${RULE(a.ctx)}\n\n메모는 다시 쓰지 말고 '## 가장 믿을 만한 근거와 가장 약한 근거' 한 절만 쓰세요.\n\n${acc.slice(0,60000)}`}
 };
-let cur=TOOLS[0],busy=false,stop=false,lastOut=null,chat=[];
+let cur=TOOLS.find(t=>t.id===ls.get("rtool",""))||TOOLS[0],busy=false,stop=false,lastOut=null,chat=[];
+/* results stay on screen after a reload until the user clears them: the last output of each tool, the mentor chat, attached files, and the last lookup of each DB */
+let OUTS={},DBO={};
+const keepR=()=>HUB.keep.later("research",()=>({outs:OUTS,chat:chat.filter(m=>!(m.role==="assistant"&&m.content==="…")),att:att.map(f=>({name:f.name,title:f.title,text:f.text,file:f.file instanceof Blob?f.file:null}))}));
+const packDb=o=>{const sp={},im={};String(o.md||"").replace(/⟦spec:(\d+)⟧/g,(m,i)=>{if(SPEC[+i])sp[i]=SPEC[+i];return m;}).replace(/⟦img:(\d+)⟧/g,(m,i)=>{if(IMGS[+i])im[i]=IMGS[+i];return m;});return{...o,aiBusy:false,_sp:sp,_im:im};};
+const unpackDb=o=>{const sp=o._sp||{},im=o._im||{};const md=String(o.md||"").replace(/⟦spec:(\d+)⟧/g,(m,i)=>sp[i]?(SPEC.push(sp[i]),`⟦spec:${SPEC.length-1}⟧`):m).replace(/⟦img:(\d+)⟧/g,(m,i)=>im[i]?(IMGS.push(im[i]),`⟦img:${IMGS.length-1}⟧`):m);const r={...o,md};delete r._sp;delete r._im;return r;};
+const keepDb=()=>HUB.keep.later("lookup",()=>{const o={};Object.keys(DBO).forEach(k=>{if(DBO[k]&&!DBO[k].aiBusy)o[k]=packDb(DBO[k]);});return{o,last:(dbOut&&dbOut.db)||""};});
 
 /* ---------- corpus: search picks, search top, library, or files attached here ---------- */
 const GROUPS=[["read","읽고 종합","여러 논문을 묶어 흐름과 차이를 정리해요"],["check","선별·검증","기준대로 고르고, 주장과 인용이 맞는지 확인해요"],["idea","아이디어·설계","가설을 세우고 실험 계획을 다듬어요"],["write","쓰기·심사","초안을 쓰고, 심사받고, 고쳐요"]];
@@ -4388,7 +4419,7 @@ async function attach(files){
   for(const f of Array.from(files||[])){
     attBusy=f.name;renderCorpus();
     try{const r=/\.(txt|md)$/i.test(f.name)?{name:f.name,title:f.name.replace(/\.\w+$/,""),text:await f.text()}:await HUB.lib.readFile(f);
-      if(!r.text||r.text.length<20)throw new Error("글자를 읽지 못했어요");att.push({...r,file:f});srcId="att";}
+      if(!r.text||r.text.length<20)throw new Error("글자를 읽지 못했어요");att.push({...r,file:f});srcId="att";keepR();}
     catch(e){HUB.toast(`${f.name}: ${(e&&e.message)||"읽지 못했어요"}`,5000);}
   }
   attBusy="";renderCorpus();renderCfg();
@@ -4423,13 +4454,15 @@ function renderCfg(){
     ${t.id==="citecheck"&&HUB.embedded?`<div class="note-bar warn">claude.ai 안에서는 Crossref에 연결할 수 없어요. 내려받은 HTML 파일에서 실행하세요.</div>`:""}
     ${t.chat?"":`<div class="row"><button class="btn primary big" type="button" id="rRun">실행</button><button class="btn" type="button" id="rStop" hidden>멈추기</button></div>`}
     <input type="file" id="rFillFile" hidden accept=".pdf,.docx,.pptx,.hwpx,.txt,.md"></div>`;
+  if(!busy&&!(lastOut&&lastOut.tool===t.id)&&OUTS[t.id])lastOut=OUTS[t.id];
   if(t.chat)renderChat();else if(!busy)showOut(lastOut&&lastOut.tool===t.id?lastOut:null);
 }
 function showOut(o,live){
+  if(o&&!live&&o.tool&&o.md){OUTS[o.tool]=o;keepR();}
   const el=$("#rOut");
   if(!o){el.innerHTML=`<div class="pad"><p class="muted" style="margin:0">실행하면 결과가 여기에 나오고 보고서 탭에 자동으로 저장돼요.</p></div>`;return;}
   el.innerHTML=`<article class="pad article">${o.title&&!live?`<h2 class="atitle">${esc(o.title)}</h2>`:""}${o.html||""}<div class="md">${HUB.md(o.md)}</div>${live?`<p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>쓰는 중…</p>`:
-    `<div class="actions"><button class="btn" type="button" data-rx="copy">복사</button><button class="btn" type="button" data-rx="md">.md 저장</button><button class="btn" type="button" data-rx="docx">Word(.docx) 저장</button><button class="btn" type="button" data-rx="pptx">PPT(.pptx) 저장</button>${/^\s*\|.*\|\s*$/m.test(o.md||"")?`<button class="btn" type="button" data-rx="xlsx">표를 엑셀(.xlsx)로</button>`:""}${o.extra||""}</div>`}</article>`;
+    `<div class="actions"><button class="btn ghost" type="button" data-rx="clear" title="이 도구의 결과를 화면에서 지워요. 보고서 탭에 저장된 것은 남아요.">결과 지우기</button><button class="btn" type="button" data-rx="copy">복사</button><button class="btn" type="button" data-rx="md">.md 저장</button><button class="btn" type="button" data-rx="docx">Word(.docx) 저장</button><button class="btn" type="button" data-rx="pptx">PPT(.pptx) 저장</button>${/^\s*\|.*\|\s*$/m.test(o.md||"")?`<button class="btn" type="button" data-rx="xlsx">표를 엑셀(.xlsx)로</button>`:""}${o.extra||""}</div>`}</article>`;
 }
 const inputsOf=t=>{const o={};(t.inputs||[]).forEach(f=>{const el=$("#ri_"+f.id);o[f.id]=el?el.value.trim():"";});return o;};
 async function saveReport(title,tool,md){lastOut={...(lastOut||{}),tool,md,title};try{await HUB.col("reports").set(uid(),{title,tool,md:String(md).slice(0,200000),addedAt:Date.now()});}catch(e){HUB.toast("보고서를 저장하지 못했어요");}}
@@ -4602,6 +4635,7 @@ ${B}`);
 
 /* ---------- Socratic chat ---------- */
 function renderChat(){
+  if(!busy)keepR();
   $("#rOut").innerHTML=`<div class="pad"><div class="chat" id="rChat">${chat.length?chat.map(m=>`<div class="msg ${m.role==="user"?"u":"a"}">${m.role==="user"?esc(m.show||m.content):`<div class="md">${HUB.md(m.content)}</div>`}</div>`).join(""):`<p class="muted" style="margin:0">고민 중인 연구 질문이나 막힌 지점을 적어 보세요. 답 대신 생각을 좁혀 가는 질문이 돌아와요.</p>`}</div>
     <form class="qform" id="rChatForm"><label class="sr" for="rChatIn">메시지</label><input id="rChatIn" placeholder="예: 이 치료가 실제로 효과가 있는지 어떻게 보여야 할까?" autocomplete="off"><button class="btn primary" type="submit">보내기</button></form>
     <div class="actions"><button class="btn" type="button" data-rx="chatsave" ${chat.length<2?"disabled":""}>대화를 보고서로 저장</button><button class="btn" type="button" data-rx="chatnew" ${chat.length?"":"disabled"}>새 대화</button></div></div>`;
@@ -5147,6 +5181,7 @@ ${o.md.replace(SPECRE,"").replace(IMGRE,"").slice(0,12000)}`,{modelTier:"quick",
 }
 const dbFull=o=>o.md.replace(SPECRE,"").replace(IMGRE,"")+(o.ai?"\n\n---\n\n## AI 해석 (DB 값이 아니라 해석이에요)\n\n"+o.ai:"");
 function renderLookup(){
+  if(dbOut&&dbOut.db&&!dbOut.aiBusy){DBO[dbOut.db]=dbOut;keepDb();}
   const hit=k=>!dbF||((DB[k].label||"")+" "+DB[k].name+" "+DB[k].g+" "+(DB[k].ph||"")).toLowerCase().includes(dbF);
   const fi=$("#dbFilter");if(fi&&fi.value!==dbF)fi.value=dbF;
   $("#dbHist").innerHTML=dbHist.length?`<span class="muted" style="font-size:.85em">최근</span>`+dbHist.map((h,i)=>`<button type="button" class="chip sm" data-dbh="${i}" title="${esc(DB[h.db].label||DB[h.db].name)}">${esc(DB[h.db].name)}: ${esc(String(h.q).slice(0,24))}</button>`).join("")+`<button type="button" class="chip sm ghost" data-dbh="x">지우기</button>`:"";
@@ -5155,19 +5190,26 @@ function renderLookup(){
   $("#dbOut").innerHTML=dbOut?`<div class="pad"><h3 class="cap">DB 원본 기록</h3><div class="md">${HUB.md(dbOut.md)}</div>
       ${dbOut.ai||dbOut.aiBusy?`<div class="aibox"><h3 class="cap">${dbOut.db==="ask"?"AI 답":"AI 해석"} <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— DB 값이 아니라 위 기록을 풀이한 것이에요</span></h3><div class="md" id="dbAi">${dbOut.ai?HUB.md(dbOut.ai):`<p class="muted"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>해석을 쓰는 중…</p>`}</div></div>`:dbOut.aiErr?`<div class="note-bar warn">해석을 만들지 못했어요: ${esc(dbOut.aiErr)}</div>`:""}
       ${dbOut.plan&&dbOut.plan.length?`<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:10px"><span class="muted" style="font-size:.85em">이 DB에서 직접 더 찾기</span>${dbOut.plan.map((p,i)=>`<button type="button" class="chip sm" data-dbgo2="${esc(p.db)}" data-dbq="${esc(p.q)}">${"①②③"[i]} ${esc(DB[p.db]?DB[p.db].name:p.db)}</button>`).join("")}</div>`:""}
-      <div class="actions">${dbOut.aiBusy||dbOut.local?"":`<button class="btn ${dbOut.ai?"":"primary"}" type="button" id="dbAsk">${dbOut.db==="ask"?(dbOut.ai?"답 다시 쓰기":"AI 답 보기"):dbOut.ai?"해석 다시 쓰기":"AI 해석 보기"}</button>`}${dbOut.db&&DBPAIR[dbOut.db]&&dbOut.q?`<button class="btn" type="button" data-dbgo="${DBPAIR[dbOut.db][0]}">${DBPAIR[dbOut.db][1]}</button>`:""}<button class="btn" type="button" id="dbSave">보고서로 저장</button><button class="btn" type="button" id="dbCopy">복사</button></div></div>`:`<div class="pad"><p class="muted" style="margin:0">맨 위 칸에 질문을 쓰면 AI가 맞는 DB를 골라 찾아 주고, 아래에서 데이터베이스를 직접 고르고 이름을 넣어도 돼요. 직접 고르면 공개 DB에서 바로 찾아와요. 값은 각 DB의 원본 기록 그대로예요. GenBank·ENA·DDBJ는 같은 서열 기록을 공유하므로 GenBank 조회 결과에서 세 곳 모두로 갈 수 있어요.</p></div>`;
+      <div class="actions"><button class="btn ghost" type="button" id="dbClear">결과 지우기</button>${dbOut.aiBusy||dbOut.local?"":`<button class="btn ${dbOut.ai?"":"primary"}" type="button" id="dbAsk">${dbOut.db==="ask"?(dbOut.ai?"답 다시 쓰기":"AI 답 보기"):dbOut.ai?"해석 다시 쓰기":"AI 해석 보기"}</button>`}${dbOut.db&&DBPAIR[dbOut.db]&&dbOut.q?`<button class="btn" type="button" data-dbgo="${DBPAIR[dbOut.db][0]}">${DBPAIR[dbOut.db][1]}</button>`:""}<button class="btn" type="button" id="dbSave">보고서로 저장</button><button class="btn" type="button" id="dbCopy">복사</button></div></div>`:`<div class="pad"><p class="muted" style="margin:0">맨 위 칸에 질문을 쓰면 AI가 맞는 DB를 골라 찾아 주고, 아래에서 데이터베이스를 직접 고르고 이름을 넣어도 돼요. 직접 고르면 공개 DB에서 바로 찾아와요. 값은 각 DB의 원본 기록 그대로예요. GenBank·ENA·DDBJ는 같은 서열 기록을 공유하므로 GenBank 조회 결과에서 세 곳 모두로 갈 수 있어요.</p></div>`;
   $("#dbOut").querySelectorAll(".md p").forEach(p=>{const m=p.textContent.trim().match(/^⟦spec:(\d+)⟧$/);if(m&&SPEC[+m[1]]){const d=document.createElement("figure");d.className="specfig";d.innerHTML=specSvg(SPEC[+m[1]]);p.replaceWith(d);return;}const g=p.textContent.trim().match(/^⟦img:(\d+)⟧$/);if(g&&IMGS[+g[1]]){const x=IMGS[+g[1]],f=document.createElement("figure");f.className="molfig";f.innerHTML=`<img alt="${esc(x.alt)} 구조" loading="lazy" referrerpolicy="no-referrer"><figcaption>${esc(x.alt)}</figcaption>`;const im=f.querySelector("img");im.onerror=()=>{f.innerHTML=`<figcaption class="muted">${esc(x.alt)} 구조 그림을 불러오지 못했어요 (외부 그림 서버 연결 필요)</figcaption>`;};im.src=x.src;p.replaceWith(f);}});
 }
 
 /* ---------- events ---------- */
 function init(){
   renderCorpus();renderTools();renderCfg();renderLookup();
+  HUB.keep.get("research").then(d=>{if(!d||busy)return;
+    if(d.outs&&typeof d.outs==="object")Object.keys(d.outs).forEach(k=>{if(!OUTS[k]&&d.outs[k]&&d.outs[k].md)OUTS[k]=d.outs[k];});
+    if(Array.isArray(d.chat)&&!chat.length)chat=d.chat.filter(m=>m&&m.role&&typeof m.content==="string");
+    if(Array.isArray(d.att)&&!att.length)att=d.att.filter(f=>f&&f.text).map(f=>({name:f.name||"파일",title:f.title||f.name||"파일",text:f.text,file:f.file||null}));
+    renderCorpus();renderCfg();});
+  HUB.keep.get("lookup").then(d=>{if(!d||!d.o)return;Object.keys(d.o).forEach(k=>{if(!DBO[k]&&d.o[k]&&d.o[k].md)DBO[k]=unpackDb(d.o[k]);});
+    if(!dbOut){const k=d.last&&DBO[d.last]?d.last:DBO[dbCur]?dbCur:"";if(k){dbOut=DBO[k];if(DB[k]){dbCur=k;}}}renderLookup();});
   HUB.col("reports").subscribe(renderReports);
   $("#rTools").addEventListener("click",e=>{if(busy)return;const g=e.target.closest("[data-grp]");if(g){grp=g.dataset.grp;renderTools();return;}const b=e.target.closest("[data-tool]");if(b)pick(b.dataset.tool);});
   $("#rCorpus").addEventListener("click",e=>{
     const s=e.target.closest("[data-src]");if(s){srcId=s.dataset.src;ls.set("rsrc",srcId);renderCorpus();if(!busy)renderCfg();return;}
     const rp=e.target.closest("[data-rpj]");if(rp){if(HUB.proj&&HUB.proj.set)HUB.proj.set(rp.dataset.rpj);renderCorpus();if(!busy)renderCfg();return;}
-    const d=e.target.closest("[data-attdel]");if(d){att.splice(+d.dataset.attdel,1);renderCorpus();if(!busy)renderCfg();return;}
+    const d=e.target.closest("[data-attdel]");if(d){att.splice(+d.dataset.attdel,1);keepR();renderCorpus();if(!busy)renderCfg();return;}
     if(e.target.id==="rAttach")$("#rFile").click();
     else if(e.target.id==="rAttLib"){const fs=att.map(f=>f.file).filter(f=>f&&!/\.(txt|md)$/i.test(f.name));if(fs.length)HUB.lib.addFiles(fs);}});
   $("#rCorpus").addEventListener("change",e=>{if(e.target.id==="rFile"){const fs=Array.from(e.target.files);e.target.value="";attach(fs);}});
@@ -5181,7 +5223,8 @@ function init(){
   $("#v-research").addEventListener("click",e=>{
     if(e.target.id==="rRun")return run();if(e.target.id==="rStop"){stop=true;e.target.disabled=true;return;}
     const b=e.target.closest("[data-rx]");if(!b)return;const k=b.dataset.rx;
-    if(k==="chatnew"){chat=[];renderChat();}
+    if(k==="chatnew"){chat=[];renderChat();keepR();}
+    else if(k==="clear"){if(busy)return;delete OUTS[cur.id];if(lastOut&&lastOut.tool===cur.id)lastOut=null;keepR();showOut(null);}
     else if(k==="chatsave"){const md=chat.map(m=>`**${m.role==="user"?"나":"멘토"}**\n\n${m.show||m.content}`).join("\n\n---\n\n");saveReport("소크라테스 대화","socratic",md).then(()=>HUB.toast("보고서에 저장했어요"));}
     else if(!lastOut)return;
     else if(k==="copy")HUB.copy(lastOut.md);else if(k==="tsv")HUB.copy(lastOut.tsv||"");else HUB.exportDoc(k,lastOut.md,lastOut.title||cur.name);});
@@ -5206,23 +5249,23 @@ function init(){
     else HUB.exportDoc(k,r.md,r.title);});
   $("#dbCheck").addEventListener("click",dbCheck);
   $("#dbFilter").addEventListener("input",e=>{dbF=e.target.value.trim().toLowerCase();renderLookup();});
-  $("#dbFilter").addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();const b=$("#dbSeg").querySelectorAll("button[data-db]");if(b.length>=1){dbCur=b[0].dataset.db;ls.set("dbcur",dbCur);dbOut=null;dbF="";e.target.value="";renderLookup();const i=$("#dbQ");if(i)i.focus();}});
+  $("#dbFilter").addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();const b=$("#dbSeg").querySelectorAll("button[data-db]");if(b.length>=1){dbCur=b[0].dataset.db;ls.set("dbcur",dbCur);dbOut=DBO[dbCur]||null;dbF="";e.target.value="";renderLookup();const i=$("#dbQ");if(i)i.focus();}});
   $("#dbHist").addEventListener("click",e=>{const b=e.target.closest("[data-dbh]");if(!b)return;if(b.dataset.dbh==="x"){dbHist=[];ls.set("dbhist",dbHist);renderLookup();return;}const h=dbHist[+b.dataset.dbh];if(h)HUB.lookup.open(h.db,h.q,true);});
   $("#dbAskForm").addEventListener("submit",e=>{e.preventDefault();const q=$("#dbAskQ").value.trim();if(q)askDb(q);});
   $("#dbAskEx").addEventListener("click",e=>{const b=e.target.closest("[data-ex]");if(!b)return;$("#dbAskQ").value=b.dataset.ex;askDb(b.dataset.ex);});
-  $("#dbSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-db]");if(!b)return;dbCur=b.dataset.db;ls.set("dbcur",dbCur);dbOut=null;renderLookup();const i=$("#dbQ");if(i)i.focus();});
+  $("#dbSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-db]");if(!b)return;dbCur=b.dataset.db;ls.set("dbcur",dbCur);dbOut=DBO[dbCur]||null;renderLookup();const i=$("#dbQ");if(i)i.focus();});
   $("#dbForm").addEventListener("submit",async e=>{e.preventDefault();const q=$("#dbQ").value.trim();if(!q)return;
     $("#dbOut").innerHTML=`<div class="pad"><p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>${DB[dbCur].name}에서 찾는 중…</p></div>`;
     try{const md=await DB[dbCur].run(q);dbOut={md,title:`${DB[dbCur].name} · ${q}`,db:dbCur,q,local:!!DB[dbCur].local};dbRemember(dbCur,q);renderLookup();if(HUB.ai.auto&&md.length>60&&!DB[dbCur].local&&md!==NONE)interpret();}catch(err){const bad=/찾지 못했어요|넣어 주세요|모르는 종|읽지 못했어요|확인해 주세요|쓸 수 없는|모자라요/.test(String(err&&err.message));
       if(bad)$("#dbOut").innerHTML=`<div class="pad"><div class="note-bar warn">${esc(err.message)}</div></div>`;
       else{dbOut={md:dbFail(dbCur,q,err),title:`${DB[dbCur].name} · ${q} (연결 실패)`,db:dbCur,q,local:true};renderLookup();}}});
   $("#dbOut").addEventListener("click",e=>{const g2=e.target.closest("[data-dbgo2]");if(g2){HUB.lookup.open(g2.dataset.dbgo2,g2.dataset.dbq||"",false);return;}
-    const go=e.target.closest("[data-dbgo]");if(go&&dbOut){HUB.lookup.open(go.dataset.dbgo,dbOut.q,true);return;}if(!dbOut)return;if(e.target.id==="dbAsk")interpret();if(e.target.id==="dbCopy")HUB.copy(dbFull(dbOut));if(e.target.id==="dbSave")saveReport(dbOut.title,"lookup",dbFull(dbOut)).then(()=>HUB.toast("보고서에 저장했어요"));});
+    const go=e.target.closest("[data-dbgo]");if(go&&dbOut){HUB.lookup.open(go.dataset.dbgo,dbOut.q,true);return;}if(!dbOut)return;if(e.target.id==="dbClear"){if(dbOut.aiBusy)return;delete DBO[dbOut.db];dbOut=null;keepDb();renderLookup();return;}if(e.target.id==="dbAsk")interpret();if(e.target.id==="dbCopy")HUB.copy(dbFull(dbOut));if(e.target.id==="dbSave")saveReport(dbOut.title,"lookup",dbFull(dbOut)).then(()=>HUB.toast("보고서에 저장했어요"));});
   const nav=document.querySelector('#nav [data-go="research"]');if(nav)nav.addEventListener("click",()=>{if(!busy){renderCorpus();renderCfg();}});
   HUB.ready.then(()=>{if(!busy){renderCorpus();renderCfg();}});
 }
-function pick(id){const t=TOOLS.find(x=>x.id===id);if(!t)return;cur=t;grp=t.g;renderCorpus();renderTools();renderCfg();const c=$("#rCfg");if(c&&HUB.view==="research")c.scrollIntoView({block:"nearest",behavior:"smooth"});}
-HUB.lookup={list:()=>Object.keys(DB).map(k=>({k,name:DB[k].name,label:DB[k].label||DB[k].name,g:DB[k].g,ph:DB[k].ph})),open(k,q,go){if(!DB[k])return false;dbCur=k;ls.set("dbcur",dbCur);dbOut=null;HUB.go("lookup");renderLookup();const i=$("#dbQ");if(i&&q!=null)i.value=q;if(go&&q)$("#dbForm").dispatchEvent(new Event("submit",{cancelable:true}));else if(i)i.focus();return true;},ask(q){HUB.go("lookup");const i=$("#dbAskQ");if(i){i.value=q;i.focus();}if(q)askDb(q);}};
+function pick(id){const t=TOOLS.find(x=>x.id===id);if(!t)return;cur=t;ls.set("rtool",id);grp=t.g;renderCorpus();renderTools();renderCfg();const c=$("#rCfg");if(c&&HUB.view==="research")c.scrollIntoView({block:"nearest",behavior:"smooth"});}
+HUB.lookup={list:()=>Object.keys(DB).map(k=>({k,name:DB[k].name,label:DB[k].label||DB[k].name,g:DB[k].g,ph:DB[k].ph})),open(k,q,go){if(!DB[k])return false;dbCur=k;ls.set("dbcur",dbCur);dbOut=DBO[dbCur]||null;HUB.go("lookup");renderLookup();const i=$("#dbQ");if(i&&q!=null)i.value=q;if(go&&q)$("#dbForm").dispatchEvent(new Event("submit",{cancelable:true}));else if(i)i.focus();return true;},ask(q){HUB.go("lookup");const i=$("#dbAskQ");if(i){i.value=q;i.focus();}if(q)askDb(q);}};
 document.addEventListener("hub:proj",()=>{if(HUB.view==="research"&&!busy){renderCorpus();renderCfg();}});
 /* counts on the source buttons can be stale if papers were added or picked while another tab was open */
 document.addEventListener("hub:view",e=>{if(e.detail==="research"&&!busy)renderCorpus();});
@@ -6122,7 +6165,9 @@ function seedOptions(){const q=G.q.trim().toLowerCase();const fromLib=HUB.lib.pa
   const res=(HUB.search&&HUB.search.results?HUB.search.results():[]).filter(e=>!q||(e.title||"").toLowerCase().includes(q)).slice(0,q?6:4).map(e=>({t:e.title,s:"검색 결과 · "+[e.journal,e.year].filter(Boolean).join(" "),seed:{doi:e.doi,title:e.title,oaId:e.oaId}}));
   G.opts=[...fromLib,...res];
   return G.opts.length?G.opts.map((o,i)=>`<button type="button" data-gseed="${i}"><b>${esc(String(o.t||"").slice(0,120))}</b><span>${esc(o.s)}</span></button>`).join(""):`<p class="muted" style="padding:10px;margin:0">맞는 논문이 없어요. DOI나 제목을 그대로 넣고 '그리기'를 눌러도 돼요.</p>`;}
-function draw(){const el=$("#v-graph");if(!el)return;
+/* the last relation map stays after a reload until "지우기" */
+const keepG=()=>HUB.keep.later("graph",()=>{if(G.busy)return undefined;const L=G.mode==="seed"&&G.seed?{nodes:G.nodes,edges:G.edges,seed:G.seed,msg:G.msg}:G.last;return L&&L.seed?{...L,q:G.q,hist:G.hist,layout:G.layout,n:G.n,sim:G.sim,sel:G.mode==="seed"?G.sel:null}:null;});
+function draw(){keepG();const el=$("#v-graph");if(!el)return;
   const leg=G.mode==="lib"?(G.folders||[]).map(([f,c])=>`<span><i style="background:${c}"></i>${esc(f)}</span>`).join(""):["seed","prior","later","similar"].map(k=>`<span><i style="background:${COL[k]}"></i>${NAME[k]}</span>`).join("")+`<span><i class="ring"></i>라이브러리에 있음</span>`;
   el.innerHTML=`<div class="page"><section class="card pad grtop">
     <div class="seg"><button type="button" data-gmode="seed" aria-pressed="${G.mode==="seed"}">논문 중심 관계도 (선행·후속)</button><button type="button" data-gmode="rec" aria-pressed="${G.mode==="rec"}">놓친 핵심 논문 찾기</button><button type="button" data-gmode="lib" aria-pressed="${G.mode==="lib"}">라이브러리 지도</button></div>
@@ -6134,7 +6179,7 @@ function draw(){const el=$("#v-graph");if(!el)return;
         <label class="ck"><input type="checkbox" id="grSim" ${G.sim?"checked":""}><span>비슷한 연구도</span></label>
         ${G.hist.length>1?`<span class="muted" style="font-size:13px">최근:</span>${G.hist.slice(0,5).map(h=>`<button class="btn sm ghost" type="button" data-ghist="${esc(h.id)}">${esc(h.label)}</button>`).join("")}`:""}</div>`:""}
     ${G.mode==="lib"?`<p class="grmsg" style="color:var(--ink)">라이브러리 논문을 <b>키워드가 겹치는 것끼리</b> 이어서, 어떤 주제 묶음이 있고 어떤 논문이 서로 가까운지 보여 줘요. 선행·후속 같은 인용 관계는 '논문 중심 관계도'에서 봅니다.</p>`:""}${G.msg?`<p class="grmsg">${esc(G.msg)}</p>`:""}</section>
-    ${G.mode==="rec"?recHtml():G.nodes.length?`<div class="grwrap"><div class="grcanvas card"><div class="grleg">${leg}</div><div class="grzoom"><button type="button" data-gr="zin" aria-label="확대">+</button><button type="button" data-gr="zout" aria-label="축소">−</button><button type="button" data-gr="fit" aria-label="전체 보기">⤢</button><button type="button" data-gr="png" title="그림으로 저장">PNG</button></div>${svg()}</div><aside class="grside card pad" id="grSide">${side()}</aside></div>`
+    ${G.mode==="rec"?recHtml():G.nodes.length?`<div class="grwrap"><div class="grcanvas card"><div class="grleg">${leg}</div><div class="grzoom"><button type="button" data-gr="zin" aria-label="확대">+</button><button type="button" data-gr="zout" aria-label="축소">−</button><button type="button" data-gr="fit" aria-label="전체 보기">⤢</button><button type="button" data-gr="png" title="그림으로 저장">PNG</button>${G.mode==="seed"&&G.seed&&!G.busy?`<button type="button" data-gr="clear" title="이 관계도를 지워요">지우기</button>`:""}</div>${svg()}</div><aside class="grside card pad" id="grSide">${side()}</aside></div>`
       :`<div class="placeholder">${G.mode==="seed"?"중심이 될 논문을 고르면 그 논문이 인용한 선행 연구와, 그 논문을 인용한 후속 연구를 한 장에 그려요.":"라이브러리에 논문을 담으면 키워드가 겹치는 논문끼리 이어서 보여 줘요."}</div>`}</div>`;}
 function redrawSvg(){const c=$(".grcanvas");if(!c)return draw();const old=$("#grSvg");if(old)old.outerHTML=svg();const sd=$("#grSide");if(sd)sd.innerHTML=side();}
 function zoom(f,cx,cy){const v=G.vb;if(!v)return;const nx=cx==null?v[0]+v[2]/2:cx,ny=cy==null?v[1]+v[3]/2:cy;const w=Math.max(200,Math.min(9000,v[2]*f)),k=w/v[2];G.vb=[nx-(nx-v[0])*k,ny-(ny-v[1])*k,w,v[3]*k];const s=$("#grSvg");if(s)s.setAttribute("viewBox",G.vb.join(" "));}
@@ -6144,6 +6189,11 @@ async function savePng(){const s=$("#grSvg");if(!s)return;const cs=getComputedSt
   const img=new Image();img.onload=()=>{const c=document.createElement("canvas");c.width=W;c.height=Hh;c.getContext("2d").drawImage(img,0,0,W,Hh);c.toBlob(b=>{if(b)HUB.save("논문_관계도.png",b);},"image/png");};
   img.onerror=()=>HUB.toast("그림으로 저장하지 못했어요");img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(src.replace(/<svg /,`<svg width="${W}" height="${Hh}" `));}
 function init(){const V=$("#v-graph");if(!V)return;
+  HUB.keep.get("graph").then(d=>{if(!d||!d.seed||G.seed||G.busy||!Array.isArray(d.nodes))return;
+    Object.assign(G,{q:d.q||G.q,hist:d.hist||G.hist,layout:d.layout||G.layout,n:d.n||G.n,sim:d.sim!=null?d.sim:G.sim});
+    d.nodes.forEach(n=>n.lib=inLib(n));
+    if(G.mode==="seed"){G.nodes=d.nodes;G.edges=d.edges||[];G.seed=d.seed;G.msg=d.msg||"";G.sel=d.sel||d.seed.id;G.vb=null;}else G.last={nodes:d.nodes,edges:d.edges||[],seed:d.seed,msg:d.msg||""};
+    draw();});
   V.addEventListener("click",async e=>{
     const m=e.target.closest("[data-gmode]");if(m){if(G.mode==="seed"&&G.seed)G.last={nodes:G.nodes,edges:G.edges,seed:G.seed,msg:G.msg};G.mode=m.dataset.gmode;G.sel=null;G.vb=null;if(G.mode==="rec"){G.msg=G.rec?G.recmsg||"":"";draw();return;}if(G.mode==="seed"){G.nodes=G.last?G.last.nodes:[];G.edges=G.last?G.last.edges:[];G.seed=G.last?G.last.seed:null;G.msg=G.last?G.last.msg:"";}else{if(G.seed)G.last={nodes:G.nodes,edges:G.edges,seed:G.seed,msg:G.msg};libMap();}draw();return;}
     const gc=e.target.closest("[data-grec]");if(gc&&G.rec){const n=[...G.rec.prior,...G.rec.later].find(x=>x.id===gc.dataset.id);if(!n)return;
@@ -6157,6 +6207,7 @@ function init(){const V=$("#v-graph");if(!V)return;
       if(k==="rec"){await recommend();G.recmsg=G.msg;return;}
       if(k==="go"){const q=G.q.trim();if(!q){HUB.toast("중심 논문을 고르거나 DOI·제목을 넣어 주세요");return;}G.showOpts=false;const d=q.match(/10\.\d{4,9}\/\S+/);build(d?{doi:d[0].replace(/[.,;)]+$/,"")}:{title:q});}
       else if(k==="zin")zoom(0.75);else if(k==="zout")zoom(1.33);else if(k==="fit"){G.vb=null;redrawSvg();}else if(k==="png")savePng();
+      else if(k==="clear"){G.nodes=[];G.edges=[];G.seed=null;G.sel=null;G.last=null;G.msg="";G.vb=null;HUB.keep.del("graph");draw();}
       else if(k==="center"&&n){if(G.mode==="lib"){G.last=null;G.mode="seed";G.q=n.title;build({doi:n.doi,title:n.title});}else build({oaId:n.id});}
       else if(k==="openlib"&&n)HUB.lib.open(n.id);
       else if(k==="add"&&n){a.disabled=true;await HUB.lib.addRef({title:n.title,authors:n.authors,journal:n.journal,year:n.year,doi:n.doi,cited:n.cited,url:n.url});n.lib=true;HUB.toast("라이브러리에 담았어요");redrawSvg();}
