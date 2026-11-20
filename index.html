@@ -3842,7 +3842,11 @@ const fKids=id=>folders().filter(f=>(f.parent||"")===(id||"")).sort((a,b)=>Strin
 const fDesc=id=>{const out=new Set([id]);let grow=true;while(grow){grow=false;folders().forEach(f=>{if(f.parent&&out.has(f.parent)&&!out.has(f.id)){out.add(f.id);grow=true;}});}return out;};
 const fPath=id=>{const L=[];let f=fById(id),g=0;while(f&&g++<20){L.unshift(f.name);f=fById(f.parent);}return L.join(" / ");};
 const inUF=p=>!UF?true:UF==="__nofolder"?!(p.ufolder&&fById(p.ufolder)):fDesc(UF).has(p.ufolder);
-function fOpts(sel,blank){const out=[`<option value="">${blank}</option>`];const walk=(pid,d)=>fKids(pid).forEach(f=>{out.push(`<option value="${esc(f.id)}" ${f.id===sel?"selected":""}>${"　".repeat(d)}${esc(f.name)}</option>`);walk(f.id,d+1);});walk("",0);return out.join("");}
+/* folder pickers draw the same tree as the side panel, with box-drawing connectors (├─ └─ │) since an <option> cannot hold lines */
+function fOpts(sel,blank){const out=[`<option value="">${blank}</option>`];
+  const walk=(pid,pre)=>{const ks=fKids(pid);ks.forEach((f,i)=>{const last=i===ks.length-1;const lead=pid?pre+(last?"└─ ":"├─ "):"";
+    out.push(`<option value="${esc(f.id)}" ${f.id===sel?"selected":""}>${lead}${esc(f.name)}</option>`);walk(f.id,pid?pre+(last?"\u3000\u2002":"│\u2002\u2002"):"");});};
+  walk("","");return out.join("");}
 function foldBox(){const b=$("#libFold");if(!b)return;if(UF&&UF!=="__nofolder"&&!fById(UF)){UF="";saveUF();}
   if(UF&&fById(UF)){let f=fById(fById(UF).parent),g=0,ch=false;while(f&&g++<20){if(UFC.delete(f.id))ch=true;f=fById(f.parent);}if(ch)saveUFC();}
   const real=S.papers.filter(p=>!p.derived),cnt=id=>{const d=fDesc(id);return real.filter(p=>d.has(p.ufolder)).length;},none=real.filter(p=>!(p.ufolder&&fById(p.ufolder))).length;
