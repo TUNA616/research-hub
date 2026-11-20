@@ -889,6 +889,35 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .libjob small{color:var(--muted);font-size:12px}
 .libjob .spin{flex:none}
 @media (max-width:600px){.libjob{left:10px;right:10px;bottom:10px;border-radius:12px}.libjob small{display:none}}
+
+/* library: my folders (tree) and groups of derived files */
+#libFold{display:flex;flex-direction:column;gap:6px}
+.uftree{display:flex;flex-direction:column;gap:2px}
+.ufrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-left:calc(var(--d,0) * 16px)}
+.uf{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:inherit;font:inherit;font-size:14px;text-align:left;cursor:pointer}
+.uf:hover{background:var(--surface);border-color:var(--line)}
+.uf[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.uf.ufdrop{outline:2px dashed var(--accent);outline-offset:1px;background:var(--accent-soft)}
+.ufi{flex:none;width:12px;color:var(--muted);font-size:11px}
+.ufn{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.uf .n{flex:none;font-size:12px;color:var(--muted)}
+.ufact{display:flex;gap:8px;font-size:12.5px;padding-left:22px;flex-basis:100%}
+.ufact .danger,.glist .danger{color:var(--err,#b3261e)}
+.ufname{flex:1 1 120px;min-width:0;padding:5px 8px;border:1px solid var(--accent);border-radius:7px;font:inherit;font-size:14px;background:var(--surface);color:inherit}
+.ufhint{margin:2px 0 0;font-size:12.5px;line-height:1.5}
+.tag.gtag{cursor:pointer;background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.tag.gtag.sub{cursor:default}
+.tag.uftag{border:1px dashed var(--line2)!important;background:transparent;color:var(--muted);font-weight:500}
+.irow.gsub{margin-left:18px;position:relative}
+.irow.gsub::before{content:"";position:absolute;left:-10px;top:-4px;bottom:50%;width:8px;border-left:1.5px solid var(--line2);border-bottom:1.5px solid var(--line2);border-bottom-left-radius:6px}
+.gpanel{margin:10px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);font-size:13.5px;display:flex;flex-direction:column;gap:8px}
+.gph{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.glist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.glist li{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:4px 6px;border-radius:7px}
+.glist li.on{background:var(--accent-soft)}
+.glist li .linkbtn{text-align:left;overflow-wrap:anywhere}
+.gact{margin-left:auto;display:flex;gap:10px;font-size:12.5px}
+.gsug{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 </style>
 </head>
 <body>
@@ -986,6 +1015,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
     <div class="side-tools">
       <label class="sr" for="q">검색</label>
       <input class="search" id="q" type="search" placeholder="제목, 저자, 키워드, 저널 검색">
+      <div id="libFold"></div>
       <div id="libProj" hidden></div>
       <div class="kwhead"><span>주제 폴더</span><button class="linkbtn" type="button" data-act="reorg">폴더 다시 정리</button></div>
       <div class="folders" id="folders"></div>
@@ -1311,7 +1341,7 @@ function makeCol(name){
       mirrorGet(name).then(l=>tx2("readwrite",s=>s.put({k:mirrorKey(name),d:{list:l.filter(x=>x.id!==id),at:Date.now()}})).catch(()=>{}));return;}c.list=c.list.filter(x=>x.id!==id);if(H.storage==="browser")await (base?tx(name,"readwrite",s=>s.delete(id)):X.del(name,id)).catch(()=>{});emit();};
   return c;
 }
-const cols={papers:makeCol("papers"),reports:makeCol("reports"),figs:makeCol("figs"),drafts:makeCol("drafts"),materials:makeCol("materials"),cells:makeCol("cells"),orders:makeCol("orders"),notes:makeCol("notes"),plans:makeCol("plans"),projects:makeCol("projects"),grants:makeCol("grants"),tpls:makeCol("tpls")};
+const cols={papers:makeCol("papers"),reports:makeCol("reports"),figs:makeCol("figs"),drafts:makeCol("drafts"),materials:makeCol("materials"),cells:makeCol("cells"),orders:makeCol("orders"),notes:makeCol("notes"),plans:makeCol("plans"),projects:makeCol("projects"),grants:makeCol("grants"),tpls:makeCol("tpls"),lfolders:makeCol("lfolders")};
 H.col=n=>cols[n];
 /* API keys come from this browser's settings, which can also be filled from a pasted or imported settings code. Before a key goes into a request header or URL
    it must look like a key: printable ASCII with no spaces or line breaks (so it cannot add headers or break the URL) and a sane length. Anything else is ignored. */
@@ -1872,7 +1902,7 @@ function bindSettings(){
   $("#cfgTheme").addEventListener("change",e=>{H.cfg.theme=e.target.value;ls.set("cfg",H.cfg);H.applyTheme();});
   $("#settingsBtn").addEventListener("click",()=>{$("#cfgAiKey").value=H.cfg.aiKey;$("#cfgAiModel").value=H.cfg.aiModel;$("#cfgOaKey").value=H.cfg.oaKey;$("#cfgS2Key").value=H.cfg.s2Key;$("#cfgUpMail").value=H.cfg.upMail||"";$("#cfgGtpKey").value=H.cfg.gtpKey||"";$("#cfgGKey").value=H.cfg.gKey||"";$("#cfgOKey").value=H.cfg.oKey||"";$("#cfgTheme").value=H.cfg.theme||"";});
   $("#setSave").addEventListener("click",()=>{Object.assign(H.cfg,{aiKey:$("#cfgAiKey").value.trim(),aiModel:$("#cfgAiModel").value.trim()||"claude-sonnet-5-5",oaKey:$("#cfgOaKey").value.trim(),s2Key:$("#cfgS2Key").value.trim(),upMail:$("#cfgUpMail").value.trim(),gtpKey:$("#cfgGtpKey").value.trim(),gKey:$("#cfgGKey").value.trim(),oKey:$("#cfgOKey").value.trim(),theme:$("#cfgTheme").value});ls.set("cfg",H.cfg);H.applyTheme();H.renderHome();});
-  const BKC=()=>[["papers",cols.papers],["reports",cols.reports],["figs",cols.figs],["drafts",cols.drafts],["materials",cols.materials],["cells",cols.cells],["orders",cols.orders],["notes",cols.notes],["plans",cols.plans],["projects",cols.projects],["grants",cols.grants],["tpls",cols.tpls]];
+  const BKC=()=>[["papers",cols.papers],["reports",cols.reports],["figs",cols.figs],["drafts",cols.drafts],["materials",cols.materials],["cells",cols.cells],["orders",cols.orders],["notes",cols.notes],["plans",cols.plans],["projects",cols.projects],["grants",cols.grants],["tpls",cols.tpls],["lfolders",cols.lfolders]];
   const bkData=()=>{const d={app:"research-hub",exportedAt:Date.now()};BKC().forEach(([k,c])=>d[k]=c.list);return d;};
   const bkName=ext=>"연구허브_백업_"+new Date().toISOString().slice(0,10)+"."+ext;
   const prog=t=>{const p=$("#bkProg");if(p){p.hidden=!t;p.textContent=t||"";}};
@@ -2535,7 +2565,7 @@ async function applyReorg(btn){
 
 function filtered(){
   const q=S.q.trim().toLowerCase();
-  let l=folderSet();
+  let l=folderSet().filter(inUF);
   if(S.kw)l=l.filter(p=>(p.keywords||[]).some(k=>normKw(k)===S.kw));
   {const pj=curProj();if(pj)l=l.filter(p=>pj==="__none"?!p.project:(p.project||"")===pj);}
   if(q)l=l.filter(p=>[p.title,(p.authors||[]).join(" "),p.journal,p.journalAbbr,(p.keywords||[]).join(" "),(p.tags||[]).join(" "),p.doi,p.origName,p.memo].join(" ").toLowerCase().includes(q));
@@ -2558,11 +2588,11 @@ function render(){
   kb.innerHTML=`<div class="kwhead"><span>키워드${S.kw?" · 1개 선택됨":""}</span>${S.kw?`<button class="linkbtn" type="button" data-kw="">선택 해제</button>`:""}</div><div class="kwchips">`+top.map(([k,v])=>`<button class="kw" type="button" data-kw="${esc(k)}" aria-pressed="${S.kw===k}">${esc(v.label)}<span class="n">${v.n}</span></button>`).join("")+`</div>`;
   const l=filtered();
   $("#listCount").textContent=`${l.length}편 표시`;
-  $("#list").innerHTML=l.length?l.map(p=>`<div class="irow${pickSet.has(p.id)?" picked":""}"><label class="ipick" title="고르기 (리서치·프로젝트에 쓰기)"><input type="checkbox" data-pick="${esc(p.id)}" ${pickSet.has(p.id)?"checked":""} aria-label="고르기"></label><button class="item" type="button" data-id="${esc(p.id)}" aria-current="${S.sel===p.id}">
+  $("#list").innerHTML=l.length?gview(l).map(p=>`<div class="irow${pickSet.has(p.id)?" picked":""}${p._gsub?" gsub":""}"><label class="ipick" title="고르기 (리서치·프로젝트에 쓰기)"><input type="checkbox" data-pick="${esc(p.id)}" ${pickSet.has(p.id)?"checked":""} aria-label="고르기"></label><button class="item" type="button" draggable="true" data-id="${esc(p.id)}" aria-current="${S.sel===p.id}">
     <span class="yr">${esc(p.year||"—")}${p.star?`<span class="favm" title="즐겨찾기">★</span>`:""}</span>
     <span style="min-width:0"><span class="t">${esc(p.title||p.origName)}</span>
     <span class="s">${esc(authorShort(p))}${p.journalAbbr||p.journal?" · "+esc(p.journalAbbr||p.journal):""}</span>
-    <span class="badges"><span class="tag ft">${ftLabel(p)}</span>${(p.figures||[]).length?`<span class="tag">그림 ${(p.figures||[]).length}</span>`:""}${(p.tables||[]).length?`<span class="tag">표 ${p.tables.length}</span>`:""}${p.note&&p.note.relevance?`<span class="tag">관련 ${p.note.relevance.score}/5</span>`:""}${p.read?`<span class="tag rd-${p.read}">${READ[p.read]}</span>`:""}${p.retracted?`<span class="tag err">철회됨</span>`:(p.notices||[]).length?`<span class="tag err">정정 공지</span>`:""}${!p.summary?`<span class="tag err">요약 없음</span>`:""}${projTag(p)}</span></span></button></div>`).join(""):`<div class="list-empty">${S.papers.length?"조건에 맞는 논문이 없어요.":S.dbLoaded?"아직 정리한 논문이 없어요.":"목록을 불러오는 중…"}</div>`;
+    <span class="badges"><span class="tag ft">${ftLabel(p)}</span>${(p.figures||[]).length?`<span class="tag">그림 ${(p.figures||[]).length}</span>`:""}${(p.tables||[]).length?`<span class="tag">표 ${p.tables.length}</span>`:""}${p.note&&p.note.relevance?`<span class="tag">관련 ${p.note.relevance.score}/5</span>`:""}${p.read?`<span class="tag rd-${p.read}">${READ[p.read]}</span>`:""}${p.retracted?`<span class="tag err">철회됨</span>`:(p.notices||[]).length?`<span class="tag err">정정 공지</span>`:""}${!p.summary?`<span class="tag err">요약 없음</span>`:""}${projTag(p)}${gBadge(p)}${p.ufolder&&fById(p.ufolder)&&!fDesc(UF||"-").has(p.ufolder)?`<span class="tag uftag">${esc(fById(p.ufolder).name)}</span>`:""}</span></span></button></div>`).join(""):`<div class="list-empty">${S.papers.length?"조건에 맞는 논문이 없어요.":S.dbLoaded?"아직 정리한 논문이 없어요.":"목록을 불러오는 중…"}</div>`;
   libAfterList(l);
   renderMain();
 }
@@ -3679,8 +3709,10 @@ function readerTop(){const m=$("#main");if(!m)return;const th=parseFloat(getComp
 function readerNav(p){const l=filtered(),i=l.findIndex(x=>x.id===p.id);
   return `<div class="rnav"><div class="row" style="gap:6px"><button class="btn sm" type="button" data-rnav="-1" ${i<=0?"disabled":""}>← 이전</button><span class="muted mono">${i>=0?`${i+1} / ${l.length}`:"목록 밖"}</span><button class="btn sm" type="button" data-rnav="1" ${i<0||i>=l.length-1?"disabled":""}>다음 →</button></div>
     <label class="rnproj"><span>프로젝트</span><select data-pproj="${esc(p.id)}">${projOpts(p.project||"","없음")}</select></label>
-    <label class="ck rnpick"><input type="checkbox" data-pick="${esc(p.id)}" ${pickSet.has(p.id)?"checked":""}><span>고르기</span></label></div>`;}
+    <label class="rnproj"><span>내 폴더</span><select data-pfolder="${esc(p.id)}">${fOpts(p.ufolder&&fById(p.ufolder)?p.ufolder:"","없음")}</select></label>
+    <label class="ck rnpick"><input type="checkbox" data-pick="${esc(p.id)}" ${pickSet.has(p.id)?"checked":""}><span>고르기</span></label></div>${groupPanel(p)}`;}
 function libAfterList(l){
+  foldBox();
   const pb=$("#libProj");
   if(pb){const ns=HUB.proj?HUB.proj.names():[],cur=curProj(),cnt=n=>S.papers.filter(p=>n==="__none"?!p.project:p.project===n).length;
     pb.hidden=!ns.length&&!cur;
@@ -3691,7 +3723,7 @@ function libAfterList(l){
 }
 function pickBar(l){const bar=$("#libPick");if(!bar)return;l=l||filtered();const n=pickSet.size,vis=l.filter(p=>pickSet.has(p.id)).length;
   bar.innerHTML=`<label class="ck"><input type="checkbox" id="libPickAll" ${l.length&&vis===l.length?"checked":""} ${l.length?"":"disabled"}><span>보이는 ${l.length}편 모두</span></label>`+
-   (n?`<span class="lpn"><b>${n}편 고름</b>${n>vis?` <small class="muted">(다른 필터에 ${n-vis}편)</small>`:""}</span><div class="row lpact"><button class="btn sm primary" type="button" data-lp="research">리서치로</button><select class="mini" data-lp="proj" aria-label="고른 논문을 프로젝트에 넣기">${projOpts("","프로젝트에 넣기…")}<option value="__clear">프로젝트에서 빼기</option></select><button class="btn sm ghost" type="button" data-lp="clear">해제</button></div>`
+   (n?`<span class="lpn"><b>${n}편 고름</b>${n>vis?` <small class="muted">(다른 필터에 ${n-vis}편)</small>`:""}</span><div class="row lpact"><button class="btn sm primary" type="button" data-lp="research">리서치로</button><select class="mini" data-lp="proj" aria-label="고른 논문을 프로젝트에 넣기">${projOpts("","프로젝트에 넣기…")}<option value="__clear">프로젝트에서 빼기</option></select><select class="mini" data-lp="folder" aria-label="고른 논문을 내 폴더로 옮기기">${fOpts("","폴더로 옮기기…")}<option value="__out">폴더에서 빼기</option></select>${n>1?`<button class="btn sm" type="button" data-lp="group" title="같은 논문에서 나온 문서·자료를 한데 묶어요">한 묶음으로</button>`:""}<button class="btn sm ghost" type="button" data-lp="clear">해제</button></div>`
      :`<span class="muted lpn">체크해서 리서치에 쓸 논문을 골라요</span>`);
   const a=$("#libPickAll");if(a)a.indeterminate=vis>0&&vis<l.length;}
 async function setPaperProject(ids,proj){for(const id of ids)await HUB.col("papers").update(id,{project:proj||""});}
@@ -3709,6 +3741,86 @@ document.addEventListener("click",e=>{
   const rn=e.target.closest("[data-rnav]");if(rn){const l=filtered(),i=l.findIndex(x=>x.id===S.sel),nx=l[i+(+rn.dataset.rnav)];if(nx)select(nx.id);return;}
 });
 document.addEventListener("hub:proj",()=>{if(S.dbLoaded)render();});
+/* ---------- my folders (a tree the user builds; one folder per paper) and groups (a paper with the files derived from it, shown together) ----------
+   papers carry ufolder (folder id) and group (the group's id = its main paper's id). Folders live in the "lfolders" collection {name,parent,addedAt}. */
+const fcol=()=>HUB.col("lfolders");
+let UF=HUB.u.ls.get("libuf","")||"";const saveUF=()=>HUB.u.ls.set("libuf",UF);
+const GX=new Set(HUB.u.ls.get("libgx",[])||[]);const saveGX=()=>HUB.u.ls.set("libgx",[...GX]);
+let FEDIT="",FDEL={id:"",until:0};
+const folders=()=>fcol()?fcol().list:[];
+const fById=id=>folders().find(f=>f.id===id);
+const fKids=id=>folders().filter(f=>(f.parent||"")===(id||"")).sort((a,b)=>String(a.name).localeCompare(String(b.name),"ko"));
+const fDesc=id=>{const out=new Set([id]);let grow=true;while(grow){grow=false;folders().forEach(f=>{if(f.parent&&out.has(f.parent)&&!out.has(f.id)){out.add(f.id);grow=true;}});}return out;};
+const fPath=id=>{const L=[];let f=fById(id),g=0;while(f&&g++<20){L.unshift(f.name);f=fById(f.parent);}return L.join(" / ");};
+const inUF=p=>!UF?true:UF==="__nofolder"?!(p.ufolder&&fById(p.ufolder)):fDesc(UF).has(p.ufolder);
+function fOpts(sel,blank){const out=[`<option value="">${blank}</option>`];const walk=(pid,d)=>fKids(pid).forEach(f=>{out.push(`<option value="${esc(f.id)}" ${f.id===sel?"selected":""}>${"　".repeat(d)}${esc(f.name)}</option>`);walk(f.id,d+1);});walk("",0);return out.join("");}
+function foldBox(){const b=$("#libFold");if(!b)return;if(UF&&UF!=="__nofolder"&&!fById(UF)){UF="";saveUF();}
+  const cnt=id=>{const d=fDesc(id);return S.papers.filter(p=>d.has(p.ufolder)).length;},none=S.papers.filter(p=>!(p.ufolder&&fById(p.ufolder))).length;
+  const row=(f,d)=>{const on=UF===f.id,ed=FEDIT===f.id;return `<div class="ufrow" style="--d:${d}">${ed?`<input class="ufname" data-ufren="${esc(f.id)}" value="${esc(f.name)}" aria-label="폴더 이름"><button class="btn sm" type="button" data-ufa="renok" data-id="${esc(f.id)}">확인</button>`
+      :`<button class="uf" type="button" data-uf="${esc(f.id)}" aria-pressed="${on}" title="${esc(fPath(f.id))} · 논문을 끌어다 놓으면 이 폴더로 옮겨요"><span class="ufi" aria-hidden="true">${fKids(f.id).length?"▾":"–"}</span><span class="ufn">${esc(f.name)}</span><span class="n">${cnt(f.id)}</span></button>${on?`<span class="ufact"><button class="linkbtn" type="button" data-ufa="sub" data-id="${esc(f.id)}">+하위</button><button class="linkbtn" type="button" data-ufa="ren" data-id="${esc(f.id)}">이름</button><button class="linkbtn danger ${FDEL.id===f.id&&Date.now()<FDEL.until?"armed":""}" type="button" data-ufa="del" data-id="${esc(f.id)}">${FDEL.id===f.id&&Date.now()<FDEL.until?"한 번 더 누르면 삭제":"삭제"}</button></span>`:""}`}</div>`+fKids(f.id).map(k=>row(k,d+1)).join("");};
+  b.innerHTML=`<div class="kwhead"><span>내 폴더</span><button class="linkbtn" type="button" data-ufa="new">+ 새 폴더</button></div>
+    <div class="uftree"><div class="ufrow" style="--d:0"><button class="uf" type="button" data-uf="" aria-pressed="${!UF}"><span class="ufi" aria-hidden="true">◇</span><span class="ufn">모든 논문</span><span class="n">${S.papers.length}</span></button></div>
+    ${fKids("").map(f=>row(f,0)).join("")}
+    ${folders().length?`<div class="ufrow" style="--d:0"><button class="uf" type="button" data-uf="__nofolder" aria-pressed="${UF==="__nofolder"}"><span class="ufi" aria-hidden="true">·</span><span class="ufn">폴더 없음</span><span class="n">${none}</span></button></div>`:`<p class="muted ufhint">폴더를 만들고 목록의 논문을 끌어다 놓거나, 체크한 뒤 '폴더로 옮기기'를 쓰세요.</p>`}</div>`;
+  const i=b.querySelector("[data-ufren]");if(i){i.focus();i.select();}}
+async function moveToFolder(ids,fid){for(const id of ids)await HUB.col("papers").update(id,{ufolder:fid||""});}
+async function newFolder(parent){let n="새 폴더",k=2;const sib=new Set(fKids(parent||"").map(f=>f.name));while(sib.has(n))n="새 폴더 "+(k++);const id=uid();await fcol().set(id,{name:n,parent:parent||"",addedAt:Date.now()});FEDIT=id;setTimeout(render,60);}
+/* groups */
+const gMembers=gid=>S.papers.filter(p=>p.group===gid);
+function gview(l){const by=new Map();l.forEach(p=>{if(p.group&&gMembers(p.group).length>1){if(!by.has(p.group))by.set(p.group,[]);by.get(p.group).push(p);}});
+  const out=[],done=new Set();
+  for(const p of l){if(!p.group||!by.has(p.group)||by.get(p.group).length<2){out.push(p);continue;}if(done.has(p.group))continue;done.add(p.group);
+    const ms=by.get(p.group),head=ms.find(x=>x.id===p.group)||ms[0],rest=ms.filter(x=>x!==head),open=GX.has(p.group);
+    out.push({...head,_gn:gMembers(p.group).length,_gopen:open});if(open)rest.forEach(x=>out.push({...x,_gsub:true}));}
+  return out;}
+const gBadge=p=>p._gn?`<span class="tag gtag" role="button" tabindex="0" data-gx="${esc(p.group)}" title="같은 논문에서 나온 자료 묶음 · 눌러서 ${p._gopen?"접기":"펼치기"}">${p._gopen?"▾":"▸"} 묶음 ${p._gn}</span>`:p._gsub?`<span class="tag gtag sub">묶음 자료</span>`:"";
+async function makeGroup(ids){ids=ids.filter(id=>S.papers.some(p=>p.id===id));if(ids.length<2){toast("두 편 이상 골라야 묶을 수 있어요");return;}
+  const ps=ids.map(id=>S.papers.find(p=>p.id===id));const had=ps.find(p=>p.group&&gMembers(p.group).length>1);
+  /* the main item: a full paper PDF over slides, data or supplements, then the oldest */
+  const side=x=>(x.fileType==="ref"?4:0)+(x.fileType&&x.fileType!=="pdf"?2:0)+(/supp|\bSI\b|slide|poster|data|figure|보충|발표/i.test(String(x.title||"")+" "+String(x.origName||""))?1:0);
+  const gid=had?had.group:(ps.slice().sort((a,b)=>side(a)-side(b)||(a.addedAt||0)-(b.addedAt||0))[0].id);
+  const old=new Set(ps.map(p=>p.group).filter(g=>g&&g!==gid));for(const g of old)for(const m of gMembers(g))if(!ids.includes(m.id))ids.push(m.id);
+  GX.add(gid);saveGX();for(const id of ids)await HUB.col("papers").update(id,{group:gid});render();
+  toast(`${ids.length}편을 한 묶음으로 묶었어요. 대표: '${String((S.papers.find(p=>p.id===gid)||{}).title||"").slice(0,40)}'`,5000);}
+async function ungroupOne(id){const p=S.papers.find(x=>x.id===id);if(!p||!p.group)return;const gid=p.group,ms=gMembers(gid);
+  if(id===gid&&ms.length>1){const nx=ms.find(x=>x.id!==id);for(const m of ms)if(m.id!==id)await HUB.col("papers").update(m.id,{group:nx.id});if(GX.has(gid)){GX.delete(gid);GX.add(nx.id);saveGX();}}
+  await HUB.col("papers").update(id,{group:""});const left=gMembers(p.group===id?"":gid);
+  const rest=S.papers.filter(x=>x.group&&gMembers(x.group).length===1);for(const x of rest)await HUB.col("papers").update(x.id,{group:""});toast("묶음에서 뺐어요");}
+async function setMain(id){const p=S.papers.find(x=>x.id===id);if(!p||!p.group||p.group===id)return;const gid=p.group;for(const m of gMembers(gid))await HUB.col("papers").update(m.id,{group:id});if(GX.has(gid)){GX.delete(gid);GX.add(id);saveGX();}toast("대표 자료를 바꿨어요");}
+/* "the same paper": same DOI, or file names / titles that share a long common start */
+const stem=s=>String(s||"").toLowerCase().replace(/\.(pdf|docx?|pptx?|xlsx?|csv|hwpx?)$/,"").replace(/[\s_\-()[\].,]+/g,"");
+function gSuggest(p){const d=String(p.doi||"").toLowerCase(),a=stem(p.origName),t=stem(p.title);
+  return S.papers.filter(o=>o.id!==p.id&&!(p.group&&o.group===p.group)&&((d&&String(o.doi||"").toLowerCase()===d)||(a.length>=12&&stem(o.origName).slice(0,Math.min(18,a.length))===a.slice(0,Math.min(18,a.length)))||(t.length>=20&&stem(o.title).slice(0,24)===t.slice(0,24)))).slice(0,6);}
+function groupPanel(p){const ms=p.group?gMembers(p.group):[];const sg=gSuggest(p);
+  if(ms.length<2&&!sg.length)return `<div class="gpanel"><span class="muted">이 논문에서 나온 보충자료·발표자료·데이터가 라이브러리에 있으면, 목록에서 함께 체크하고 <b>한 묶음으로</b>를 누르세요.</span></div>`;
+  return `<div class="gpanel">${ms.length>1?`<div class="gph"><b>묶음 자료 ${ms.length}개</b><span class="muted">같은 논문에서 나온 문서·자료</span></div><ul class="glist">${ms.map(m=>`<li class="${m.id===p.id?"on":""}"><span class="tag ft">${esc(ftLabel(m))}</span>${m.id===p.group?`<span class="tag">대표</span>`:""}<button class="linkbtn" type="button" data-gopen="${esc(m.id)}">${esc(String(m.title||m.origName).slice(0,90))}</button><span class="gact">${m.id!==p.group?`<button class="linkbtn" type="button" data-gmain="${esc(m.id)}">대표로</button>`:""}<button class="linkbtn danger" type="button" data-gout="${esc(m.id)}">빼기</button></span></li>`).join("")}</ul>`:""}
+    ${sg.length?`<div class="gsug"><span class="muted">같은 논문의 자료로 보여요:</span>${sg.map(o=>`<button class="chip" type="button" data-gadd="${esc(o.id)}" title="이 논문과 한 묶음으로">＋ ${esc(String(o.title||o.origName).slice(0,50))}</button>`).join("")}</div>`:""}</div>`;}
+document.addEventListener("click",async e=>{if(HUB.view!=="library")return;
+  const gx=e.target.closest("[data-gx]");if(gx){e.preventDefault();e.stopPropagation();const g=gx.dataset.gx;if(GX.has(g))GX.delete(g);else GX.add(g);saveGX();render();return;}
+  const uf=e.target.closest("[data-uf]");if(uf){UF=uf.dataset.uf;saveUF();FEDIT="";render();return;}
+  const ua=e.target.closest("[data-ufa]");if(ua){const k=ua.dataset.ufa,id=ua.dataset.id;
+    if(k==="new")await newFolder(UF&&UF!=="__nofolder"?"":"");else if(k==="sub")await newFolder(id);else if(k==="ren"){FEDIT=id;render();}
+    else if(k==="renok"){const i=$(`[data-ufren="${CSS.escape(id)}"]`);const v=i&&i.value.trim();if(v)await fcol().update(id,{name:v.slice(0,60)});FEDIT="";setTimeout(render,60);}
+    else if(k==="del"){if(!(FDEL.id===id&&Date.now()<FDEL.until)){FDEL={id,until:Date.now()+4000};ua.classList.add("armed");ua.textContent="한 번 더 누르면 삭제";setTimeout(()=>{const x=document.querySelector(`[data-ufa=del][data-id="${CSS.escape(id)}"]`);if(x){x.classList.remove("armed");x.textContent="삭제";}},4000);return;}FDEL={id:"",until:0};
+      const f=fById(id);if(!f)return;const up=f.parent||"";for(const p of S.papers.filter(x=>x.ufolder===id))await HUB.col("papers").update(p.id,{ufolder:up});for(const k2 of fKids(id))await fcol().update(k2.id,{parent:up});await fcol().remove(id);UF=up;saveUF();toast(`'${f.name}' 폴더를 지웠어요. 안의 논문과 하위 폴더는 ${up?"위 폴더로":"'폴더 없음'으로"} 옮겼어요.`,5000);setTimeout(render,60);}
+    return;}
+  const lg=e.target.closest("button[data-lp=group]");if(lg){await makeGroup([...pickSet]);return;}
+  const go=e.target.closest("[data-gopen]");if(go){select(go.dataset.gopen);return;}
+  const gm=e.target.closest("[data-gmain]");if(gm){await setMain(gm.dataset.gmain);return;}
+  const gt=e.target.closest("[data-gout]");if(gt){await ungroupOne(gt.dataset.gout);return;}
+  const ga=e.target.closest("[data-gadd]");if(ga&&S.sel){await makeGroup([S.sel,ga.dataset.gadd]);return;}
+},true);
+document.addEventListener("keydown",e=>{const i=e.target.closest&&e.target.closest("[data-ufren]");if(i&&e.key==="Enter"){const b=i.parentElement.querySelector("[data-ufa=renok]");if(b)b.click();}else if(i&&e.key==="Escape"){FEDIT="";render();}
+  const gx=e.target.closest&&e.target.closest("[data-gx]");if(gx&&(e.key==="Enter"||e.key===" ")){e.preventDefault();gx.click();}});
+document.addEventListener("change",async e=>{const s=e.target.closest("select[data-lp=folder]");if(s){const v=s.value;if(v==="")return;const ids=[...pickSet];await moveToFolder(ids,v==="__out"?"":v);toast(v==="__out"?`${ids.length}편을 폴더에서 뺐어요`:`${ids.length}편을 '${fPath(v)}'로 옮겼어요`);s.value="";return;}
+  const pf=e.target.closest("select[data-pfolder]");if(pf){await moveToFolder([pf.dataset.pfolder],pf.value);toast(pf.value?`'${fPath(pf.value)}'로 옮겼어요`:"폴더에서 뺐어요");}});
+/* drag a paper (or every picked paper) onto a folder */
+document.addEventListener("dragstart",e=>{const it=e.target.closest&&e.target.closest("#list .item");if(!it)return;const id=it.dataset.id;const ids=pickSet.has(id)?[...pickSet]:[id];e.dataTransfer.setData("text/x-hub-papers",JSON.stringify(ids));e.dataTransfer.effectAllowed="move";});
+document.addEventListener("dragover",e=>{const f=e.target.closest&&e.target.closest("[data-uf]");if(f&&[...(e.dataTransfer.types||[])].includes("text/x-hub-papers")){e.preventDefault();f.classList.add("ufdrop");}});
+document.addEventListener("dragleave",e=>{const f=e.target.closest&&e.target.closest("[data-uf]");if(f)f.classList.remove("ufdrop");});
+document.addEventListener("drop",async e=>{const f=e.target.closest&&e.target.closest("[data-uf]");if(!f)return;const raw=e.dataTransfer&&e.dataTransfer.getData("text/x-hub-papers");if(!raw)return;e.preventDefault();e.stopPropagation();f.classList.remove("ufdrop");
+  let ids=[];try{ids=JSON.parse(raw);}catch(err){}const v=f.dataset.uf;if(v==="")return;await moveToFolder(ids,v==="__nofolder"?"":v);toast(v==="__nofolder"?`${ids.length}편을 폴더에서 뺐어요`:`${ids.length}편을 '${fPath(v)}'로 옮겼어요`);},true);
+if(fcol())fcol().subscribe(()=>{if(S.dbLoaded&&HUB.view==="library")render();});
 
 /* papers added from search go through the same queue as dropped files, so the progress panel shows them:
    full text if an open-access PDF can be fetched, otherwise summary + note + folder from the abstract */
