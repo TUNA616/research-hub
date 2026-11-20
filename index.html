@@ -893,7 +893,15 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 /* library: my folders (tree) and groups of derived files */
 #libFold{display:flex;flex-direction:column;gap:6px}
 .uftree{display:flex;flex-direction:column;gap:2px}
-.ufrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding-left:calc(var(--d,0) * 16px)}
+.ufrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.uftree ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.uftree ul ul{padding-left:20px}
+.uftree li{position:relative}
+/* connector lines: a vertical trunk from the parent and a short branch into each child */
+.uftree ul ul>li::before{content:"";position:absolute;left:-12px;top:-2px;bottom:0;border-left:1.5px solid var(--line2)}
+.uftree ul ul>li:last-child::before{bottom:auto;height:19px}
+.uftree ul ul>li::after{content:"";position:absolute;left:-12px;top:17px;width:12px;border-top:1.5px solid var(--line2)}
+.uftree li.has>.ufrow .ufi{color:var(--accent)}
 .uf{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:inherit;font:inherit;font-size:14px;text-align:left;cursor:pointer}
 .uf:hover{background:var(--surface);border-color:var(--line)}
 .uf[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
@@ -901,7 +909,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .ufi{flex:none;width:12px;color:var(--muted);font-size:11px}
 .ufn{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
 .uf .n{flex:none;font-size:12px;color:var(--muted)}
-.ufact{display:flex;gap:8px;font-size:12.5px;padding-left:22px;flex-basis:100%}
+.ufact{display:flex;gap:10px;font-size:12.5px;padding-left:22px;flex-basis:100%}
 .ufact .danger,.glist .danger{color:var(--err,#b3261e)}
 .ufname{flex:1 1 120px;min-width:0;padding:5px 8px;border:1px solid var(--accent);border-radius:7px;font:inherit;font-size:14px;background:var(--surface);color:inherit}
 .ufhint{margin:2px 0 0;font-size:12.5px;line-height:1.5}
@@ -918,6 +926,57 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .glist li .linkbtn{text-align:left;overflow-wrap:anywhere}
 .gact{margin-left:auto;display:flex;gap:10px;font-size:12.5px}
 .gsug{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* library: the pick bar always fits the side panel */
+.lpick .lpact{display:flex;width:100%;gap:6px}
+.lpick .lpact select.mini{flex:1 1 130px;min-width:0;max-width:100%;width:auto}
+.lpick .lpact .btn{flex:none}
+/* library: the list column can be widened or narrowed (desktop) */
+@media (min-width:861px){
+  .layout{grid-template-columns:var(--sidew,330px) 1fr}
+  .side{position:sticky}
+  .sidegrip{position:absolute;top:0;right:0;width:9px;height:100%;cursor:col-resize;z-index:5;touch-action:none}
+  .sidegrip::after{content:"";position:absolute;right:0;top:0;bottom:0;width:2px;background:transparent;transition:background .15s}
+  .sidegrip:hover::after,.sidegrip.on::after{background:var(--accent)}
+  body.resizing{cursor:col-resize;user-select:none}
+}
+@media (max-width:860px){.sidegrip{display:none}}
+
+.form select{border:1px solid var(--line2);background:var(--surface);border-radius:4px;padding:8px 10px;font-size:16px;color:var(--ink);width:100%;min-height:44px}
+
+.ufx{flex:none;width:22px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:6px;background:transparent;color:var(--accent);font-size:12px;cursor:pointer;padding:0;margin-right:-4px}
+.ufx:hover{background:var(--accent-soft)}
+.ufx.none{cursor:default;background:transparent}
+.ufx.none::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--line2)}
+.ufrow .uf{padding-left:6px}
+
+.tag.ufauto{flex:none;font-size:10.5px;padding:1px 6px;background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.ufact{flex-wrap:wrap;row-gap:4px}
+.ufdo{display:inline-flex;gap:10px;flex-wrap:wrap}
+.ufrule{margin:6px 0 8px 22px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);display:flex;flex-direction:column;gap:8px;font-size:12.5px}
+.ufrule label{display:flex;flex-direction:column;gap:6px}
+.ufrule input{padding:7px 9px;border:1px solid var(--line2);border-radius:6px;background:var(--surface);color:inherit;font:inherit;font-size:14px;min-width:0}
+.dvview h2{font-size:20px;line-height:1.35;overflow-wrap:anywhere}
+.dvimg{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+.dvtbl{overflow:auto;border:1px solid var(--line);border-radius:8px}
+.dvtbl table{border-collapse:collapse;font-size:13px;min-width:100%}
+.dvtbl th,.dvtbl td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+.dvtbl th{background:var(--surface);font-weight:600}
+.recent{margin:14px 0}
+.recl{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:10px}
+.reci{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:inherit;font:inherit;text-align:left;cursor:pointer;min-width:0}
+.reci:hover{border-color:var(--accent)}
+.reci b{font-size:14.5px;line-height:1.4;overflow-wrap:anywhere}
+.reci .muted{font-size:12.5px}
+.nlinks{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.nlh{font-size:12.5px;font-weight:600;color:var(--accent);margin-right:4px}
+.nlink{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border:1px solid var(--line2);border-radius:999px;background:var(--surface);max-width:100%}
+.nlink .linkbtn{text-align:left;overflow-wrap:anywhere}
+
+.dupbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0}
+.dupbar details{flex-basis:100%;font-size:13px}.dupbar ul{margin:6px 0 0;padding-left:18px}.dupbar small{flex-basis:100%}
+.ufnote{margin:2px 0 4px 22px;font-size:12px;line-height:1.5;color:var(--muted)}
+.chip.dupc{border-color:var(--accent);color:var(--accent)}
 </style>
 </head>
 <body>
@@ -1751,7 +1810,7 @@ H.favHtml=function(){
   </div></section>`;};
 H.renderHome=function(){
   const el=$("#v-home");if(!el||H.view!=="home")return;
-  const np=cols.papers.list.length,nr=cols.reports.list.length,ns=H.search?H.search.count():0,k=H.ai.kind;
+  const np=cols.papers.list.filter(p=>!p.derived).length,nr=cols.reports.list.length,ns=H.search?H.search.count():0,k=H.ai.kind;
   const env=[
     ["AI 요약·분석",k!=="manual",k==="claude"?"Claude에 연결돼 자동으로 돌아가요.":k==="key"?"입력한 Anthropic API 키로 자동으로 돌아가요.":k==="gemini"?"입력한 Google AI 키(Gemini)로 자동으로 돌아가요. Anthropic 키를 넣으면 Claude가 대신 써요.":"복사·붙여넣기 방식이에요. 프롬프트를 복사해 Claude 대화창에 넣고 답을 가져오면 돼요. 설정에 API 키를 넣으면 자동이 돼요."],
     ["논문 DB 검색·DB 조회",!H.embedded,H.embedded?"claude.ai 안에서는 외부 사이트 연결이 막혀 있어요. 검색과 DB 조회는 내려받은 HTML 파일을 브라우저로 열어서 쓰고, 결과 JSON을 여기로 가져오세요.":"OpenAlex·Europe PMC·PubMed·Crossref·Semantic Scholar에 바로 연결돼요."],
@@ -1759,6 +1818,7 @@ H.renderHome=function(){
   el.innerHTML=`<div class="page">
     <section class="hero"><div><h2>찾고, 읽고, 분석하고, 쓰고, 그리기</h2><p>논문 검색부터 정리, 리서치, 원고 작성, 그림까지 한 곳에 모았어요. 기준 연구 주제: <b>${esc((H.lib&&H.lib.context)||"")}</b> <button class="btn sm ghost" type="button" id="homeSet">바꾸기</button></p></div>
       <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">문헌 검색 GO</button></form></section>
+    ${H.lib&&H.lib.recentHtml?H.lib.recentHtml():""}
     <div class="steps">
       <button class="step" type="button" data-go="search"><span class="mono">1 찾기</span><b>다중 DB 검색</b><span>하위 질의로 나눠 5개 DB에서 찾고, 중복을 합쳐 5계층 점수로 줄 세워요.</span><em class="mono">${ns?ns+"편 찾아 둠":"아직 검색 전"}</em></button>
       <button class="step" type="button" data-go="search"><span class="mono">2 고르기</span><b>고IF 저널 필터</b><span>IF 기준과 저널 묶음으로 걸러 읽을 논문만 라이브러리에 담아요.</span><em class="mono">저널 ${H.search?H.search.jcount():0}개 선택됨</em></button>
@@ -1961,7 +2021,7 @@ H.ready=(async()=>{
 })();
 document.addEventListener("DOMContentLoaded",()=>{
   bindSettings();
-  cols.papers.subscribe(l=>{const n=$("#navLib");if(n)n.textContent=l.length||"";H.renderHome();});
+  cols.papers.subscribe(l=>{const n=$("#navLib");if(n)n.textContent=l.filter(p=>!p.derived).length||"";H.renderHome();});
   cols.reports.subscribe(l=>{const n=$("#navRep");if(n)n.textContent=l.length||"";H.renderHome();});
   cols.figs.subscribe(()=>H.renderHome());
   H.go(location.hash.slice(1)||ls.get("view","home")||"home",true);
@@ -2018,7 +2078,7 @@ function baseName(p){
   return arr.filter(Boolean).join("_").slice(0,140)||"paper";
 }
 function extOf(p){return TYPES[p.fileType]?p.fileType:"pdf";}
-function ftLabel(p){return p.fileType==="ref"?"초록만":extOf(p).toUpperCase();}
+function ftLabel(p){return p.fileType==="fig"?"그림":p.fileType==="tbl"?"표":p.fileType==="ref"?"초록만":extOf(p).toUpperCase();}
 function authorShort(p){const a=p.authors||[];if(!a.length)return"저자 미상";return lastName(a[0])+(a.length>2?" 외":a.length===2?" · "+lastName(a[1]):"");}
 function groupKey(p,by){if(by==="year")return String(p.year||"연도미상");if(by==="journal")return p.journalAbbr||p.journal||"저널미상";return p.category||"미분류";}
 function download(filename,data){
@@ -2565,7 +2625,7 @@ async function applyReorg(btn){
 
 function filtered(){
   const q=S.q.trim().toLowerCase();
-  let l=folderSet().filter(inUF);
+  let l=folderSet().filter(p=>!p.derived&&inUF(p));
   if(S.kw)l=l.filter(p=>(p.keywords||[]).some(k=>normKw(k)===S.kw));
   {const pj=curProj();if(pj)l=l.filter(p=>pj==="__none"?!p.project:(p.project||"")===pj);}
   if(q)l=l.filter(p=>[p.title,(p.authors||[]).join(" "),p.journal,p.journalAbbr,(p.keywords||[]).join(" "),(p.tags||[]).join(" "),p.doi,p.origName,p.memo].join(" ").toLowerCase().includes(q));
@@ -2574,13 +2634,13 @@ function filtered(){
   return l;
 }
 function render(){
-  $("#countLbl").textContent=S.papers.length?`${S.papers.length}편`:"";
+  {const nReal=S.papers.filter(p=>!p.derived).length,uf=UF&&UF!=="__nofolder"&&fById(UF);$("#countLbl").textContent=uf?`${fById(UF).name} 폴더 · ${filtered().length}편 (전체 ${nReal}편)`:UF==="__nofolder"?`폴더 없음 · ${filtered().length}편`:nReal?`${nReal}편`:"";}
   const lay=$("#layout");lay.classList.toggle("no-papers",!S.papers.length);
   // folders
-  const counts={};S.papers.forEach(p=>{const c=p.category||"미분류";counts[c]=(counts[c]||0)+1;});
+  const counts={};S.papers.filter(p=>!p.derived).forEach(p=>{const c=p.category||"미분류";counts[c]=(counts[c]||0)+1;});
   const fs=Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
   const nfav=S.papers.filter(p=>p.star).length;const nread=k=>S.papers.filter(p=>p.read===k).length;if(S.folder==="__fav"?!nfav:S.folder.startsWith("__r:")?!nread(S.folder.slice(4)):(S.folder!=="all"&&!counts[S.folder]))S.folder="all";
-  $("#folders").innerHTML=`<button class="chip" type="button" data-f="all" aria-pressed="${S.folder==="all"}">전체<span class="n">${S.papers.length}</span></button>`+(nfav?`<button class="chip fav" type="button" data-f="__fav" aria-pressed="${S.folder==="__fav"}">★ 즐겨찾기<span class="n">${nfav}</span></button>`:"")+Object.keys(READ).filter(k=>nread(k)).map(k=>`<button class="chip rd" type="button" data-f="__r:${k}" aria-pressed="${S.folder==="__r:"+k}">${READ[k]}<span class="n">${nread(k)}</span></button>`).join("")+fs.map(f=>`<button class="chip" type="button" data-f="${esc(f)}" aria-pressed="${S.folder===f}">${esc(f)}<span class="n">${counts[f]}</span></button>`).join("");
+  $("#folders").innerHTML=`<button class="chip" type="button" data-f="all" aria-pressed="${S.folder==="all"}">전체<span class="n">${S.papers.filter(p=>!p.derived).length}</span></button>`+(nfav?`<button class="chip fav" type="button" data-f="__fav" aria-pressed="${S.folder==="__fav"}">★ 즐겨찾기<span class="n">${nfav}</span></button>`:"")+Object.keys(READ).filter(k=>nread(k)).map(k=>`<button class="chip rd" type="button" data-f="__r:${k}" aria-pressed="${S.folder==="__r:"+k}">${READ[k]}<span class="n">${nread(k)}</span></button>`).join("")+fs.map(f=>`<button class="chip" type="button" data-f="${esc(f)}" aria-pressed="${S.folder===f}">${esc(f)}<span class="n">${counts[f]}</span></button>`).join("");
   const kc=kwCounts(folderSet());
   if(S.kw&&!kc.has(S.kw))S.kw=null;
   const top=[...kc.entries()].sort((a,b)=>b[1].n-a[1].n||a[0].localeCompare(b[0])).filter(([,v],i)=>v.n>1||i<12||S.kw).slice(0,30);
@@ -2592,7 +2652,7 @@ function render(){
     <span class="yr">${esc(p.year||"—")}${p.star?`<span class="favm" title="즐겨찾기">★</span>`:""}</span>
     <span style="min-width:0"><span class="t">${esc(p.title||p.origName)}</span>
     <span class="s">${esc(authorShort(p))}${p.journalAbbr||p.journal?" · "+esc(p.journalAbbr||p.journal):""}</span>
-    <span class="badges"><span class="tag ft">${ftLabel(p)}</span>${(p.figures||[]).length?`<span class="tag">그림 ${(p.figures||[]).length}</span>`:""}${(p.tables||[]).length?`<span class="tag">표 ${p.tables.length}</span>`:""}${p.note&&p.note.relevance?`<span class="tag">관련 ${p.note.relevance.score}/5</span>`:""}${p.read?`<span class="tag rd-${p.read}">${READ[p.read]}</span>`:""}${p.retracted?`<span class="tag err">철회됨</span>`:(p.notices||[]).length?`<span class="tag err">정정 공지</span>`:""}${!p.summary?`<span class="tag err">요약 없음</span>`:""}${projTag(p)}${gBadge(p)}${p.ufolder&&fById(p.ufolder)&&!fDesc(UF||"-").has(p.ufolder)?`<span class="tag uftag">${esc(fById(p.ufolder).name)}</span>`:""}</span></span></button></div>`).join(""):`<div class="list-empty">${S.papers.length?"조건에 맞는 논문이 없어요.":S.dbLoaded?"아직 정리한 논문이 없어요.":"목록을 불러오는 중…"}</div>`;
+    <span class="badges"><span class="tag ft">${ftLabel(p)}</span>${(p.figures||[]).length?`<span class="tag">그림 ${(p.figures||[]).length}</span>`:""}${(p.tables||[]).length?`<span class="tag">표 ${p.tables.length}</span>`:""}${p.note&&p.note.relevance?`<span class="tag">관련 ${p.note.relevance.score}/5</span>`:""}${p.read?`<span class="tag rd-${p.read}">${READ[p.read]}</span>`:""}${p.retracted?`<span class="tag err">철회됨</span>`:(p.notices||[]).length?`<span class="tag err">정정 공지</span>`:""}${!p.summary&&!p.derived?`<span class="tag err">요약 없음</span>`:""}${projTag(p)}${gBadge(p)}${p.ufolder&&fById(p.ufolder)&&!fDesc(UF||"-").has(p.ufolder)?`<span class="tag uftag">${esc(fById(p.ufolder).name)}</span>`:""}</span></span></button></div>`).join(""):`<div class="list-empty">${S.papers.length?"조건에 맞는 논문이 없어요.":S.dbLoaded?"아직 정리한 논문이 없어요.":"목록을 불러오는 중…"}</div>`;
   libAfterList(l);
   renderMain();
 }
@@ -2604,12 +2664,14 @@ function notices(){
   if(S.dbLoaded&&!HUB.ai.auto)n.push(`<div class="note-bar">자동 요약 연결이 없어요. 파일을 넣으면 서지 힌트·그림·표만 정리되고, '요약 만들기'를 누르면 복사·붙여넣기로 요약을 채울 수 있어요. 설정에 API 키를 넣으면 자동이 돼요.</div>`);
   const pr=S.dbLoaded&&HUB.ai.auto&&!S.sampleOff?pendingRefs().filter(p=>!S.queue.some(q=>q.ref&&q.ref.id===p.id)).length:0;
   if(pr)n.push(`<div class="note-bar">검색에서 담았지만 아직 요약되지 않은 논문이 ${pr}편 있어요. <button class="linkbtn" type="button" data-sumrefs="1">지금 모두 요약하기</button></div>`);
+  if(S.dbLoaded){const dg=RF.dupGroups();if(dg.length)n.push(`<div class="note-bar">같은 논문이 두 번 이상 들어간 것이 ${dg.length}묶음 있어요. <button class="linkbtn" type="button" data-dupall="1">모두 하나로 합치기</button> · <button class="linkbtn" type="button" data-dupopen="1">하나씩 보기</button></div>`);}
   if(S.sampleOff)n.push(`<div class="note-bar warn">Claude 사용이 허용되지 않아 요약 없이 정리하고 있어요. 페이지 상단의 권한 메뉴에서 허용하면 '다시 요약'으로 채울 수 있어요.</div>`);
   return n.join("");
 }
 function renderMain(){
   const m=$("#main");const p=S.papers.find(x=>x.id===S.sel);
   $("#layout").classList.toggle("show-detail",!!p);
+  if(p&&p.derived){m.innerHTML=derivHtml(p);return;}
   if(!p){
     m.innerHTML=`<div class="wrap">${notices()}
       <div class="drop" id="dropCard">
@@ -2707,7 +2769,8 @@ function pane(p,ko,en,n){
     <label for="fIss">호<input id="fIss" name="issue" value="${v("issue")}"></label>
     <label for="fPages">페이지<input id="fPages" name="pages" value="${v("pages")}"></label>
     <label for="fShort">파일명용 짧은 제목<input id="fShort" name="shortTitle" value="${v("shortTitle")}"></label>
-    <label for="fCat">폴더<input id="fCat" name="category" list="catList" value="${v("category")}"><datalist id="catList">${cats().map(c=>`<option value="${esc(c)}">`).join("")}</datalist></label>
+    <label for="fUf">내 폴더<select id="fUf" name="ufolder">${fOpts(p.ufolder&&fById(p.ufolder)?p.ufolder:"","없음 (폴더 밖)")}</select></label>
+    <label for="fCat">주제 폴더 (AI 분류)<input id="fCat" name="category" list="catList" value="${v("category")}" placeholder="▾ 눌러 고르거나 새 이름 입력"><datalist id="catList">${cats().map(c=>`<option value="${esc(c)}">`).join("")}</datalist></label>
     <label for="fTags">태그 (쉼표로 구분)<input id="fTags" name="tags" value="${esc((p.tags||[]).join(", "))}"></label>
     <label class="full" for="fKw">키워드 (쉼표로 구분)<input id="fKw" name="keywords" value="${esc((p.keywords||[]).join(", "))}"></label>
     <label class="full" for="fMemo">내 메모<textarea id="fMemo" name="memo">${esc(p.memo||"")}</textarea></label>
@@ -2720,7 +2783,7 @@ function renderQueue(){
   el.innerHTML=`<header><span>정리 중 ${done}/${S.queue.length}</span>${S.queue.every(q=>q.state==="done"||q.state==="err")?`<button class="btn ghost" type="button" data-act="qclose">닫기</button>`:""}</header>`+
     S.queue.map(q=>`<div class="q">${q.state==="run"?`<span class="spin"></span>`:`<span class="qd ${q.state==="err"?"err":q.state==="wait"?"wait":""}"></span>`}<div style="min-width:0"><div class="nm">${esc(q.name)}</div><div class="st ${q.state==="err"?"err":""}">${esc(q.step)}</div></div></div>`).join("");
 }
-function select(id){const mob=window.innerWidth<=860;if(mob&&!S.sel)S._ly=window.scrollY;S.sel=id;S._keep=true;render();if(mob)window.scrollTo(0,0);else readerTop();}
+function select(id){recRecent(id);const mob=window.innerWidth<=860;if(mob&&!S.sel)S._ly=window.scrollY;S.sel=id;S._keep=true;render();if(mob)window.scrollTo(0,0);else readerTop();}
 
 /* ---------- crop ---------- */
 const C={doc:null,page:1,task:null,sel:null,paper:null};
@@ -2809,7 +2872,7 @@ document.addEventListener("submit",async e=>{
   if(e.target.id!=="infoForm")return;e.preventDefault();const p=S.papers.find(x=>x.id===S.sel);if(!p)return;
   const fd=new FormData(e.target);const g=k=>(fd.get(k)||"").toString().trim();const list=(k,sep)=>g(k).split(sep).map(s=>s.trim()).filter(Boolean);
   const y=parseInt(g("year"),10);
-  await store.update(p.id,{title:g("title"),authors:list("authors",/;/),journal:g("journal"),journalAbbr:g("journalAbbr"),year:y>1800?y:null,doi:g("doi").replace(/^https?:\/\/(dx\.)?doi\.org\//,""),volume:g("volume"),issue:g("issue"),pages:g("pages"),shortTitle:g("shortTitle"),category:g("category")||"미분류",tags:list("tags",/,/),keywords:list("keywords",/,/),memo:g("memo")});
+  await store.update(p.id,{title:g("title"),authors:list("authors",/;/),journal:g("journal"),journalAbbr:g("journalAbbr"),year:y>1800?y:null,doi:g("doi").replace(/^https?:\/\/(dx\.)?doi\.org\//,""),volume:g("volume"),issue:g("issue"),pages:g("pages"),shortTitle:g("shortTitle"),category:g("category")||"미분류",ufolder:g("ufolder"),tags:list("tags",/,/),keywords:list("keywords",/,/),memo:g("memo")});
   toast("저장했어요");
 });
 $("#addBtn").onclick=()=>$("#fileInput").click();
@@ -2935,7 +2998,7 @@ async function renderPage(n,gen){
 }
 async function pageText(n){if(R.text[n]!=null)return R.text[n];const tc=await(await R.doc.getPage(n)).getTextContent();return R.text[n]=tc.items.map(it=>(it.str||"")+(it.hasEOL?"\n":"")).join("");}
 function curPage(){const box=$("#rdPages");const top=box.scrollTop+box.clientHeight*0.35;let n=1;for(const d of box.children){if(d.offsetTop<=top)n=+d.dataset.p;else break;}return n;}
-function showPg(){if(R.doc)$("#rdPg").textContent=`${curPage()} / ${R.doc.numPages}`;}
+function showPg(){if(R.doc){$("#rdPg").textContent=`${curPage()} / ${R.doc.numPages}`;if(R.p)recRecent(R.p.id,curPage());}}
 function goPage(n){n=Math.max(1,Math.min(R.doc.numPages,+n||1));const d=$(`#rdPages .rdpage[data-p="${n}"]`);if(d){$("#rdPages").scrollTop=d.offsetTop-8;showPg();}}
 
 /* marks: AI key sentences and my own highlights, drawn by matching the quoted text on the page */
@@ -3460,23 +3523,48 @@ async function importRecs(recs,auto,onStep){
       abstract:String(r.abstract||"").slice(0,6000),IF:0,cited:0,oaUrl:"",url:r.url||""});
     added++;if(auto&&r.abstract)queueRef(id,{...r,doi:d});}
   return{added,skipped,bad};}
+/* the same paper twice: same DOI, or the same long title. Pulled-out figures and tables are never duplicates. */
 function dupGroups(){const g=new Map();
-  S.papers.forEach(p=>{const d=(p.doi||"").toLowerCase(),t=normT(p.title);const k=d?"d:"+d:t.length>20?"t:"+t:null;if(!k)return;(g.get(k)||g.set(k,[]).get(k)).push(p);});
+  S.papers.filter(p=>!p.derived).forEach(p=>{const d=(p.doi||"").toLowerCase(),t=normT(p.title);const k=d?"d:"+d:t.length>20?"t:"+t:null;if(!k)return;(g.get(k)||g.set(k,[]).get(k)).push(p);});
   /* a DOI group and a title group may describe the same paper: fold title-only records into the DOI group with the same title */
   const byT=new Map();[...g.entries()].forEach(([k,l])=>{if(k[0]==="d")l.forEach(p=>{const t=normT(p.title);if(t.length>20&&!byT.has(t))byT.set(t,k);});});
   [...g.entries()].forEach(([k,l])=>{if(k[0]==="t"&&byT.has(k.slice(2))){g.get(byT.get(k.slice(2))).push(...l);g.delete(k);}});
-  return [...g.values()].filter(l=>l.length>1);}
+  /* records already gathered in one group on purpose (paper + its supplement) are not offered again */
+  return [...g.values()].filter(l=>l.length>1&&!(l.every(p=>p.group&&p.group===l[0].group)&&l.filter(p=>p.fileType!=="ref").length>1));}
+/* two stored files are copies of one file when size, page count or name (ignoring "(1)") agree */
+const fstem=s=>String(s||"").toLowerCase().replace(/\s*\(\d+\)(?=\.\w+$)/,"").replace(/\.\w+$/,"").replace(/[\s_\-]+/g,"");
+const isCopy=(a,b)=>a.fileType==="ref"||b.fileType==="ref"||(a.size&&a.size===b.size)||(fstem(a.origName)&&fstem(a.origName)===fstem(b.origName))||(a.pageCount&&a.pageCount===b.pageCount&&normT(a.title)===normT(b.title)&&normT(a.title).length>20);
+const dupKind=l=>{const keep=dupKeep(l);return l.every(o=>o===keep||isCopy(keep,o))?"copy":"mixed";};
+const dupKeep=l=>{const score=p=>(p.fileType!=="ref"?100:0)+(p.summary?10:0)+(p.note?5:0)+((p.qa||[]).length?2:0)+((p.marks||[]).length?2:0);return l.slice().sort((a,b)=>score(b)-score(a)||(a.addedAt||0)-(b.addedAt||0))[0];};
+/* one record stays (the one with the file, summary and notes); everything the others carry is moved onto it — bibliographic gaps, tags, keywords, memo,
+   highlights, Q&A, star, reading state, folder, project, group, the figures pulled out of it, lab-note links — and then the others are removed.
+   Two different files that only share a DOI (a paper and its supplement) are not deleted: they are put in one group instead. */
 async function mergeGroup(l){
-  const score=p=>(p.fileType!=="ref"?100:0)+(p.summary?10:0)+(p.note?5:0)+((p.qa||[]).length?2:0);
-  const keep=l.slice().sort((a,b)=>score(b)-score(a)||(a.addedAt||0)-(b.addedAt||0))[0];const patch={};let removed=0;
-  for(const o of l){if(o===keep)continue;
-    ["doi","journal","journalAbbr","year","volume","issue","pages","abstract","url","oaUrl","IF","cited"].forEach(k=>{if(!keep[k]&&!patch[k]&&o[k])patch[k]=o[k];});
-    if(!(keep.authors||[]).length&&(o.authors||[]).length&&!patch.authors)patch.authors=o.authors;
-    const tags=[...new Set([...(patch.tags||keep.tags||[]),...(o.tags||[])])];if(tags.length!==(keep.tags||[]).length)patch.tags=tags;
-    if(o.memo&&!String(keep.memo||"").includes(o.memo))patch.memo=((patch.memo!=null?patch.memo:keep.memo)||"")+(keep.memo||patch.memo?"\n":"")+o.memo;
-    if(keep.category==="미분류"&&o.category&&o.category!=="미분류"&&!patch.category)patch.category=o.category;
-    if(o.fileType==="ref"){await store.remove(o.id);removed++;}}
-  if(Object.keys(patch).length)await store.update(keep.id,patch);return removed;}
+  const keep=dupKeep(l);const patch={};let removed=0;const cur=k=>patch[k]!==undefined?patch[k]:keep[k];
+  const others=l.filter(o=>o!==keep),gone=others.filter(o=>isCopy(keep,o)),kept=others.filter(o=>!isCopy(keep,o));
+  for(const o of gone){
+    ["doi","journal","journalAbbr","year","volume","issue","pages","abstract","url","oaUrl","IF","cited","ufolder","project","shortTitle","articleType"].forEach(k=>{if(!cur(k)&&o[k])patch[k]=o[k];});
+    if(!(cur("authors")||[]).length&&(o.authors||[]).length)patch.authors=o.authors;
+    ["tags","keywords"].forEach(k=>{const u=[...new Set([...(cur(k)||[]),...(o[k]||[])])];if(u.length!==(cur(k)||[]).length)patch[k]=u;});
+    if(o.memo&&!String(cur("memo")||"").includes(o.memo))patch.memo=(cur("memo")||"")+(cur("memo")?"\n":"")+o.memo;
+    if((!cur("category")||cur("category")==="미분류")&&o.category&&o.category!=="미분류")patch.category=o.category;
+    if((o.marks||[]).length){const d=(typeof dedupeMarks==="function"?dedupeMarks:(x=>x))([...(cur("marks")||[]),...o.marks]);patch.marks=d.slice(-400);}
+    if((o.qa||[]).length)patch.qa=[...(cur("qa")||[]),...o.qa].slice(-60);
+    if(o.star&&!cur("star"))patch.star=true;
+    const RD={todo:1,doing:2,done:3};if(o.read&&(RD[o.read]||0)>(RD[cur("read")]||0))patch.read=o.read;
+    if(!cur("summary")&&o.summary){patch.summary=o.summary;patch.note=o.note||cur("note")||null;patch.summaryError=null;}
+    if(!cur("fileAsset")&&o.fileAsset){patch.fileAsset=o.fileAsset;patch.textAsset=o.textAsset||cur("textAsset")||null;patch.fileType=o.fileType;patch.origName=o.origName;patch.size=o.size;patch.pageCount=o.pageCount;}
+    if(!cur("group")&&o.group&&o.group!==o.id)patch.group=o.group;}
+  if(Object.keys(patch).length)await store.update(keep.id,patch);
+  const goneIds=new Set(gone.map(o=>o.id));
+  /* point everything that referred to a removed copy at the record that stays */
+  for(const x of S.papers){const up={};if(x.derivedFrom&&goneIds.has(x.derivedFrom))up.derivedFrom=keep.id;if(x.group&&goneIds.has(x.group))up.group=keep.id;if(Object.keys(up).length&&!goneIds.has(x.id))await store.update(x.id,up);}
+  if(goneIds.has(keep.group))await store.update(keep.id,{group:keep.id});
+  try{const nc=HUB.col("notes");if(nc)for(const n of nc.list){if((n.papers||[]).some(id=>goneIds.has(id)))await nc.update(n.id,{papers:[...new Set(n.papers.map(id=>goneIds.has(id)?keep.id:id))]});}}catch(e){}
+  for(const o of gone){await store.remove(o.id);removed++;}
+  /* different files that share the DOI: one group, the paper as its main item */
+  if(kept.length){const gid=keep.group||keep.id;await store.update(keep.id,{group:gid});for(const o of kept)await store.update(o.id,{group:gid});}
+  return removed;}
 async function fillMeta(onStep){const need=S.papers.filter(p=>p.doi&&(!p.volume||!p.pages||!p.journal||!(p.authors||[]).length||!p.year));let n=0,fail=0;
   for(let i=0;i<need.length;i++){const p=need[i];if(onStep)onStep(i+1,need.length);
     try{const r=await crossref(p.doi);const patch={};["journal","journalAbbr","year","volume","issue","pages"].forEach(k=>{if(!p[k]&&r[k])patch[k]=r[k];});if(!(p.authors||[]).length&&r.authors.length)patch.authors=r.authors;if(!p.abstract&&r.abstract)patch.abstract=r.abstract.slice(0,6000);
@@ -3491,7 +3579,7 @@ const styleSel=id=>`<select id="${id}">${Object.entries(STYLES).map(([k,s])=>`<o
 const scopeList=()=>ST.scope==="pick"?S.papers.filter(p=>ST.pick.includes(p.id)):filtered();
 const outBox=(lines,empty)=>lines.length?`<div class="rfout">${lines.map(l=>`<p>${mdHtml(l)}</p>`).join("")}</div>`:`<div class="rfempty">${empty}</div>`;
 function tabCite(){const list=sortRefs(scopeList(),ST.sort);const st=STYLES[ST.style];const numbered=st.cite!=="ay";OUT={lines:bibliography(list,ST.style,numbered),body:[]};
-  const km=keyMap();const q=(ST.q||"").toLowerCase();const cand=S.papers.filter(p=>!q||[p.title,(p.authors||[]).join(" "),p.journal,p.year].join(" ").toLowerCase().includes(q)).slice(0,200);
+  const km=keyMap();const q=(ST.q||"").toLowerCase();const cand=S.papers.filter(p=>!p.derived).filter(p=>!q||[p.title,(p.authors||[]).join(" "),p.journal,p.year].join(" ").toLowerCase().includes(q)).slice(0,200);
   return `<div class="rfrow"><label>인용 양식${styleSel("rfStyle")}</label>
     <label>대상<select id="rfScope"><option value="view"${ST.scope==="view"?" selected":""}>라이브러리에 지금 보이는 목록 (${filtered().length}편)</option><option value="pick"${ST.scope==="pick"?" selected":""}>아래에서 직접 고른 논문 (${ST.pick.length}편)</option></select></label>
     <label>정렬<select id="rfSort"><option value="author"${ST.sort==="author"?" selected":""}>제1저자순</option><option value="year"${ST.sort==="year"?" selected":""}>최신 연도순</option><option value="added"${ST.sort==="added"?" selected":""}>담은 순서</option></select></label></div>
@@ -3499,7 +3587,7 @@ function tabCite(){const list=sortRefs(scopeList(),ST.sort);const st=STYLES[ST.s
   <div class="rfbtns"><button class="btn primary" type="button" data-bib="copyrich">서식 포함 복사</button><button class="btn" type="button" data-bib="copytext">텍스트만 복사</button><button class="btn" type="button" data-bib="docx">Word로 저장</button><span class="muted">${list.length}편 · Word나 한글에 붙여넣으면 기울임·굵게가 그대로 들어가요.</span></div>
   ${outBox(OUT.lines,"대상 논문이 없어요. 라이브러리에 논문을 담거나 위에서 직접 골라 주세요.")}`;}
 function tabMs(){const st=STYLES[ST.style];const mode=ST.mode||st.cite;const km=keyMap();const q=(ST.q2||"").toLowerCase();
-  const cand=S.papers.filter(p=>!q||[p.title,(p.authors||[]).join(" "),p.journal,p.year,km.get(p.id)].join(" ").toLowerCase().includes(q)).slice(0,60);
+  const cand=S.papers.filter(p=>!p.derived).filter(p=>!q||[p.title,(p.authors||[]).join(" "),p.journal,p.year,km.get(p.id)].join(" ").toLowerCase().includes(q)).slice(0,60);
   let res="";
   if(ST.done){const c=convert(ST.ms||"",ST.style,mode);OUT={lines:c.refs,body:c.body.split(/\n+/).filter(x=>x.trim())};
     res=`<div class="rfbtns"><button class="btn primary" type="button" data-bib="copyrich">본문+참고문헌 서식 포함 복사</button><button class="btn" type="button" data-bib="copytext">텍스트만 복사</button><button class="btn" type="button" data-bib="docx">Word로 저장</button><span class="muted">인용 ${c.count}곳 · 참고문헌 ${c.n}편</span></div>
@@ -3520,8 +3608,8 @@ function tabImport(){return `<p class="rfhelp">Zotero·EndNote·Mendeley·PubMed
 function tabExport(){const n=filtered().length;return `<p class="rfhelp">라이브러리에 지금 보이는 <b>${n}편</b>을 다른 서지 프로그램으로 보낼 수 있어요. 폴더나 검색으로 좁힌 뒤 내보내면 그 논문만 나가요.</p>
   <div class="rfexp">${[["ris","RIS (.ris)","Zotero · EndNote · Mendeley 모두 가져오기 가능. 가장 무난해요."],["enw","EndNote (.enw)","EndNote에서 더블클릭으로 바로 열려요."],["bib","BibTeX (.bib)","LaTeX · Overleaf · Zotero"],["csl","CSL-JSON (.json)","Zotero · Pandoc · 다른 도구"]].map(([k,n2,d])=>`<button type="button" data-bib="exp-${k}"><b>${n2}</b><span>${d}</span></button>`).join("")}</div>`;}
 function tabDup(){const gs=dupGroups();
-  return gs.length?`<div class="rfbtns"><button class="btn primary" type="button" data-bib="mergeall">모두 합치기</button><span class="muted">${gs.length}묶음 · 파일·요약이 있는 쪽을 남기고, 서지정보만 있는 쪽의 빈 칸·태그·메모를 옮긴 뒤 지워요. 파일이 있는 논문은 지우지 않아요.</span></div>
-  <div class="rfdups">${gs.map((l,i)=>`<div class="rfdup"><div>${l.map(p=>`<p><span class="tag ft">${p.fileType==="ref"?"서지":esc(String(p.fileType||"").toUpperCase())}</span> ${esc(authorShort(p))} ${esc(String(p.year||""))} · ${esc((p.title||"").slice(0,120))}${p.doi?` <code>${esc(p.doi)}</code>`:""}</p>`).join("")}</div>${l.some(p=>p.fileType==="ref")?`<button class="btn sm" type="button" data-bib="merge" data-i="${i}">합치기</button>`:`<span class="muted">둘 다 파일이 있어요. 직접 확인해 주세요.</span>`}</div>`).join("")}</div>`
+  return gs.length?`<div class="rfbtns"><button class="btn primary" type="button" data-bib="mergeall">모두 하나로 합치기</button><span class="muted">${gs.length}묶음 · 파일·요약이 있는 쪽을 남기고, 다른 쪽의 빈 서지 칸·태그·키워드·메모·하이라이트·질문·폴더·프로젝트를 옮긴 뒤 지워요. DOI만 같고 다른 파일(본문과 보충자료 등)은 지우지 않고 한 묶음으로 묶어요.</span></div>
+  <div class="rfdups">${gs.map((l,i)=>{const k=dupKind(l),keep=dupKeep(l);return `<div class="rfdup"><div>${l.map(p=>`<p><span class="tag ft">${p.fileType==="ref"?"서지":esc(String(p.fileType||"").toUpperCase())}</span>${p===keep?` <span class="tag">남길 것</span>`:""} ${esc(authorShort(p))} ${esc(String(p.year||""))} · ${esc((p.title||"").slice(0,120))}${p.doi?` <code>${esc(p.doi)}</code>`:""}${p.origName?` <small class="muted">${esc(p.origName)}</small>`:""}</p>`).join("")}</div><button class="btn sm" type="button" data-bib="merge" data-i="${i}">${k==="copy"?"하나로 합치기":"합치기·묶기"}</button></div>`;}).join("")}</div>`
   :`<div class="rfempty">DOI나 제목이 같은 중복 논문이 없어요.</div>`;}
 /* ---------- retraction and correction notices ---------- */
 let RETMSG="";
@@ -3539,7 +3627,7 @@ async function checkRetractions(deep,onStep){
         const isR=ns.some(n=>/retract|withdraw/i.test(n.type));if(ns.length)notes++;
         if(ns.length||(p.notices||[]).length)await store.update(p.id,{notices:ns,...(isR&&!p.retracted?{retracted:true}:{})});if(isR&&!p.retracted)retr++;
       }catch(e){}}}
-  return{n:ps.length,noDoi:S.papers.length-ps.length,retr,notes,fail,deep};}
+  return{n:ps.length,noDoi:S.papers.filter(p=>!p.derived).length-ps.length,retr,notes,fail,deep};}
 function tabRet(){const flagged=S.papers.filter(p=>p.retracted||(p.notices||[]).length),last=Math.max(0,...S.papers.map(p=>p.retCheckedAt||0)),nd=S.papers.filter(p=>p.doi).length;
   return `<p class="rfhelp">라이브러리 논문 중 <b>철회</b>되었거나 <b>정정·우려 표명</b> 공지가 붙은 논문을 찾아 표시해요. 철회 여부는 OpenAlex, 정정 공지는 Crossref에서 확인하고, DOI가 있는 논문만 확인할 수 있어요 (지금 ${nd}편 / 전체 ${S.papers.length}편).</p>
   <div class="rfbtns"><button class="btn primary" type="button" data-bib="ret" ${HUB.embedded?"disabled":""}>철회 여부 확인</button><button class="btn" type="button" data-bib="retdeep" ${HUB.embedded?"disabled":""}>정정·우려 표명까지 확인 (논문마다 조회해서 느려요)</button></div>
@@ -3551,7 +3639,7 @@ function ensure(){if($("#refModal"))return;const d=document.createElement("div")
 function draw(){ensure();const n=dupGroups().length;
   const nr=S.papers.filter(p=>p.retracted).length;$("#rfTabs").innerHTML=TABS.map(([k,name])=>`<button type="button" class="tab" data-rftab="${k}" aria-selected="${ST.tab===k}">${name}${k==="dup"&&n?` <span class="n">${n}</span>`:k==="ret"&&nr?` <span class="n">${nr}</span>`:""}</button>`).join("");
   const t=TABS.find(x=>x[0]===ST.tab)||TABS[0];$("#rfBody").innerHTML=t[2]();saveST();}
-function open(tab,pickId){ensure();if(tab)ST.tab=tab;if(pickId){ST.scope="pick";ST.pick=[pickId];}ST.done=false;$("#refModal").hidden=false;draw();}
+function open(tab,pickId,scope){ensure();if(tab)ST.tab=tab;if(scope)ST.scope=scope;if(pickId){ST.scope="pick";ST.pick=[pickId];}ST.done=false;$("#refModal").hidden=false;draw();}
 async function doImport(text,name){const d=detect(text);const msg=m=>{IMP=m;const el=$("#rfImpMsg");if(el)el.textContent=m;};
   if(d.kind==="DOI"){if(HUB.embedded){msg("DOI 조회는 claude.ai 화면에서는 막혀 있어요. 내려받은 HTML 파일에서 해 주세요.");return;}
     const recs=[];let fail=0;for(let i=0;i<d.dois.length;i++){msg(`DOI 조회 중 ${i+1}/${d.dois.length}`);try{recs.push(await crossref(d.dois[i]));}catch(e){fail++;}}
@@ -3588,7 +3676,7 @@ document.addEventListener("click",async e=>{
       RETMSG=`DOI가 있는 ${r.n}편을 확인했어요. 철회 ${r.retr}편${r.deep?`, 정정·우려 표명 등 공지 ${r.notes}편`:""}${r.fail?`, 확인 실패 ${r.fail}편`:""}${r.noDoi?` · DOI가 없어 확인하지 못한 논문 ${r.noDoi}편`:""}`;}catch(err){RETMSG="확인하지 못했어요: "+((err&&err.message)||"연결 오류");}
     setTimeout(draw,150);return;}
   if(a==="retopen"){$("#refModal").hidden=true;HUB.lib.open(t.dataset.id);return;}
-  if(a==="merge"||a==="mergeall"){const gs=dupGroups();const todo=a==="merge"?[gs[+t.dataset.i]].filter(Boolean):gs;t.disabled=true;let n=0;for(const g of todo)n+=await mergeGroup(g);toast(n?`중복 ${n}건을 합쳤어요`:"합칠 서지 항목이 없어요");setTimeout(draw,150);return;}
+  if(a==="merge"||a==="mergeall"){const gs=dupGroups();const todo=a==="merge"?[gs[+t.dataset.i]].filter(Boolean):gs;t.disabled=true;let n=0;for(const g of todo)n+=await mergeGroup(g);toast(n?`중복 ${n}건을 하나로 합쳤어요`:"지울 중복은 없었어요. DOI만 같은 다른 파일은 한 묶음으로 묶었어요");setTimeout(draw,150);return;}
 });
 document.addEventListener("change",async e=>{const t=e.target;
   if(t.id==="rfStyle"){ST.style=t.value;draw();}
@@ -3603,7 +3691,7 @@ document.addEventListener("input",e=>{const t=e.target;
   if(t.id==="rfMs"){ST.ms=t.value;clearTimeout(draw.t);draw.t=setTimeout(saveST,600);}
   else if(t.id==="rfQ"||t.id==="rfQ2"){ST[t.id==="rfQ"?"q":"q2"]=t.value;clearTimeout(draw.q);draw.q=setTimeout(()=>{const pos=t.selectionStart,id=t.id;if(id==="rfQ2")ST.ms=$("#rfMs").value;draw();const n=$("#"+id);if(n){n.focus();n.setSelectionRange(pos,pos);}},250);}
 });
-return{openMs(text,style){ensure();ST.tab="ms";ST.ms=text;if(style&&STYLES[style])ST.style=style;ST.done=true;$("#refModal").hidden=false;draw();},docx:refsDocx,copy:richCopy,open,STYLES,convert,detect,importRecs,dupGroups,mergeGroup,toRis,toEnw,toCsl,bibliography,keyMap,nm};
+return{openMs(text,style){ensure();ST.tab="ms";ST.ms=text;if(style&&STYLES[style])ST.style=style;ST.done=true;$("#refModal").hidden=false;draw();},docx:refsDocx,copy:richCopy,open,STYLES,convert,detect,importRecs,dupGroups,mergeGroup,isCopy,dupKind,toRis,toEnw,toCsl,bibliography,keyMap,nm};
 })();
 
 /* ================= reading status · reading notes · figure data extraction ================= */
@@ -3710,9 +3798,9 @@ function readerNav(p){const l=filtered(),i=l.findIndex(x=>x.id===p.id);
   return `<div class="rnav"><div class="row" style="gap:6px"><button class="btn sm" type="button" data-rnav="-1" ${i<=0?"disabled":""}>← 이전</button><span class="muted mono">${i>=0?`${i+1} / ${l.length}`:"목록 밖"}</span><button class="btn sm" type="button" data-rnav="1" ${i<0||i>=l.length-1?"disabled":""}>다음 →</button></div>
     <label class="rnproj"><span>프로젝트</span><select data-pproj="${esc(p.id)}">${projOpts(p.project||"","없음")}</select></label>
     <label class="rnproj"><span>내 폴더</span><select data-pfolder="${esc(p.id)}">${fOpts(p.ufolder&&fById(p.ufolder)?p.ufolder:"","없음")}</select></label>
-    <label class="ck rnpick"><input type="checkbox" data-pick="${esc(p.id)}" ${pickSet.has(p.id)?"checked":""}><span>고르기</span></label></div>${groupPanel(p)}`;}
+    <label class="ck rnpick"><input type="checkbox" data-pick="${esc(p.id)}" ${pickSet.has(p.id)?"checked":""}><span>고르기</span></label></div>${groupPanel(p)}${notesPanel(p)}`;}
 function libAfterList(l){
-  foldBox();
+  foldBox();sideGrip();autoSoon();
   const pb=$("#libProj");
   if(pb){const ns=HUB.proj?HUB.proj.names():[],cur=curProj(),cnt=n=>S.papers.filter(p=>n==="__none"?!p.project:p.project===n).length;
     pb.hidden=!ns.length&&!cur;
@@ -3747,6 +3835,7 @@ const fcol=()=>HUB.col("lfolders");
 let UF=HUB.u.ls.get("libuf","")||"";const saveUF=()=>HUB.u.ls.set("libuf",UF);
 const GX=new Set(HUB.u.ls.get("libgx",[])||[]);const saveGX=()=>HUB.u.ls.set("libgx",[...GX]);
 let FEDIT="",FDEL={id:"",until:0};
+const UFC=new Set(HUB.u.ls.get("libufc",[])||[]);const saveUFC=()=>HUB.u.ls.set("libufc",[...UFC]);
 const folders=()=>fcol()?fcol().list:[];
 const fById=id=>folders().find(f=>f.id===id);
 const fKids=id=>folders().filter(f=>(f.parent||"")===(id||"")).sort((a,b)=>String(a.name).localeCompare(String(b.name),"ko"));
@@ -3755,23 +3844,24 @@ const fPath=id=>{const L=[];let f=fById(id),g=0;while(f&&g++<20){L.unshift(f.nam
 const inUF=p=>!UF?true:UF==="__nofolder"?!(p.ufolder&&fById(p.ufolder)):fDesc(UF).has(p.ufolder);
 function fOpts(sel,blank){const out=[`<option value="">${blank}</option>`];const walk=(pid,d)=>fKids(pid).forEach(f=>{out.push(`<option value="${esc(f.id)}" ${f.id===sel?"selected":""}>${"　".repeat(d)}${esc(f.name)}</option>`);walk(f.id,d+1);});walk("",0);return out.join("");}
 function foldBox(){const b=$("#libFold");if(!b)return;if(UF&&UF!=="__nofolder"&&!fById(UF)){UF="";saveUF();}
-  const cnt=id=>{const d=fDesc(id);return S.papers.filter(p=>d.has(p.ufolder)).length;},none=S.papers.filter(p=>!(p.ufolder&&fById(p.ufolder))).length;
-  const row=(f,d)=>{const on=UF===f.id,ed=FEDIT===f.id;return `<div class="ufrow" style="--d:${d}">${ed?`<input class="ufname" data-ufren="${esc(f.id)}" value="${esc(f.name)}" aria-label="폴더 이름"><button class="btn sm" type="button" data-ufa="renok" data-id="${esc(f.id)}">확인</button>`
-      :`<button class="uf" type="button" data-uf="${esc(f.id)}" aria-pressed="${on}" title="${esc(fPath(f.id))} · 논문을 끌어다 놓으면 이 폴더로 옮겨요"><span class="ufi" aria-hidden="true">${fKids(f.id).length?"▾":"–"}</span><span class="ufn">${esc(f.name)}</span><span class="n">${cnt(f.id)}</span></button>${on?`<span class="ufact"><button class="linkbtn" type="button" data-ufa="sub" data-id="${esc(f.id)}">+하위</button><button class="linkbtn" type="button" data-ufa="ren" data-id="${esc(f.id)}">이름</button><button class="linkbtn danger ${FDEL.id===f.id&&Date.now()<FDEL.until?"armed":""}" type="button" data-ufa="del" data-id="${esc(f.id)}">${FDEL.id===f.id&&Date.now()<FDEL.until?"한 번 더 누르면 삭제":"삭제"}</button></span>`:""}`}</div>`+fKids(f.id).map(k=>row(k,d+1)).join("");};
+  if(UF&&fById(UF)){let f=fById(fById(UF).parent),g=0,ch=false;while(f&&g++<20){if(UFC.delete(f.id))ch=true;f=fById(f.parent);}if(ch)saveUFC();}
+  const real=S.papers.filter(p=>!p.derived),cnt=id=>{const d=fDesc(id);return real.filter(p=>d.has(p.ufolder)).length;},none=real.filter(p=>!(p.ufolder&&fById(p.ufolder))).length;
+  /* nested lists so the CSS can draw the connector lines from a parent folder to each child */
+  const row=(f,d)=>{const on=UF===f.id,ed=FEDIT===f.id,kids=fKids(f.id);return `<li class="${kids.length?"has":""}"><div class="ufrow">${ed?`<input class="ufname" data-ufren="${esc(f.id)}" value="${esc(f.name)}" aria-label="폴더 이름"><button class="btn sm" type="button" data-ufa="renok" data-id="${esc(f.id)}">확인</button>`
+      :`${kids.length?`<button class="ufx" type="button" data-ufx="${esc(f.id)}" aria-expanded="${!UFC.has(f.id)}" aria-label="${esc(f.name)} 하위 폴더 ${UFC.has(f.id)?"펼치기":"접기"}" title="하위 폴더 ${UFC.has(f.id)?"펼치기":"접기"}">${UFC.has(f.id)?"▸":"▾"}</button>`:`<span class="ufx none" aria-hidden="true"></span>`}<button class="uf" type="button" draggable="true" data-uf="${esc(f.id)}" aria-pressed="${on}" title="${esc(fPath(f.id))} · 논문이나 다른 폴더를 끌어다 놓으면 이 안으로 옮겨요"><span class="ufn">${esc(f.name)}</span><span class="n">${cnt(f.id)}</span></button>${ruleWords(f).length?`<span class="tag ufauto" title="자동 분류 규칙: ${esc(f.rule)}">자동</span>`:""}${on?`<span class="ufact"><button class="linkbtn" type="button" data-ufa="sub" data-id="${esc(f.id)}">+하위</button><button class="linkbtn" type="button" data-ufa="ren" data-id="${esc(f.id)}">이름</button><button class="linkbtn" type="button" data-ufrule="edit" data-id="${esc(f.id)}">자동 분류</button><button class="linkbtn danger ${FDEL.id===f.id&&Date.now()<FDEL.until?"armed":""}" type="button" data-ufa="del" data-id="${esc(f.id)}">${FDEL.id===f.id&&Date.now()<FDEL.until?"한 번 더 누르면 삭제":"삭제"}</button></span>`:""}`}</div>${on&&!ed?`<p class="ufnote">위쪽 '서지 도구'·'내보내기'와 아래 '보이는 ${filtered().length}편 모두 → 리서치로'가 이 폴더 기준으로 동작해요.</p>`:""}${ruleBox(f)}${kids.length&&!UFC.has(f.id)?`<ul>${kids.map(k=>row(k,d+1)).join("")}</ul>`:""}</li>`;};
   b.innerHTML=`<div class="kwhead"><span>내 폴더</span><button class="linkbtn" type="button" data-ufa="new">+ 새 폴더</button></div>
-    <div class="uftree"><div class="ufrow" style="--d:0"><button class="uf" type="button" data-uf="" aria-pressed="${!UF}"><span class="ufi" aria-hidden="true">◇</span><span class="ufn">모든 논문</span><span class="n">${S.papers.length}</span></button></div>
-    ${fKids("").map(f=>row(f,0)).join("")}
-    ${folders().length?`<div class="ufrow" style="--d:0"><button class="uf" type="button" data-uf="__nofolder" aria-pressed="${UF==="__nofolder"}"><span class="ufi" aria-hidden="true">·</span><span class="ufn">폴더 없음</span><span class="n">${none}</span></button></div>`:`<p class="muted ufhint">폴더를 만들고 목록의 논문을 끌어다 놓거나, 체크한 뒤 '폴더로 옮기기'를 쓰세요.</p>`}</div>`;
+    <div class="uftree"><div class="ufrow" style="--d:0"><span class="ufx none" aria-hidden="true"></span><button class="uf" type="button" data-uf="" aria-pressed="${!UF}"><span class="ufn">모든 논문</span><span class="n">${real.length}</span></button></div>
+    ${fKids("").length?`<ul class="uft">${fKids("").map(f=>row(f,0)).join("")}</ul>`:""}
+    ${folders().length?`<div class="ufrow" style="--d:0"><span class="ufx none" aria-hidden="true"></span><button class="uf" type="button" data-uf="__nofolder" aria-pressed="${UF==="__nofolder"}"><span class="ufn">폴더 없음</span><span class="n">${none}</span></button></div>`:`<p class="muted ufhint">폴더를 만들고 목록의 논문을 끌어다 놓거나, 체크한 뒤 '폴더로 옮기기'를 쓰세요.</p>`}</div>`;
   const i=b.querySelector("[data-ufren]");if(i){i.focus();i.select();}}
 async function moveToFolder(ids,fid){for(const id of ids)await HUB.col("papers").update(id,{ufolder:fid||""});}
 async function newFolder(parent){let n="새 폴더",k=2;const sib=new Set(fKids(parent||"").map(f=>f.name));while(sib.has(n))n="새 폴더 "+(k++);const id=uid();await fcol().set(id,{name:n,parent:parent||"",addedAt:Date.now()});FEDIT=id;setTimeout(render,60);}
 /* groups */
 const gMembers=gid=>S.papers.filter(p=>p.group===gid);
-function gview(l){const by=new Map();l.forEach(p=>{if(p.group&&gMembers(p.group).length>1){if(!by.has(p.group))by.set(p.group,[]);by.get(p.group).push(p);}});
-  const out=[],done=new Set();
-  for(const p of l){if(!p.group||!by.has(p.group)||by.get(p.group).length<2){out.push(p);continue;}if(done.has(p.group))continue;done.add(p.group);
-    const ms=by.get(p.group),head=ms.find(x=>x.id===p.group)||ms[0],rest=ms.filter(x=>x!==head),open=GX.has(p.group);
-    out.push({...head,_gn:gMembers(p.group).length,_gopen:open});if(open)rest.forEach(x=>out.push({...x,_gsub:true}));}
+function gview(l){const inL=new Set(l.map(p=>p.id)),out=[],done=new Set();
+  for(const p of l){const ms=p.group?gMembers(p.group):[];if(ms.length<2){out.push(p);continue;}if(done.has(p.group))continue;done.add(p.group);
+    const vis=ms.filter(x=>inL.has(x.id)),head=vis.find(x=>x.id===p.group)||vis[0],rest=ms.filter(x=>x!==head&&(inL.has(x.id)||x.derived)),open=GX.has(p.group);
+    out.push({...head,_gn:ms.length,_gopen:open});if(open)rest.sort((a,b)=>(!!a.derived)-(!!b.derived)).forEach(x=>out.push({...x,_gsub:true}));}
   return out;}
 const gBadge=p=>p._gn?`<span class="tag gtag" role="button" tabindex="0" data-gx="${esc(p.group)}" title="같은 논문에서 나온 자료 묶음 · 눌러서 ${p._gopen?"접기":"펼치기"}">${p._gopen?"▾":"▸"} 묶음 ${p._gn}</span>`:p._gsub?`<span class="tag gtag sub">묶음 자료</span>`:"";
 async function makeGroup(ids){ids=ids.filter(id=>S.papers.some(p=>p.id===id));if(ids.length<2){toast("두 편 이상 골라야 묶을 수 있어요");return;}
@@ -3783,7 +3873,7 @@ async function makeGroup(ids){ids=ids.filter(id=>S.papers.some(p=>p.id===id));if
   GX.add(gid);saveGX();for(const id of ids)await HUB.col("papers").update(id,{group:gid});render();
   toast(`${ids.length}편을 한 묶음으로 묶었어요. 대표: '${String((S.papers.find(p=>p.id===gid)||{}).title||"").slice(0,40)}'`,5000);}
 async function ungroupOne(id){const p=S.papers.find(x=>x.id===id);if(!p||!p.group)return;const gid=p.group,ms=gMembers(gid);
-  if(id===gid&&ms.length>1){const nx=ms.find(x=>x.id!==id);for(const m of ms)if(m.id!==id)await HUB.col("papers").update(m.id,{group:nx.id});if(GX.has(gid)){GX.delete(gid);GX.add(nx.id);saveGX();}}
+  if(id===gid&&ms.length>1){const nx=ms.find(x=>x.id!==id&&!x.derived)||ms.find(x=>x.id!==id);for(const m of ms)if(m.id!==id)await HUB.col("papers").update(m.id,{group:nx.id});if(GX.has(gid)){GX.delete(gid);GX.add(nx.id);saveGX();}}
   await HUB.col("papers").update(id,{group:""});const left=gMembers(p.group===id?"":gid);
   const rest=S.papers.filter(x=>x.group&&gMembers(x.group).length===1);for(const x of rest)await HUB.col("papers").update(x.id,{group:""});toast("묶음에서 뺐어요");}
 async function setMain(id){const p=S.papers.find(x=>x.id===id);if(!p||!p.group||p.group===id)return;const gid=p.group;for(const m of gMembers(gid))await HUB.col("papers").update(m.id,{group:id});if(GX.has(gid)){GX.delete(gid);GX.add(id);saveGX();}toast("대표 자료를 바꿨어요");}
@@ -3791,12 +3881,15 @@ async function setMain(id){const p=S.papers.find(x=>x.id===id);if(!p||!p.group||
 const stem=s=>String(s||"").toLowerCase().replace(/\.(pdf|docx?|pptx?|xlsx?|csv|hwpx?)$/,"").replace(/[\s_\-()[\].,]+/g,"");
 function gSuggest(p){const d=String(p.doi||"").toLowerCase(),a=stem(p.origName),t=stem(p.title);
   return S.papers.filter(o=>o.id!==p.id&&!(p.group&&o.group===p.group)&&((d&&String(o.doi||"").toLowerCase()===d)||(a.length>=12&&stem(o.origName).slice(0,Math.min(18,a.length))===a.slice(0,Math.min(18,a.length)))||(t.length>=20&&stem(o.title).slice(0,24)===t.slice(0,24)))).slice(0,6);}
-function groupPanel(p){const ms=p.group?gMembers(p.group):[];const sg=gSuggest(p);
-  if(ms.length<2&&!sg.length)return `<div class="gpanel"><span class="muted">이 논문에서 나온 보충자료·발표자료·데이터가 라이브러리에 있으면, 목록에서 함께 체크하고 <b>한 묶음으로</b>를 누르세요.</span></div>`;
-  return `<div class="gpanel">${ms.length>1?`<div class="gph"><b>묶음 자료 ${ms.length}개</b><span class="muted">같은 논문에서 나온 문서·자료</span></div><ul class="glist">${ms.map(m=>`<li class="${m.id===p.id?"on":""}"><span class="tag ft">${esc(ftLabel(m))}</span>${m.id===p.group?`<span class="tag">대표</span>`:""}<button class="linkbtn" type="button" data-gopen="${esc(m.id)}">${esc(String(m.title||m.origName).slice(0,90))}</button><span class="gact">${m.id!==p.group?`<button class="linkbtn" type="button" data-gmain="${esc(m.id)}">대표로</button>`:""}<button class="linkbtn danger" type="button" data-gout="${esc(m.id)}">빼기</button></span></li>`).join("")}</ul>`:""}
-    ${sg.length?`<div class="gsug"><span class="muted">같은 논문의 자료로 보여요:</span>${sg.map(o=>`<button class="chip" type="button" data-gadd="${esc(o.id)}" title="이 논문과 한 묶음으로">＋ ${esc(String(o.title||o.origName).slice(0,50))}</button>`).join("")}</div>`:""}</div>`;}
+function groupPanel(p){const ms=p.group?gMembers(p.group):[];const sg=p.derived?[]:gSuggest(p);
+  const nf=(p.figures||[]).filter(f=>f.asset).length+(p.tables||[]).length,nd=S.papers.filter(x=>x.derived&&x.derivedFrom===p.id).length;
+  const dv=!p.derived&&nf?`<div class="gsug"><button class="btn sm" type="button" data-gderive="${esc(p.id)}" ${nd>=nf?"disabled":""}>${nd>=nf?"그림·표를 모두 꺼냈어요":`그림·표 ${nf-nd}개를 묶음 자료로 꺼내기`}</button><span class="muted">꺼낸 그림·표는 따로 열어 보고, 폴더에 넣고, CSV로 받을 수 있어요</span></div>`:"";
+  if(ms.length<2&&!sg.length)return `<div class="gpanel">${dv}<span class="muted">이 논문에서 나온 보충자료·발표자료·데이터가 라이브러리에 있으면, 목록에서 함께 체크하고 <b>한 묶음으로</b>를 누르세요.</span></div>`;
+  return `<div class="gpanel">${ms.length>1?`<div class="gph"><b>묶음 자료 ${ms.length}개</b><span class="muted">같은 논문에서 나온 문서·자료</span></div><ul class="glist">${ms.slice().sort((a,b)=>(!!a.derived)-(!!b.derived)).map(m=>`<li class="${m.id===p.id?"on":""}"><span class="tag ft">${esc(ftLabel(m))}</span>${m.id===p.group?`<span class="tag">대표</span>`:""}<button class="linkbtn" type="button" data-gopen="${esc(m.id)}">${esc(String(m.title||m.origName).slice(0,90))}</button><span class="gact">${m.id!==p.group&&!m.derived?`<button class="linkbtn" type="button" data-gmain="${esc(m.id)}">대표로</button>`:""}<button class="linkbtn danger" type="button" data-gout="${esc(m.id)}">빼기</button></span></li>`).join("")}</ul>`:""}
+    ${dv}${sg.length?`<div class="gsug"><span class="muted">같은 논문의 자료로 보여요:</span>${sg.map(o=>RF.isCopy(p,o)?`<button class="chip dupc" type="button" data-gmerge="${esc(o.id)}" title="같은 논문이 두 번 들어갔어요. 하나만 남기고 메모·하이라이트·폴더를 합쳐요">같은 파일 — 하나로 합치기: ${esc(String(o.origName||o.title).slice(0,40))}</button>`:`<button class="chip" type="button" data-gadd="${esc(o.id)}" title="이 논문과 한 묶음으로">＋ 묶기: ${esc(String(o.title||o.origName).slice(0,50))}</button>`).join("")}</div>`:""}</div>`;}
 document.addEventListener("click",async e=>{if(HUB.view!=="library")return;
   const gx=e.target.closest("[data-gx]");if(gx){e.preventDefault();e.stopPropagation();const g=gx.dataset.gx;if(GX.has(g))GX.delete(g);else GX.add(g);saveGX();render();return;}
+  const ux=e.target.closest("[data-ufx]");if(ux){const id=ux.dataset.ufx;if(UFC.has(id))UFC.delete(id);else UFC.add(id);saveUFC();render();return;}
   const uf=e.target.closest("[data-uf]");if(uf){UF=uf.dataset.uf;saveUF();FEDIT="";render();return;}
   const ua=e.target.closest("[data-ufa]");if(ua){const k=ua.dataset.ufa,id=ua.dataset.id;
     if(k==="new")await newFolder(UF&&UF!=="__nofolder"?"":"");else if(k==="sub")await newFolder(id);else if(k==="ren"){FEDIT=id;render();}
@@ -3809,6 +3902,9 @@ document.addEventListener("click",async e=>{if(HUB.view!=="library")return;
   const gm=e.target.closest("[data-gmain]");if(gm){await setMain(gm.dataset.gmain);return;}
   const gt=e.target.closest("[data-gout]");if(gt){await ungroupOne(gt.dataset.gout);return;}
   const ga=e.target.closest("[data-gadd]");if(ga&&S.sel){await makeGroup([S.sel,ga.dataset.gadd]);return;}
+  const gm2=e.target.closest("[data-gmerge]");if(gm2&&S.sel){const l=[S.sel,gm2.dataset.gmerge].map(id=>S.papers.find(p=>p.id===id)).filter(Boolean);const keep=l.length===2?(l.slice().sort((a,b)=>((b.summary?10:0)+(b.fileType!=="ref"?100:0))-((a.summary?10:0)+(a.fileType!=="ref"?100:0))||(a.addedAt||0)-(b.addedAt||0))[0]):null;gm2.disabled=true;const n=await RF.mergeGroup(l);if(keep)S.sel=keep.id;render();toast(n?"하나로 합쳤어요":"합칠 것이 없었어요");return;}
+  const da=e.target.closest("[data-dupall]");if(da){da.disabled=true;let n=0;for(const g of RF.dupGroups())n+=await RF.mergeGroup(g);render();toast(n?`중복 ${n}건을 하나로 합쳤어요`:"지울 중복은 없었어요. DOI만 같은 다른 파일은 한 묶음으로 묶었어요",5000);return;}
+  const dop=e.target.closest("[data-dupopen]");if(dop){RF.open("dup");return;}
 },true);
 document.addEventListener("keydown",e=>{const i=e.target.closest&&e.target.closest("[data-ufren]");if(i&&e.key==="Enter"){const b=i.parentElement.querySelector("[data-ufa=renok]");if(b)b.click();}else if(i&&e.key==="Escape"){FEDIT="";render();}
   const gx=e.target.closest&&e.target.closest("[data-gx]");if(gx&&(e.key==="Enter"||e.key===" ")){e.preventDefault();gx.click();}});
@@ -3821,6 +3917,94 @@ document.addEventListener("dragleave",e=>{const f=e.target.closest&&e.target.clo
 document.addEventListener("drop",async e=>{const f=e.target.closest&&e.target.closest("[data-uf]");if(!f)return;const raw=e.dataTransfer&&e.dataTransfer.getData("text/x-hub-papers");if(!raw)return;e.preventDefault();e.stopPropagation();f.classList.remove("ufdrop");
   let ids=[];try{ids=JSON.parse(raw);}catch(err){}const v=f.dataset.uf;if(v==="")return;await moveToFolder(ids,v==="__nofolder"?"":v);toast(v==="__nofolder"?`${ids.length}편을 폴더에서 뺐어요`:`${ids.length}편을 '${fPath(v)}'로 옮겼어요`);},true);
 if(fcol())fcol().subscribe(()=>{if(S.dbLoaded&&HUB.view==="library")render();});
+/* the list column's width: drag the edge (or use ←/→ on it), double-click to reset; kept per browser */
+function sideGrip(){const sd=document.querySelector("#layout .side"),lay=$("#layout");if(!sd||!lay)return;
+  const apply=w=>{if(w)lay.style.setProperty("--sidew",w+"px");else lay.style.removeProperty("--sidew");};
+  const max=()=>Math.min(760,Math.round(window.innerWidth*0.6)),clamp=w=>Math.max(240,Math.min(max(),w));
+  const W=+HUB.u.ls.get("libsidew",0)||0;if(W&&!lay.style.getPropertyValue("--sidew"))apply(clamp(W));
+  if(sd.querySelector(".sidegrip"))return;
+  const g=document.createElement("div");g.className="sidegrip";g.setAttribute("role","separator");g.setAttribute("aria-orientation","vertical");g.setAttribute("aria-label","목록 칸 너비");g.tabIndex=0;g.title="끌어서 목록 칸 너비 조절 · 두 번 누르면 원래대로";sd.appendChild(g);
+  g.addEventListener("pointerdown",e=>{e.preventDefault();try{g.setPointerCapture(e.pointerId);}catch(err){}g.classList.add("on");document.body.classList.add("resizing");const x0=e.clientX,w0=sd.getBoundingClientRect().width;
+    const mv=ev=>apply(clamp(Math.round(w0+ev.clientX-x0)));
+    const up=()=>{g.classList.remove("on");document.body.classList.remove("resizing");g.removeEventListener("pointermove",mv);g.removeEventListener("pointerup",up);g.removeEventListener("pointercancel",up);HUB.u.ls.set("libsidew",Math.round(sd.getBoundingClientRect().width));};
+    g.addEventListener("pointermove",mv);g.addEventListener("pointerup",up);g.addEventListener("pointercancel",up);});
+  g.addEventListener("dblclick",()=>{apply(0);HUB.u.ls.set("libsidew",0);});
+  g.addEventListener("keydown",ev=>{if(ev.key!=="ArrowLeft"&&ev.key!=="ArrowRight")return;ev.preventDefault();const w=clamp(Math.round(sd.getBoundingClientRect().width)+(ev.key==="ArrowRight"?24:-24));apply(w);HUB.u.ls.set("libsidew",w);});}
+window.addEventListener("resize",()=>{const lay=$("#layout");const v=lay&&parseFloat(lay.style.getPropertyValue("--sidew"));if(v&&v>Math.round(window.innerWidth*0.6))lay.style.setProperty("--sidew",Math.max(240,Math.round(window.innerWidth*0.6))+"px");});
+/* ===== 1. figures and tables pulled out of a paper become items of its group ===== */
+const DV={fig:"그림",tbl:"표"};
+async function deriveFrom(p){const main=p;const have=new Set(S.papers.filter(x=>x.derived&&x.derivedFrom===main.id).map(x=>x.derivedKey));let n=0,skip=0;
+  const base={derived:true,derivedFrom:main.id,group:main.id,ufolder:main.ufolder||"",project:main.project||"",year:main.year||null,authors:(main.authors||[]).slice(0,3),journal:main.journal||"",journalAbbr:main.journalAbbr||"",category:main.category||"미분류",keywords:[],tags:[],memo:"",figures:[],tables:[],summary:null,note:null};
+  if(main.group!==main.id&&!(main.group&&gMembers(main.group).length>1))await HUB.col("papers").update(main.id,{group:main.id});
+  const gid=main.group&&gMembers(main.group).length>1?main.group:main.id;base.group=gid;
+  let t=Date.now();
+  for(const [i,f] of (main.figures||[]).entries()){const key="fig:"+i;if(have.has(key))continue;if(!f.asset){skip++;continue;}
+    await HUB.col("papers").set(uid(),{...base,fileType:"fig",derivedKey:key,title:`${f.label||"그림 "+(i+1)} — ${String(main.title||main.origName||"").slice(0,80)}`,caption:f.caption||"",page:f.page||null,asset:f.asset,origName:(f.label||"figure")+".png",addedAt:t--});n++;}
+  for(const [i,tb] of (main.tables||[]).entries()){const key="tbl:"+i;if(have.has(key))continue;
+    await HUB.col("papers").set(uid(),{...base,fileType:"tbl",derivedKey:key,title:`${tb.label||"표 "+(i+1)} — ${String(main.title||main.origName||"").slice(0,80)}`,caption:tb.caption||"",rows:(tb.rows||[]).slice(0,200),origName:(tb.label||"table")+".csv",addedAt:t--});n++;}
+  GX.add(gid);saveGX();render();
+  toast(n?`그림·표 ${n}개를 이 논문의 묶음 자료로 꺼냈어요${skip?` (${skip}개는 원본 그림이 이 기기에만 있어 건너뛰었어요)`:""}`:"새로 꺼낼 그림·표가 없어요. 이미 꺼냈거나 찾은 그림·표가 없어요.",5000);}
+function derivHtml(p){const main=S.papers.find(x=>x.id===p.derivedFrom);const rows=p.rows||[];
+  return `<div class="wrap"><div class="card pad dvview"><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><button class="btn ghost back" type="button" data-act="back">← 목록</button><span class="tag ft">${esc(DV[p.fileType]||"자료")}</span><span class="muted">묶음 자료${p.page?` · 원문 ${p.page}쪽`:""}</span></div>
+    <h2 style="margin:10px 0 6px">${esc(p.title||"")}</h2>${p.caption?`<p class="muted" style="margin:0 0 12px;line-height:1.6">${esc(p.caption)}</p>`:""}
+    ${p.fileType==="fig"&&p.asset?`<a href="${esc(HUB.assetUrl(p.asset))}" target="_blank" rel="noopener"><img class="dvimg" alt="${esc(p.title||"그림")}" src="${esc(HUB.assetUrl(p.asset))}"></a>`:""}
+    ${p.fileType==="tbl"&&rows.length?`<div class="dvtbl"><table>${rows.slice(0,200).map((r,i)=>`<tr>${(r||[]).map(c=>i===0?`<th>${esc(c)}</th>`:`<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</table></div>`:""}
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:14px">${main?`<button class="btn primary" type="button" data-gopen="${esc(main.id)}">원 논문 열기</button>`:""}${p.fileType==="tbl"&&rows.length?`<button class="btn" type="button" data-dv="csv" data-id="${esc(p.id)}">CSV로 받기</button><button class="btn" type="button" data-dv="copy" data-id="${esc(p.id)}">표 복사</button>`:""}
+      <label class="rnproj"><span>내 폴더</span><select data-pfolder="${esc(p.id)}">${fOpts(p.ufolder&&fById(p.ufolder)?p.ufolder:"","없음")}</select></label>
+      <button class="btn ghost danger" type="button" data-dv="del" data-id="${esc(p.id)}">이 자료 삭제</button></div>
+    ${main?groupPanel(p):""}</div></div>`;}
+let DVDEL={id:"",until:0};
+document.addEventListener("click",async e=>{if(HUB.view!=="library")return;
+  const gd=e.target.closest("[data-gderive]");if(gd){const p=S.papers.find(x=>x.id===gd.dataset.gderive);if(p){gd.disabled=true;await deriveFrom(p);}return;}
+  const b=e.target.closest("[data-dv]");if(!b)return;const p=S.papers.find(x=>x.id===b.dataset.id);if(!p)return;const k=b.dataset.dv;
+  const csv=()=>(p.rows||[]).map(r=>(r||[]).map(c=>/[",\n]/.test(String(c))?`"${String(c).replace(/"/g,'""')}"`:String(c==null?"":c)).join(",")).join("\n");
+  if(k==="csv")HUB.save((p.origName||"table").replace(/\.csv$/,"")+".csv",new Blob(["﻿"+csv()],{type:"text/csv"}));
+  else if(k==="copy")HUB.copy((p.rows||[]).map(r=>(r||[]).join("\t")).join("\n"));
+  else if(k==="del"){if(!(DVDEL.id===p.id&&Date.now()<DVDEL.until)){DVDEL={id:p.id,until:Date.now()+4000};b.textContent="한 번 더 누르면 삭제";b.classList.add("armed");return;}
+    DVDEL={id:"",until:0};const back=p.derivedFrom;await HUB.col("papers").remove(p.id);S.sel=S.papers.some(x=>x.id===back)?back:null;render();toast("묶음 자료를 지웠어요. 원 논문은 그대로예요.");}},true);
+
+/* ===== 3. drag a folder into another (or to the top) ===== */
+document.addEventListener("dragstart",e=>{const f=e.target.closest&&e.target.closest("[data-uf]");if(!f||!f.dataset.uf||f.dataset.uf==="__nofolder")return;e.dataTransfer.setData("text/x-hub-folder",f.dataset.uf);e.dataTransfer.effectAllowed="move";});
+document.addEventListener("dragover",e=>{const f=e.target.closest&&e.target.closest("[data-uf]");if(f&&f.dataset.uf!=="__nofolder"&&[...(e.dataTransfer.types||[])].includes("text/x-hub-folder")){e.preventDefault();f.classList.add("ufdrop");}});
+document.addEventListener("drop",async e=>{const f=e.target.closest&&e.target.closest("[data-uf]");if(!f)return;const src=e.dataTransfer&&e.dataTransfer.getData("text/x-hub-folder");if(!src)return;e.preventDefault();e.stopPropagation();f.classList.remove("ufdrop");
+  const to=f.dataset.uf;if(to==="__nofolder"||to===src)return;if(to&&fDesc(src).has(to)){toast("폴더를 자기 안쪽 폴더로는 옮길 수 없어요");return;}
+  const s=fById(src);if(!s||(s.parent||"")===(to||""))return;await fcol().update(src,{parent:to||""});if(to)UFC.delete(to),saveUFC();toast(to?`'${s.name}'을 '${fPath(to)}' 안으로 옮겼어요`:`'${s.name}'을 맨 위로 옮겼어요`);setTimeout(render,60);},true);
+
+/* ===== 4. folders that fill themselves: words in title, keywords, journal, abstract or tags ===== */
+let RULEEDIT="",autoBusy=false;
+const ruleWords=f=>String(f.rule||"").split(/[,;\n]+/).map(w=>w.trim().toLowerCase()).filter(w=>w.length>=2);
+const fDepth=id=>{let d=0,f=fById(id);while(f&&f.parent&&d<20){d++;f=fById(f.parent);}return d;};
+function ruleMatch(p){const rs=folders().filter(f=>ruleWords(f).length);if(!rs.length)return null;
+  const t=[p.title,(p.keywords||[]).join(" "),p.journal,p.journalAbbr,p.abstract,(p.tags||[]).join(" "),p.category,p.origName].join(" ").toLowerCase();
+  const hit=rs.filter(f=>ruleWords(f).some(w=>t.includes(w))).sort((a,b)=>fDepth(b.id)-fDepth(a.id));return hit[0]||null;}
+async function autoFile(all){if(autoBusy||!S.dbLoaded)return 0;const rs=folders().filter(f=>ruleWords(f).length);if(!rs.length)return 0;autoBusy=true;let n=0;
+  try{const since=Math.min(...rs.map(f=>f.ruleAt||0));
+    const cand=S.papers.filter(p=>!p.derived&&!(p.ufolder&&fById(p.ufolder))&&!p.summaryPending&&(all||(!p.ufChecked&&(p.addedAt||0)>=since)));
+    for(const p of cand){const f=ruleMatch(p);if(f){await HUB.col("papers").update(p.id,{ufolder:f.id,ufChecked:true});n++;}else if(!all)await HUB.col("papers").update(p.id,{ufChecked:true});}}
+  finally{autoBusy=false;}
+  if(n)toast(`규칙에 맞는 논문 ${n}편을 폴더에 넣었어요`,4000);return n;}
+let autoT=null;const autoSoon=()=>{clearTimeout(autoT);autoT=setTimeout(()=>autoFile(false),1200);};
+document.addEventListener("click",async e=>{if(HUB.view!=="library")return;const b=e.target.closest("[data-ufrule]");if(!b)return;e.preventDefault();e.stopPropagation();const k=b.dataset.ufrule,id=b.dataset.id;
+  if(k==="edit"){RULEEDIT=RULEEDIT===id?"":id;render();}
+  else if(k==="save"){const i=$(`[data-ufrulein="${CSS.escape(id)}"]`);const v=(i&&i.value||"").trim();await fcol().update(id,{rule:v,ruleAt:Date.now()});RULEEDIT="";setTimeout(render,60);toast(v?"규칙을 저장했어요. 앞으로 들어오는 논문에 적용돼요":"규칙을 지웠어요");}
+  else if(k==="now"){const i=$(`[data-ufrulein="${CSS.escape(id)}"]`);const v=(i&&i.value||"").trim();if(v)await fcol().update(id,{rule:v,ruleAt:Date.now()});RULEEDIT="";const n=await autoFile(true);if(!n)toast("폴더 밖에 있는 논문 중 규칙에 맞는 논문이 없어요");setTimeout(render,60);}},true);
+function ruleBox(f){return RULEEDIT===f.id?`<div class="ufrule"><label><span>이 단어가 제목·키워드·저널·초록에 있으면 자동으로 이 폴더에 넣기 (쉼표로 구분)</span><input data-ufrulein="${esc(f.id)}" value="${esc(f.rule||"")}" placeholder="예: kidney, AKI, nephro"></label><div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm primary" type="button" data-ufrule="save" data-id="${esc(f.id)}">저장</button><button class="btn sm" type="button" data-ufrule="now" data-id="${esc(f.id)}">저장하고 폴더 밖 논문에도 적용</button><button class="btn sm ghost" type="button" data-ufrule="edit" data-id="${esc(f.id)}">닫기</button></div></div>`:"";}
+
+/* ===== 5. continue reading ===== */
+let recT=null;
+function recRecent(id,page){if(!id)return;const l=(HUB.u.ls.get("librecent",[])||[]).filter(x=>x&&x.id!==id);const old=(HUB.u.ls.get("librecent",[])||[]).find(x=>x&&x.id===id);
+  l.unshift({id,at:Date.now(),page:page||(old&&old.page)||0});clearTimeout(recT);recT=setTimeout(()=>{HUB.u.ls.set("librecent",l.slice(0,12));},page?600:0);}
+function recentHtml(){const l=(HUB.u.ls.get("librecent",[])||[]).map(x=>({...x,p:S.papers.find(p=>p.id===x.id)})).filter(x=>x.p).slice(0,4);if(!l.length)return "";
+  const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?"방금":m<60?m+"분 전":m<1440?Math.round(m/60)+"시간 전":Math.round(m/1440)+"일 전";};
+  return `<section class="card pad recent"><div class="mbar"><h3 style="margin:0">이어 읽기</h3><span class="muted" style="font-size:13px">최근에 연 논문</span></div><div class="recl">${l.map(x=>`<button type="button" class="reci" data-recent="${esc(x.id)}"><span class="tag ft">${esc(ftLabel(x.p))}</span><b>${esc(String(x.p.title||x.p.origName).slice(0,110))}</b><span class="muted">${esc(authorShort(x.p))}${x.p.year?" · "+x.p.year:""} · ${ago(x.at)}${x.page?` · ${x.page}쪽까지 읽음`:""}</span></button>`).join("")}</div></section>`;}
+document.addEventListener("click",async e=>{const r=e.target.closest("[data-recent]");if(!r)return;const id=r.dataset.recent,x=(HUB.u.ls.get("librecent",[])||[]).find(y=>y.id===id),p=S.papers.find(y=>y.id===id);if(!p)return;
+  HUB.go("library");select(id);if(x&&x.page&&p.fileType==="pdf"&&typeof openReader==="function"){await openReader(p,x.page);}});
+
+/* ===== 6. lab notes that cite this paper ===== */
+function notesFor(p){const c=HUB.col("notes");return c?c.list.filter(n=>(n.papers||[]).includes(p.id)):[];}
+function notesPanel(p){const l=notesFor(p);if(!l.length)return "";return `<div class="gpanel"><div class="gph"><b>이 논문을 참고한 실험노트 ${l.length}건</b></div><ul class="glist">${l.sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))).map(n=>`<li><span class="tag">${esc(n.kind||"노트")}</span><button class="linkbtn" type="button" data-gonote="${esc(n.id)}">${esc(n.title||"(제목 없음)")}</button><span class="muted">${esc(n.date||"")}</span></li>`).join("")}</ul></div>`;}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-gonote]");if(!b)return;if(HUB.mat&&HUB.mat.openNote)HUB.mat.openNote(b.dataset.gonote);});
+if(HUB.col("notes"))HUB.col("notes").subscribe(()=>{if(S.dbLoaded&&HUB.view==="library"&&S.sel)renderMain();});
 
 /* papers added from search go through the same queue as dropped files, so the progress panel shows them:
    full text if an open-access PDF can be fetched, otherwise summary + note + folder from the abstract */
@@ -3860,7 +4044,8 @@ document.addEventListener("click",e=>{if(!e.target.closest("[data-sumrefs]"))ret
 
 HUB.lib={
   get papers(){return S.papers;},
-  picked:()=>S.papers.filter(p=>pickSet.has(p.id)),
+  picked:()=>S.papers.filter(p=>pickSet.has(p.id)&&!p.derived),
+  recentHtml:()=>recentHtml(),
   get context(){return S.settings.context||DEFAULT_CONTEXT;},
   filtered,
   open(id){HUB.go("library");select(id);},
@@ -6957,14 +7142,24 @@ const REC={
   match:(r,v)=>v[0]==="k"?(r.kind||"분석·기타")===v.slice(2):r.project===v.slice(2),
   sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||""))||(b.addedAt||0)-(a.addedAt||0),
   sum:l=>`전체 ${l.length}건 · `+["합성","세포","동물","분석·기타"].map(v=>[v,l.filter(r=>(r.kind||"분석·기타")===v).length]).filter(x=>x[1]).map(x=>x[0]+" "+x[1]).join(" · "),
-  extra:r=>`${attHtml("notes",r)}
+  extra:r=>`${attHtml("notes",r)}${paperLinks(r)}
     <div class="row" style="gap:6px;flex-wrap:wrap">${col().list.length?`<select class="btn sm" data-nmat="${r.id}" aria-label="재료 목록에서 넣기" style="max-width:240px"><option value="">재료 목록에서 넣기…</option>${col().list.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(x=>`<option value="${x.id}">${esc(x.name)}${x.catalog?" · "+esc(x.catalog):""}</option>`).join("")}</select>`:""}${r.date?`<button class="btn sm" type="button" data-r="nday" data-id="${r.id}">일정에서 이 날 보기</button>`:""}<button class="btn sm" type="button" data-r="ntpl" data-id="${r.id}" title="제목, 결과, 사진을 뺀 나머지를 서식으로 저장해요">서식으로 저장</button><button class="btn sm" type="button" data-r="ndocx" data-id="${r.id}" title="한글에서도 바로 열려요 (한글: 파일 → 불러오기)">Word·한글 (.docx)</button><button class="btn sm" type="button" data-r="nhwpx" data-id="${r.id}" title="시험판: 한글에서 열리는지 확인 중이에요">한글 (.hwpx 시험)</button><button class="btn sm" type="button" data-r="npdf" data-id="${r.id}">PDF</button><button class="btn sm" type="button" data-r="nmd" data-id="${r.id}">Markdown</button><button class="btn sm" type="button" data-r="ncopy" data-id="${r.id}">복사</button><button class="btn sm" type="button" data-r="nmeth" data-id="${r.id}" style="border-color:var(--accent);color:var(--accent)" ${RS.busy===r.id?"disabled":""}>${RS.busy===r.id?"쓰는 중…":"Methods 문장으로 다듬어 원고에 넣기"}</button></div>`,
   defaults:()=>({kind:RS.chip.startsWith("k:")?RS.chip.slice(2):"합성",date:today(),project:""})}
 };
+/* papers from the library this note relied on; the paper's page lists the notes back */
+const libPapers=()=>((HUB.lib&&HUB.lib.papers)||[]).filter(p=>!p.derived);
+function paperLinks(r){const all=libPapers(),ids=(r.papers||[]).filter(id=>all.some(p=>p.id===id)),ps=ids.map(id=>all.find(p=>p.id===id));
+  const opts=all.filter(p=>!ids.includes(p.id)).sort((a,b)=>String(a.title||"").localeCompare(String(b.title||""))).slice(0,400);
+  return `<div class="nlinks"><span class="nlh">참고한 논문</span>${ps.map(p=>`<span class="nlink"><button class="linkbtn" type="button" data-nlopen="${esc(p.id)}" title="라이브러리에서 열기">${esc(String(p.title||p.origName||"").slice(0,70))}${p.year?` (${p.year})`:""}</button><button class="linkbtn danger" type="button" data-nlx="${esc(p.id)}" data-id="${r.id}" aria-label="연결 끊기">×</button></span>`).join("")}${all.length?`<select class="btn sm" data-nlink="${r.id}" aria-label="라이브러리 논문 연결" style="max-width:260px"><option value="">＋ 라이브러리 논문 연결…</option>${opts.map(p=>`<option value="${esc(p.id)}">${esc(String(p.title||p.origName||"").slice(0,80))}</option>`).join("")}</select>`:`<span class="muted">라이브러리에 논문을 넣으면 여기서 연결할 수 있어요</span>`}</div>`;}
+document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.nlink||!t.value)return;const r=HUB.col("notes").list.find(x=>x.id===t.dataset.nlink);if(!r)return;const v=t.value;t.value="";
+  await HUB.col("notes").update(r.id,{papers:[...new Set([...(r.papers||[]),v])]});setTimeout(draw,60);HUB.toast("논문을 연결했어요. 그 논문 화면에서도 이 노트가 보여요");});
+document.addEventListener("click",async e=>{if(HUB.view!=="mat")return;const o=e.target.closest("[data-nlopen]");if(o){HUB.go("library");if(HUB.lib&&HUB.lib.open)HUB.lib.open(o.dataset.nlopen);return;}
+  const x=e.target.closest("[data-nlx]");if(x){const r=HUB.col("notes").list.find(n=>n.id===x.dataset.id);if(r){await HUB.col("notes").update(r.id,{papers:(r.papers||[]).filter(i=>i!==x.dataset.nlx)});setTimeout(draw,60);}}});
 const nfields=r=>REC.notes.fields.filter(f=>!f[3]||f[3]===(r.kind||"분석·기타"));
 /* body of a note; with img=true the photos come along as picture lines for Word and PDF */
 const noteBody=(r,img)=>nfields(r).filter(f=>f[0]!=="title"&&f[2]!=="big"&&f[2]!=="area"&&String(r[f[0]]||"").trim()).map(f=>"- **"+f[1]+"**: "+r[f[0]]).join("\n")+"\n\n"+nfields(r).filter(f=>(f[2]==="big"||f[2]==="area")&&String(r[f[0]]||"").trim()).map(f=>"## "+f[1]+"\n\n"+r[f[0]]).join("\n\n")+"\n"
   +(img&&(r.photos||[]).length?"\n## 사진\n\n"+r.photos.map((p,i)=>`![사진 ${i+1}](asset:${p})`).join("\n\n")+"\n":"")
+  +((r.papers||[]).length?"\n## 참고한 논문\n\n"+(r.papers||[]).map(id=>libPapers().find(p=>p.id===id)).filter(Boolean).map(p=>`- ${(p.authors||[])[0]||""}${(p.authors||[]).length>1?" et al.":""} (${p.year||"n.d."}). ${p.title||p.origName||""}. ${p.journal||""}${p.doi?" https://doi.org/"+p.doi:""}`).join("\n")+"\n":"")
   +((r.files||[]).length?"\n## 첨부 파일\n\n"+r.files.map(f=>`- [첨부: ${String(f.name).replace(/[\[\]()]/g," ")}](asset:${f.asset})`).join("\n")+"\n":"");
 const noteMd=r=>"# "+(r.title||"실험노트")+"\n\n"+nfields(r).filter(f=>f[0]!=="title"&&f[2]!=="big"&&f[2]!=="area"&&String(r[f[0]]||"").trim()).map(f=>"- **"+f[1]+"**: "+r[f[0]]).join("\n")+"\n\n"+nfields(r).filter(f=>(f[2]==="big"||f[2]==="area")&&String(r[f[0]]||"").trim()).map(f=>"## "+f[1]+"\n\n"+r[f[0]]).join("\n\n")+"\n";
 /* note templates: a few common experiments built in, and any note can be saved as one */
@@ -6974,7 +7169,7 @@ const TPL0=[
  {id:"b-ani",name:"동물 투여·관찰",kind:"동물",strain:"계통 · 성별 · 주령",n:"군당 마릿수 · 군 구성",model:"모델 · 유도 방법",dose:"물질 · 용량(mg/kg) · 경로 · 일정",aim:"",proc:"1. 순화\n2. 무작위 군 배정\n3. 모델 유도\n4. 투여\n5. 체중·상태 관찰\n6. 희생, 혈액·장기 채취",result:"| 군 | n | 체중 변화 | 주요 결과 |\n| --- | --- | --- | --- |\n|  |  |  |  |"},
  {id:"b-syn",name:"합성 (일반)",kind:"합성",cond:"용매 · 온도 · 시간 · 분위기",char:"¹H NMR, MS, HPLC 순도",aim:"",proc:"1. 반응물 투입\n2. 반응 진행 (TLC로 확인)\n3. 후처리 (추출·세척·건조)\n4. 정제\n5. 수득·건조"}];
 const tcol=()=>HUB.col("tpls");
-const TPLSKIP=new Set(["title","date","result","next","photos","files","log","id","addedAt","project","who"]);
+const TPLSKIP=new Set(["title","date","result","next","photos","files","papers","log","id","addedAt","project","who"]);
 const tplList=()=>[...TPL0.map(t=>({...t,builtin:true})),...tcol().list.slice().sort((a,b)=>(a.addedAt||0)-(b.addedAt||0))];
 const tplSelect=()=>`<select class="btn" data-ntpl="1" aria-label="서식으로 새 노트" style="max-width:220px"><option value="">서식으로 새 노트…</option><optgroup label="기본 서식">${TPL0.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join("")}</optgroup>${tcol().list.length?`<optgroup label="내 서식">${tcol().list.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join("")}</optgroup>`:""}</select>`;
 const tplMan=()=>tcol().list.length?`<details class="tplman"><summary>내 서식 ${tcol().list.length}개</summary><div class="tplrows">${tcol().list.map(t=>`<div class="tplrow"><span class="tag nk-${({합성:"syn",세포:"cell",동물:"ani"})[t.kind]||"etc"}">${esc(t.kind||"")}</span><b>${esc(t.name)}</b><button class="btn sm ghost danger" type="button" data-r="tpldel" data-id="${t.id}">지우기</button></div>`).join("")}</div></details>`:"";
@@ -7136,6 +7331,30 @@ async function mdFillRec(colName,id,text,onlyEmpty){const r0=HUB.col(colName).li
 document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.files||!t.files.length||!t.dataset)return;
   if(t.dataset.mdnew){const fs=[...t.files];t.value="";mdNew(t.dataset.mdnew==="plan"?"plan":M.tab,fs);}
   else if(t.dataset.mdfill){const fs=[...t.files].filter(isTextF);t.value="";for(const f of fs)await mdFillDraft(t.dataset.mdfill,f);}});
+/* ---------- the same record entered twice: found by a key per kind, merged into the oldest one ----------
+   Empty fields are filled from the copies, longer texts that differ are kept one under the other, photos, files, linked papers and history are joined. */
+const dn=v=>String(v==null?"":v).toLowerCase().replace(/[\s·.,\-_/()]+/g,"");
+const DUPKEY={
+  materials:m=>dn(m.name)?(dn(m.catalog)||dn(m.lot)?["m",dn(m.name),dn(m.catalog),dn(m.lot)].join("|"):["m",dn(m.name),dn(m.vendor),dn(m.spec)].join("|")):null,
+  cells:r=>dn(r.line)?["c",dn(r.line),dn(r.passage),r.frozen||"",dn(r.loc)].join("|"):null,
+  orders:r=>dn(r.item)?["o",dn(r.item),dn(r.vendor),dn(r.catalog),r.ordered||""].join("|"):null,
+  notes:r=>dn(r.title)?["n",dn(r.title),r.date||"",r.kind||""].join("|"):null,
+  plans:r=>dn(r.title)?["p",dn(r.title),r.date||"",r.time||""].join("|"):null};
+function labDups(name){const f=DUPKEY[name];if(!f)return [];const g=new Map();HUB.col(name).list.forEach(r=>{const k=f(r);if(!k)return;(g.get(k)||g.set(k,[]).get(k)).push(r);});return [...g.values()].filter(l=>l.length>1);}
+const LONG=new Set(["memo","aim","proc","result","next","mats","note"]);
+async function labMerge(name,l){const c=HUB.col(name);const keep=l.slice().sort((a,b)=>(a.addedAt||0)-(b.addedAt||0))[0];const patch={};const cur=k=>patch[k]!==undefined?patch[k]:keep[k];
+  for(const o of l){if(o===keep)continue;
+    for(const [k,v] of Object.entries(o)){if(["id","addedAt"].includes(k)||v==null||v==="")continue;
+      if(Array.isArray(v)){const base=cur(k)||[];const u=k==="log"?[...base,...v].filter((x,i,a)=>a.findIndex(y=>JSON.stringify(y)===JSON.stringify(x))===i).slice(0,30):k==="files"?[...base,...v.filter(f=>!base.some(b=>b.asset===f.asset))]:[...new Set([...base,...v])];if(u.length!==base.length)patch[k]=u;continue;}
+      const kv=cur(k);if(kv==null||kv===""){patch[k]=v;continue;}
+      if(typeof v==="string"&&LONG.has(k)&&String(kv).trim()!==v.trim()&&!String(kv).includes(v.trim()))patch[k]=String(kv)+"\n\n"+v;}}
+  if(Object.keys(patch).length)await c.update(keep.id,patch);
+  const ids=new Set(l.filter(o=>o!==keep).map(o=>o.id));
+  if(name==="notes")for(const p of pcol().list)if(p.noteId&&ids.has(p.noteId))await pcol().update(p.id,{noteId:keep.id});
+  for(const id of ids)await c.remove(id);return ids.size;}
+const dupBar=name=>{const g=labDups(name);if(!g.length)return "";const n=g.reduce((s,l)=>s+l.length-1,0);
+  return `<div class="note-bar dupbar">같은 기록으로 보이는 것이 ${g.length}묶음(${n}건 더) 있어요. <button class="btn sm" type="button" data-labdup="${name}">하나로 합치기</button><details><summary>무엇이 같은지 보기</summary><ul>${g.slice(0,20).map(l=>`<li>${esc(l.map(r=>r.name||r.line||r.item||r.title||"").filter(Boolean)[0]||"")} · ${l.length}건${l[0].date||l[0].frozen||l[0].ordered?" · "+esc(l[0].date||l[0].frozen||l[0].ordered):""}</li>`).join("")}</ul></details><small class="muted">가장 먼저 등록한 기록에 빈 칸·사진·파일·연결 논문·긴 글을 모으고 나머지를 지워요.</small></div>`;};
+document.addEventListener("click",async e=>{if(HUB.view!=="mat")return;const b=e.target.closest("[data-labdup]");if(!b)return;const name=b.dataset.labdup;b.disabled=true;let n=0;for(const l of labDups(name))n+=await labMerge(name,l);HUB.toast(n?`중복 ${n}건을 하나로 합쳤어요`:"합칠 중복이 없어요",4500);setTimeout(draw,80);});
 const RS={q:"",chip:"*",open:"",adding:false,busy:"",nsel:new Set(),pend:[]};
 const rf=r=>M.tab==="notes"?nfields(r):REC[M.tab].fields;
 const rcol=()=>HUB.col(M.tab);
@@ -7152,6 +7371,7 @@ function recHtml(){const cf=REC[M.tab],all=rcol().list.filter(inProj),list=rview
   return `<section class="card pad"><div class="mbar"><input id="rQ" class="search" type="search" placeholder="${cf.ph}" value="${esc(RS.q)}" autocomplete="off"><button class="btn primary" type="button" data-r="new">${cf.add}</button><label class="btn" title="마크다운(.md)·텍스트 파일의 내용을 읽어 칸을 채워요. 여러 개를 고르면 파일마다 기록을 하나씩 만들어요. 이 화면에 파일을 끌어 놓아도 돼요." style="cursor:pointer">마크다운 파일로 등록<input type="file" data-mdnew="rec" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><button class="btn" type="button" data-r="exp" ${all.length?"":"disabled"}>엑셀로 내보내기</button>${NT?tplSelect():""}${NT&&all.length&&!ns?`<button class="btn" type="button" data-r="nbdocx" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요. 일부만 담으려면 노트 왼쪽 칸을 체크하세요">노트 모음 Word·한글</button><button class="btn" type="button" data-r="nbpdf" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요">노트 모음 PDF</button>`:""}</div>
     ${NT?tplMan():""}
     ${NT&&all.length&&!ns?`<p class="muted" style="margin:8px 0 0;font-size:12.5px">일부만 모으려면 노트 왼쪽 칸을 체크하세요. 체크하지 않으면 지금 보이는 노트 전체를 모아요.</p>`:""}
+    ${dupBar(M.tab)}
     ${all.length?`<p class="muted" style="margin:10px 0 0;font-size:13.5px">${cf.sum(all)}</p><div class="chips" style="margin:10px 0">${[["*","전체",all.length],...cf.chips(all)].map(([v,n,c])=>`<button class="chip" type="button" data-rchip="${esc(v)}" aria-pressed="${RS.chip===v}">${esc(n)}<span class="n">${c}</span></button>`).join("")}</div>`:""}
     ${RS.adding?`<div class="mrev" id="rNew"><b>${cf.add}</b><div class="mgrid">${rf(RS.draft).map(f=>rfield(f,RS.draft,"data-rn")).join("")}</div>${pendHtml("rec",RS.pend)}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-r="savenew">저장</button><button class="btn ghost" type="button" data-r="cancelnew">취소</button></div></div>`:""}
     ${list.length?`<div class="mlist" style="margin-top:10px">${list.map(r=>{const on=RS.open===r.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-ropen="${r.id}">${NT?`<input type="checkbox" data-nsel="${r.id}" ${RS.nsel.has(r.id)?"checked":""} aria-label="${esc(cf.title(r))} 고르기">`:""}<div class="mn"><b>${pjDot(r.project)}${esc(cf.title(r))}</b><span>${esc([cf.sub(r),M.tab!=="notes"&&r.project].filter(Boolean).join(" · "))}</span></div>${cf.tags(r)}${attTag(r)}<span class="row" style="gap:6px;flex:none">${cf.quick(r)}</span></div>
@@ -7224,6 +7444,7 @@ function planHtml(){const [Y,Mo]=PS.ym.split("-").map(Number),first=new Date(Y,M
     <div class="pcal"><div class="pwd">${WD.map((w,i)=>`<span class="${i===0?"psun":i===6?"psat":""}">${w}</span>`).join("")}</div><div class="pgrid">${cal}</div></div>
     <div class="pday"><div class="mbar"><h3 style="margin:0">${dlabel(PS.day)}${PS.day===td?" · 오늘":""}</h3><span class="row" style="gap:6px"><button class="btn primary" type="button" data-p="new">일정 추가</button><label class="btn" title="마크다운(.md)·텍스트 파일로 일정을 만들어요. 여러 개면 파일마다 하나씩" style="cursor:pointer">마크다운 파일로 일정<input type="file" data-mdnew="plan" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><button class="btn" type="button" data-p="newnote">이 날 실험노트 쓰기</button></span></div>
       ${PS.adding?`<div class="mrev" id="pNew"><b>일정 추가</b>${planForm(PS.draft,"data-pln")}${pendHtml("plan",PS.pend||[])}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-p="save">저장</button><button class="btn ghost" type="button" data-p="cancel">취소</button></div></div>`:""}
+      ${dupBar("plans")}
       <h4 class="psec">계획 <span class="mono">${x.plans.length}</span></h4>${x.plans.length?x.plans.map(prow).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 잡아 둔 계획이 없어요.</p>`}
       <h4 class="psec">실험노트 <span class="mono">${x.notes.length}</span></h4>${x.notes.length?x.notes.map(n=>`<div class="prow"><div class="pt"><b>${pjDot(n.project)}${esc(n.title||"(제목 없음)")}</b><span>${esc([n.project,REC.notes.sub(n).split(" · ").slice(n.project?2:1).join(" · "),HUB.embedsPlain(n.result||"").replace(/\s+/g," ").slice(0,90)].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(n.kind)}">${esc(n.kind||"분석·기타")}</span>${attTag(n)}<button class="btn sm" type="button" data-p="note" data-id="${n.id}">열기</button></div>`).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 쓴 실험노트가 없어요.</p>`}
       ${x.orders.length||x.cells.length?`<h4 class="psec">발주·세포 기록 <span class="mono">${x.orders.length+x.cells.length}</span></h4>${x.orders.map(o=>`<div class="prow"><div class="pt"><b>${esc(o.item||"")}</b><span>${esc([o.vendor,o.qty&&"수량 "+o.qty].filter(Boolean).join(" · "))}</span></div><span class="tag">${o.received===PS.day?"입고":o.due===PS.day&&o.status!=="입고"?"입고 예정":"발주"}</span></div>`).join("")}${x.cells.map(c=>`<div class="prow"><div class="pt"><b>${esc(c.line||"")}</b><span>${esc([c.passage&&"P"+c.passage,c.loc].filter(Boolean).join(" · "))}</span></div><span class="tag nk-cell">세포 동결</span></div>`).join("")}`:""}
@@ -7607,6 +7828,7 @@ function draw(){const V=$("#v-mat");if(!V||HUB.view!=="mat")return;
         <div class="mscroll"><table><thead><tr><th>물품명</th><th>분류</th><th>제조사</th><th>카탈로그</th><th>Lot</th><th>CAS</th><th>규격</th><th>보관</th><th>구입일</th><th></th></tr></thead><tbody>${review.map(r=>`<tr class="${r.uncertain?"unc":""}" data-rid="${r.rid}">${["name","category","vendor","catalog","lot","cas","spec","storage","date"].map(k=>k==="category"?`<td><select data-rf2="category" aria-label="분류">${CATS.map(c=>`<option ${r.category===c?"selected":""}>${c}</option>`).join("")}</select></td>`:`<td><input data-rf2="${k}" value="${esc(r[k]||"")}" aria-label="${k}" ${k==="name"?'style="min-width:190px"':""}></td>`).join("")}<td class="x"><button type="button" data-m="delrev" aria-label="이 줄 빼기">✕</button></td></tr>`).join("")}</tbody></table></div></div>`:""}
     </section>
     <section class="card pad"><div class="mbar"><input id="mQ" class="search" type="search" placeholder="물품명·제조사·카탈로그 번호로 찾기" value="${esc(M.q)}" autocomplete="off"><div class="menu-wrap"><button class="btn" type="button" data-m="exp" ${all.length?"":"disabled"}>목록 내보내기 (엑셀)</button></div></div>
+      ${dupBar("materials")}
       <div class="chips" style="margin:10px 0">${[["*","전체",all.length],...CATS.filter(c=>cnt(c)).map(c=>[c,c,cnt(c)])].map(([v,n,c])=>`<button class="chip" type="button" data-mcat="${esc(v)}" aria-pressed="${M.cat===v}">${esc(n)}<span class="n">${c}</span></button>`).join("")}</div>
       ${list.length?`<div class="mlist">${list.map(m=>{const on=open===m.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-mopen="${m.id}"><input type="checkbox" data-msel="${m.id}" ${sel.has(m.id)?"checked":""} aria-label="${esc(m.name)} 고르기">${m.asset?`<img alt="" loading="lazy" src="${esc(HUB.assetUrl(m.asset))}">`:""}<div class="mn"><b>${pjDot(m.project)}${esc(m.name||"(이름 없음)")}</b><span>${esc([m.vendor,m.catalog&&"Cat# "+m.catalog,m.lot&&"Lot "+m.lot,m.spec,m.storage,m.project].filter(Boolean).join(" · "))}</span></div><span class="tag">${esc(m.category)}</span>${m.protocol?`<span class="tag ft">프로토콜</span>`:""}</div>
         ${on?`<div class="mbody"><div class="mgrid">${FIELDS.map(([k,l])=>`<label>${l}<input data-mf="${k}" value="${esc(m[k]||"")}"></label>`).join("")}<label>분류<select data-mf="category">${CATS.map(c=>`<option ${m.category===c?"selected":""}>${c}</option>`).join("")}</select></label>${pjSelect("data-mf","project",m.project||"")}</div>
@@ -7690,7 +7912,7 @@ function init(){const V=$("#v-mat");if(!V)return;
   window.addEventListener("hashchange",()=>{if(location.hash==="#mat")draw();});
   HUB.ready.then(()=>{if(HUB.view==="mat")draw();});
 }
-HUB.mat={draw};
+HUB.mat={draw,openNote:id=>{HUB.go("mat");setTimeout(()=>gotoNote(id),60);}};
 HUB.proj={names:()=>pjNames(),color:n=>pjColor(n),dot:n=>pjDot(n),get current(){return M.proj||"";},
   set(n){n=n||"";if(M.proj===n)return;M.proj=n;save();if(HUB.view==="mat")draw();pjNotify();},
   open(){M.tab="proj";save();HUB.go("mat");draw();}};
