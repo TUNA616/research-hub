@@ -867,6 +867,22 @@ html{height:100%}body{height:auto;min-height:100%}
 .erow span{grid-column:2;font-size:12.5px;color:var(--muted);line-height:1.4}
 .erow[aria-pressed="true"]{background:var(--accent-soft)}
 .erow[aria-pressed="true"] i{border:5px solid var(--accent)}
+
+/* 실험실: files and pictures attached to records */
+.attbox{display:flex;flex-direction:column;gap:8px;margin:4px 0 10px;padding:10px 12px;border:1px dashed var(--line2);border-radius:10px;background:var(--paper)}
+.attbox .nphotos{margin:0}
+.attlist{display:flex;flex-direction:column;gap:4px}
+.attf{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);min-width:0}
+.attx{flex:none;font:600 10.5px/1 var(--mono,ui-monospace,monospace);letter-spacing:.04em;padding:4px 6px;border-radius:5px;background:var(--accent-soft);color:var(--accent);min-width:34px;text-align:center}
+.attn{flex:1 1 160px;min-width:0;overflow-wrap:anywhere;font-size:14px}
+.attf small{flex:none}
+.attmd{margin:-2px 0 4px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);max-height:none;overflow:auto}
+.attmd pre{white-space:pre-wrap;margin:0;font-size:13px}
+.attbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.attbar .muted{font-size:12.5px}
+.attadd{cursor:pointer}
+.attpend{margin-top:8px}
+button.attpill{cursor:pointer;font:inherit;font-size:12px}
 </style>
 </head>
 <body>
@@ -1262,6 +1278,9 @@ function makeCol(name){
 }
 const cols={papers:makeCol("papers"),reports:makeCol("reports"),figs:makeCol("figs"),drafts:makeCol("drafts"),materials:makeCol("materials"),cells:makeCol("cells"),orders:makeCol("orders"),notes:makeCol("notes"),plans:makeCol("plans"),projects:makeCol("projects"),grants:makeCol("grants"),tpls:makeCol("tpls")};
 H.col=n=>cols[n];
+/* API keys come from this browser's settings, which can also be filled from a pasted or imported settings code. Before a key goes into a request header or URL
+   it must look like a key: printable ASCII with no spaces or line breaks (so it cannot add headers or break the URL) and a sane length. Anything else is ignored. */
+H.key=name=>{const v=String((H.cfg&&H.cfg[name])||"").trim();if(!/^[\x21-\x7e]{8,400}$/.test(v))return "";return v;};
 /* ---------- work on screen kept across reloads until the user clears it: search results, lookups, research output, chat, map, home guide.
    IndexedDB, because a search pool is too big for localStorage. later() debounces; pending saves are flushed when the page is hidden. ---------- */
 H.keep=(()=>{let p;const open=()=>p||(p=new Promise((res,rej)=>{try{const r=indexedDB.open("research-hub-keep",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}}));
@@ -1306,7 +1325,7 @@ async function viaKey(input,opts){
   if(opts.images&&opts.images.length){const b64=b=>new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(",")[1]);fr.onerror=rej;fr.readAsDataURL(b);});
     const last=messages[messages.length-1];const blocks=[];for(const im of opts.images)blocks.push({type:"image",source:{type:"base64",media_type:im.type||"image/png",data:await b64(im)}});
     messages[messages.length-1]={role:"user",content:blocks.concat([{type:"text",text:last.content}])};}
-  try{r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal:opts.signal,headers:{"content-type":"application/json","x-api-key":H.cfg.aiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:H.cfg.aiModel||"claude-sonnet-5-5",max_tokens:16000,messages})});j=await r.json();}
+  try{r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal:opts.signal,headers:{"content-type":"application/json","x-api-key":H.key("aiKey"),"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:H.cfg.aiModel||"claude-sonnet-5-5",max_tokens:16000,messages})});j=await r.json();}
   catch(e){throw{code:"network",message:"Claude API에 연결하지 못했어요"};}
   if(!r.ok)throw{code:r.status===429?"rate_limited":"api_error",message:(j&&j.error&&j.error.message)||("API 오류 "+r.status)};
   const text=(j.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");if(opts.onText)opts.onText(text);
@@ -1319,7 +1338,7 @@ H.gemFetch=async(kind,body,signal)=>{
   const want=((kind==="img"?H.cfg.gImg:H.cfg.gTxt)||"").trim();
   const list=[...new Set([want,gemOk[kind],...H.GEM[kind]].filter(Boolean))];let last;
   for(const model of list){let r,j;
-    try{r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",{method:"POST",signal,headers:{"content-type":"application/json","x-goog-api-key":H.cfg.gKey},body:JSON.stringify(body)});j=await r.json().catch(()=>null);}
+    try{r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent",{method:"POST",signal,headers:{"content-type":"application/json","x-goog-api-key":H.key("gKey")},body:JSON.stringify(body)});j=await r.json().catch(()=>null);}
     catch(e){if(e&&e.name==="AbortError")throw{code:"cancelled",message:"취소했어요"};throw{code:"network",message:H.embedded?"claude.ai 안에서는 Google AI에 연결할 수 없어요. 내려받은 HTML 파일이나 GitHub 주소에서 쓰세요.":"Google AI에 연결하지 못했어요"};}
     if(r.ok){gemOk[kind]=model;if(want&&model!==want&&!gemWarned[kind]){gemWarned[kind]=1;H.toast(`설정한 모델 '${want}'을 쓸 수 없어서 '${model}'로 대신 썼어요`,6000);}return{j,model};}
     const msg=(j&&j.error&&j.error.message)||String(r.status);
@@ -3415,7 +3434,7 @@ let RETMSG="";
 async function checkRetractions(deep,onStep){
   const ps=S.papers.filter(p=>p.doi);let retr=0,notes=0,fail=0;const stamp=Date.now();
   for(let i=0;i<ps.length;i+=40){const part=ps.slice(i,i+40);if(onStep)onStep(`철회 여부 확인 중 ${Math.min(i+40,ps.length)}/${ps.length}`);
-    try{const q={filter:"doi:"+part.map(p=>"https://doi.org/"+p.doi).join("|"),select:"doi,is_retracted",per_page:50};if(HUB.cfg.oaKey)q.api_key=HUB.cfg.oaKey;else q.mailto="research-hub@example.org";
+    try{const q={filter:"doi:"+part.map(p=>"https://doi.org/"+p.doi).join("|"),select:"doi,is_retracted",per_page:50};const ok=HUB.key("oaKey");if(ok)q.api_key=ok;else q.mailto="research-hub@example.org";
       const d=await HUB.getJson("https://api.openalex.org/works?"+Object.entries(q).map(([k,v])=>k+"="+encodeURIComponent(v)).join("&"));
       const map=new Map((d.results||[]).map(w=>[String(w.doi||"").replace(/^https?:\/\/doi\.org\//i,"").toLowerCase(),!!w.is_retracted]));
       for(const p of part){const r=map.get(p.doi.toLowerCase());if(r==null)continue;if(r)retr++;if(!!p.retracted!==r||!p.retCheckedAt)await store.update(p.id,{retracted:r,retCheckedAt:stamp});}
@@ -3847,7 +3866,7 @@ function oaRec(w){const src=w.primary_location&&w.primary_location.source;let ab
   return{title:w.display_name||w.title,authors:(w.authorships||[]).map(a=>a.author&&a.author.display_name).filter(Boolean),year:w.publication_year,date:w.publication_date,journal:src&&src.display_name||"",issn:src&&src.issn||[],
     doi:w.doi||"",cited:w.cited_by_count||0,type:w.type==="review"?"review":w.type==="preprint"?"preprint":"article",oaUrl:(w.open_access&&w.open_access.is_oa&&(w.open_access.oa_url||""))||"",
     url:w.doi||(w.primary_location&&w.primary_location.landing_page_url)||w.id,abstract:abs,oaId:String(w.id||"").split("/").pop(),volume:b.volume||"",pages:b.first_page?b.first_page+(b.last_page?"-"+b.last_page:""):""};}
-async function oaGet(params){if(HUB.cfg.oaKey)params.api_key=HUB.cfg.oaKey;const d=await HUB.getJson("https://api.openalex.org/works?"+qs(params));return(d.results||[]).map(oaRec);}
+async function oaGet(params){const ok=HUB.key("oaKey");if(ok)params.api_key=ok;const d=await HUB.getJson("https://api.openalex.org/works?"+qs(params));return(d.results||[]).map(oaRec);}
 const SRC=[
 {id:"oa",async fn(q,o){
   const f=[];if(o.y1)f.push("from_publication_date:"+o.y1+"-01-01");if(o.y2)f.push("to_publication_date:"+o.y2+"-12-31");
@@ -3881,7 +3900,7 @@ const SRC=[
       journal:(r["container-title"]||[])[0]||"",issn:r.ISSN||[],doi:r.DOI||"",cited:r["is-referenced-by-count"]||0,type:"article",url:r.DOI?"https://doi.org/"+r.DOI:r.URL,abstract:strip(r.abstract),volume:r.volume||"",pages:r.page||""};});}},
 {id:"s2",async fn(q,o){
   const p={query:q,limit:Math.min(o.per,100),fields:"title,abstract,year,venue,journal,citationCount,externalIds,openAccessPdf,authors,publicationDate,publicationTypes"};if(o.y1||o.y2)p.year=(o.y1||"")+"-"+(o.y2||"");
-  const d=await HUB.getJson("https://api.semanticscholar.org/graph/v1/paper/search?"+qs(p),HUB.cfg.s2Key?{headers:{"x-api-key":HUB.cfg.s2Key}}:undefined);
+  const s2k=HUB.key("s2Key");const d=await HUB.getJson("https://api.semanticscholar.org/graph/v1/paper/search?"+qs(p),s2k?{headers:{"x-api-key":s2k}}:undefined);
   return(d.data||[]).map(r=>{const x=r.externalIds||{};return{title:r.title,authors:(r.authors||[]).map(a=>a.name),year:r.year,date:r.publicationDate||"",journal:(r.journal&&r.journal.name)||r.venue||"",issn:[],doi:x.DOI||"",pmid:x.PubMed||"",
     cited:r.citationCount||0,type:(r.publicationTypes||[]).includes("Review")?"review":"article",oaUrl:(r.openAccessPdf&&r.openAccessPdf.url)||"",url:x.DOI?"https://doi.org/"+x.DOI:"https://www.semanticscholar.org/paper/"+r.paperId,abstract:r.abstract||""};});}}
 ];
@@ -5095,7 +5114,7 @@ Object.assign(DB,{
    return `## PROTAC-DB — ${t}${e3?" · E3 "+e3:""}\n- **[PROTAC-DB에서 '${t}'${e3?" + "+e3:""} 분해제 목록 열기](${pdb})** — 구조, warhead·linker·E3 ligand, DC50·Dmax, 결합·세포 활성, 약동학 값\n- [PROTAC-DB 전체 목록](https://cadd.zju.edu.cn/protacdb/browse/compound?dataset=protac) · [PROTACpedia](https://protacpedia.weizmann.ac.il/) · [ChEMBL에서 '${t}' 표적](https://www.ebi.ac.uk/chembl/g/#search_results/targets/query=${encodeURIComponent(t)}) · [PDB에서 '${t}' 삼원 복합체 구조](https://www.rcsb.org/search?request=${encodeURIComponent(JSON.stringify({query:{type:"terminal",service:"full_text",parameters:{value:t+" PROTAC"}},return_type:"entry"}))})\n\n${lit}\n\nPROTAC-DB는 브라우저에서 바로 불러오는 공개 API가 없어서(접속마다 보안 쿠키가 필요해요) 값 표는 위 링크로 열어 보세요. 논문 목록에서 DC50·Dmax를 보고하는 논문을 찾았으면 '문헌 검색' 탭에서 같은 제목으로 찾아 라이브러리에 담을 수 있어요.`;}},
  gtopdb:{g:"화합물",label:"표적–리간드 약리 (IUPHAR/BPS)",name:"Guide to PHARMACOLOGY",ph:"표적 유전자 기호 또는 리간드 이름 예: PTPN1, ADRB2, losartan",from:"IUPHAR/BPS Guide to PHARMACOLOGY (전문가 큐레이션 약리 값)",async run(q){
    const s=String(q).trim();if(!s)throw new Error("표적 유전자 기호나 리간드 이름을 넣어 주세요.");
-   const B="https://www.guidetopharmacology.org/services/",KEY=(HUB.cfg.gtpKey||"").trim(),opt=KEY?{headers:{"GTP-API-Key":KEY}}:undefined;
+   const B="https://www.guidetopharmacology.org/services/",KEY=HUB.key("gtpKey"),opt=KEY?{headers:{"GTP-API-Key":KEY}}:undefined;
    let firstErr=null;const get=async u=>{try{const d=await HUB.getJson(B+u,opt);return Array.isArray(d)?d:d?[d]:[];}catch(err){if(!/404/.test(err.message||"")&&!firstErr)firstErr=err;return [];}};
    const e=encodeURIComponent(s),num=v=>{const m=String(v==null?"":v).match(/-?\d+(\.\d+)?/);return m?+m[0]:-1;};
    const affOf=i=>{const p=i.affinityParameter||i.affinityType||i.originalAffinityType||"",a=i.affinity||i.affinityRange||i.originalAffinity||"";return a?`${p?p+" ":""}${a}`:"—";};
@@ -5703,7 +5722,7 @@ ${cur.svg}`;
 /* ---------- image engine: PaperBanana-style loop (plan + style → render → critique → re-render) on the Gemini API ----------
    Works only where the page may reach Google (the downloaded file), with the person's own Google AI key. */
 /* img/txt name the kind of model; the actual Gemini model is picked in HUB.gemFetch (settings value first, then automatic) */
-const G=()=>({key:HUB.cfg.gKey||"",img:"img",txt:"txt"});
+const G=()=>({key:HUB.key("gKey"),img:"img",txt:"txt"});
 const b64Of=blob=>new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(",")[1]);fr.onerror=rej;fr.readAsDataURL(blob);});
 function blobOf(b64,mime){const bin=atob(b64),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:mime||"image/png"});}
 async function gem(kind,parts,cfg){
@@ -5828,7 +5847,7 @@ async function reviseImg(req){
   busy=false;busyLog=null;render();
 }
 /* ---------- OpenAI image engine (the image model behind ChatGPT), with the person's own OpenAI key ---------- */
-const OA=()=>({key:HUB.cfg.oKey||"",img:HUB.cfg.oImg||"gpt-image-1.5"});
+const OA=()=>({key:HUB.key("oKey"),img:HUB.cfg.oImg||"gpt-image-1.5"});
 const OASIZE={"16:9":"1536x1024","4:3":"1536x1024","1:1":"1024x1024","3:4":"1024x1536"};
 async function oai(path,body,form){
   let r,j;
@@ -6129,7 +6148,7 @@ const G={mode:"seed",layout:"radial",n:20,sim:true,nodes:[],edges:[],seed:null,s
 const SEL="id,doi,display_name,publication_year,cited_by_count,authorships,primary_location,referenced_works,related_works,type";
 const wid=u=>String(u||"").split("/").pop();
 const normT=s=>String(s||"").toLowerCase().replace(/[^a-z0-9가-힣]+/g,"");
-async function oa(path,params){const p=Object.assign({},params);if(HUB.cfg.oaKey)p.api_key=HUB.cfg.oaKey;else p.mailto="research-hub@example.org";
+async function oa(path,params){const p=Object.assign({},params);const ok=HUB.key("oaKey");if(ok)p.api_key=ok;else p.mailto="research-hub@example.org";
   const q=Object.entries(p).map(([k,v])=>encodeURIComponent(k)+"="+encodeURIComponent(v)).join("&");return HUB.getJson("https://api.openalex.org/"+path+(q?"?"+q:""));}
 function rec(w,kind){const src=w.primary_location&&w.primary_location.source;const au=(w.authorships||[]).map(a=>a.author&&a.author.display_name).filter(Boolean);
   return{id:wid(w.id),kind,title:w.display_name||"",authors:au,year:w.publication_year||null,journal:(src&&src.display_name)||"",doi:String(w.doi||"").replace(/^https?:\/\/doi\.org\//i,"").toLowerCase(),cited:w.cited_by_count||0,
@@ -6736,6 +6755,7 @@ const REC={
   quick:r=>`<button class="btn sm" type="button" data-rq="use" data-id="${r.id}" ${(+r.vials||0)>0?"":"disabled"}>1개 꺼냄</button><button class="btn sm ghost" type="button" data-rq="add" data-id="${r.id}">1개 추가</button>`,
   chips:l=>[...new Set(l.map(r=>r.line).filter(Boolean))].slice(0,14).map(v=>[v,v,l.filter(r=>r.line===v).length]),match:(r,v)=>r.line===v,
   sum:l=>`세포주 ${new Set(l.map(r=>r.line).filter(Boolean)).size}종 · 기록 ${l.length}건 · 바이알 합계 ${l.reduce((n,r)=>n+(+r.vials||0),0)}개${l.filter(r=>(+r.vials||0)<=2).length?` · 2개 이하 ${l.filter(r=>(+r.vials||0)<=2).length}건`:""}`,
+  extra:r=>attHtml("cells",r),
   defaults:()=>({frozen:today(),vials:"1"})},
  orders:{label:"발주 기록",add:"발주 기록 추가",empty:"아직 발주 기록이 없어요. 물품, 동물, 세포 주문을 요청부터 입고까지 적어 둘 수 있어요.",ph:"품목·업체·요청자·과제로 찾기",file:"orders.xlsx",
   fields:[["kind","종류",["물품","동물","세포","기타"]],["item","품목 (동물은 계통)",""],["vendor","업체",""],["catalog","카탈로그·견적 번호",""],["qty","수량",""],["amount","금액",""],["status","상태",["요청","발주","입고","취소"]],["ordered","발주일","date"],["due","입고 예정일","date"],["received","입고일","date"],["requester","요청자",""],["project","프로젝트","proj"],["account","과제·계정 (연구비)",""],["sex","성별 (동물)",""],["age","주령 (동물)",""],["iacuc","동물실험 승인번호 (동물)",""],["memo","메모","area"]],
@@ -6745,6 +6765,7 @@ const REC={
   chips:l=>[["s:진행","진행 중",l.filter(r=>r.status!=="입고"&&r.status!=="취소").length],...["요청","발주","입고","취소"].map(v=>["s:"+v,v,l.filter(r=>(r.status||"요청")===v).length]),...["동물","세포"].map(v=>["k:"+v,v,l.filter(r=>r.kind===v).length])].filter(x=>x[2]),
   match:(r,v)=>v==="s:진행"?(r.status!=="입고"&&r.status!=="취소"):v[0]==="s"?(r.status||"요청")===v.slice(2):r.kind===v.slice(2),
   sum:l=>{const act=l.filter(r=>r.status!=="입고"&&r.status!=="취소").length,late=l.filter(r=>r.status==="발주"&&r.due&&r.due<today()).length;return `전체 ${l.length}건 · 진행 중 ${act}건${late?` · 입고 예정일이 지난 ${late}건`:""}`;},
+  extra:r=>attHtml("orders",r),
   defaults:()=>({kind:"물품",status:"요청",ordered:today()})},
  notes:{label:"실험노트",add:"새 실험노트",main:"title",mainName:"제목",empty:"아직 쓴 실험노트가 없어요. 합성, 세포, 동물 실험을 나눠서 날짜별로 적어 둘 수 있어요.",ph:"제목·프로젝트·내용으로 찾기",file:"lab_notes.xlsx",
   fields:[["kind","분류",["합성","세포","동물","분석·기타"]],["title","제목",""],["date","실험일","date"],["project","프로젝트","proj"],["who","실험자",""],["tagsx","태그 (쉼표로 구분)",""],
@@ -6754,20 +6775,21 @@ const REC={
    ["method","분석법·장비","","분석·기타"],["sample","시료","","분석·기타"],
    ["mats","사용한 재료·시약 (아래 '재료 목록에서 넣기'로 고를 수 있어요)","area"],["aim","목적","big"],["proc","절차 (실제로 한 대로)","big"],["result","결과·관찰","big"],["next","다음에 할 일·메모","area"]],
   title:r=>r.title||"(제목 없음)",sub:r=>[r.date,r.project,r.kind==="합성"?[r.target,r.yield&&"수율 "+r.yield].filter(Boolean).join(" · "):r.kind==="세포"?[r.cell,r.treat].filter(Boolean).join(" · "):r.kind==="동물"?[r.strain,r.n&&"n "+r.n,r.model].filter(Boolean).join(" · "):r.method,r.who].filter(Boolean).join(" · "),
-  tags:r=>`<span class="tag nk-${({합성:"syn",세포:"cell",동물:"ani"})[r.kind]||"etc"}">${esc(r.kind||"분석·기타")}</span>${(r.photos||[]).length?`<span class="tag">사진 ${r.photos.length}</span>`:""}`,
+  tags:r=>`<span class="tag nk-${({합성:"syn",세포:"cell",동물:"ani"})[r.kind]||"etc"}">${esc(r.kind||"분석·기타")}</span>`,
   quick:r=>`<button class="btn sm ghost" type="button" data-rq="dup" data-id="${r.id}" title="같은 조건으로 오늘 날짜의 새 노트를 만들어요">복사해서 새 노트</button>`,
   chips:l=>["합성","세포","동물","분석·기타"].map(v=>["k:"+v,v,l.filter(r=>(r.kind||"분석·기타")===v).length]).filter(x=>x[2]),
   match:(r,v)=>v[0]==="k"?(r.kind||"분석·기타")===v.slice(2):r.project===v.slice(2),
   sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||""))||(b.addedAt||0)-(a.addedAt||0),
   sum:l=>`전체 ${l.length}건 · `+["합성","세포","동물","분석·기타"].map(v=>[v,l.filter(r=>(r.kind||"분석·기타")===v).length]).filter(x=>x[1]).map(x=>x[0]+" "+x[1]).join(" · "),
-  extra:r=>`${(r.photos||[]).length?`<div class="nphotos">${r.photos.map(p=>`<span class="nph"><a href="${esc(HUB.assetUrl(p))}" target="_blank" rel="noopener"><img alt="첨부 사진" loading="lazy" src="${esc(HUB.assetUrl(p))}"></a><button type="button" class="btn sm ghost danger" data-r="delphoto" data-id="${r.id}" data-p="${esc(p)}" aria-label="사진 빼기">빼기</button></span>`).join("")}</div>`:""}
-    <div class="row" style="gap:6px;flex-wrap:wrap">${col().list.length?`<select class="btn sm" data-nmat="${r.id}" aria-label="재료 목록에서 넣기" style="max-width:240px"><option value="">재료 목록에서 넣기…</option>${col().list.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(x=>`<option value="${x.id}">${esc(x.name)}${x.catalog?" · "+esc(x.catalog):""}</option>`).join("")}</select>`:""}<label class="btn sm" style="cursor:pointer">사진 붙이기 (여러 장 · 붙여넣기·끌어 놓기도 돼요)<input type="file" id="nFile" data-id="${r.id}" accept="image/*" multiple hidden></label>${r.date?`<button class="btn sm" type="button" data-r="nday" data-id="${r.id}">일정에서 이 날 보기</button>`:""}<button class="btn sm" type="button" data-r="ntpl" data-id="${r.id}" title="제목, 결과, 사진을 뺀 나머지를 서식으로 저장해요">서식으로 저장</button><button class="btn sm" type="button" data-r="ndocx" data-id="${r.id}" title="한글에서도 바로 열려요 (한글: 파일 → 불러오기)">Word·한글 (.docx)</button><button class="btn sm" type="button" data-r="nhwpx" data-id="${r.id}" title="시험판: 한글에서 열리는지 확인 중이에요">한글 (.hwpx 시험)</button><button class="btn sm" type="button" data-r="npdf" data-id="${r.id}">PDF</button><button class="btn sm" type="button" data-r="nmd" data-id="${r.id}">Markdown</button><button class="btn sm" type="button" data-r="ncopy" data-id="${r.id}">복사</button><button class="btn sm" type="button" data-r="nmeth" data-id="${r.id}" style="border-color:var(--accent);color:var(--accent)" ${RS.busy===r.id?"disabled":""}>${RS.busy===r.id?"쓰는 중…":"Methods 문장으로 다듬어 원고에 넣기"}</button></div>`,
+  extra:r=>`${attHtml("notes",r)}
+    <div class="row" style="gap:6px;flex-wrap:wrap">${col().list.length?`<select class="btn sm" data-nmat="${r.id}" aria-label="재료 목록에서 넣기" style="max-width:240px"><option value="">재료 목록에서 넣기…</option>${col().list.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(x=>`<option value="${x.id}">${esc(x.name)}${x.catalog?" · "+esc(x.catalog):""}</option>`).join("")}</select>`:""}${r.date?`<button class="btn sm" type="button" data-r="nday" data-id="${r.id}">일정에서 이 날 보기</button>`:""}<button class="btn sm" type="button" data-r="ntpl" data-id="${r.id}" title="제목, 결과, 사진을 뺀 나머지를 서식으로 저장해요">서식으로 저장</button><button class="btn sm" type="button" data-r="ndocx" data-id="${r.id}" title="한글에서도 바로 열려요 (한글: 파일 → 불러오기)">Word·한글 (.docx)</button><button class="btn sm" type="button" data-r="nhwpx" data-id="${r.id}" title="시험판: 한글에서 열리는지 확인 중이에요">한글 (.hwpx 시험)</button><button class="btn sm" type="button" data-r="npdf" data-id="${r.id}">PDF</button><button class="btn sm" type="button" data-r="nmd" data-id="${r.id}">Markdown</button><button class="btn sm" type="button" data-r="ncopy" data-id="${r.id}">복사</button><button class="btn sm" type="button" data-r="nmeth" data-id="${r.id}" style="border-color:var(--accent);color:var(--accent)" ${RS.busy===r.id?"disabled":""}>${RS.busy===r.id?"쓰는 중…":"Methods 문장으로 다듬어 원고에 넣기"}</button></div>`,
   defaults:()=>({kind:RS.chip.startsWith("k:")?RS.chip.slice(2):"합성",date:today(),project:""})}
 };
 const nfields=r=>REC.notes.fields.filter(f=>!f[3]||f[3]===(r.kind||"분석·기타"));
 /* body of a note; with img=true the photos come along as picture lines for Word and PDF */
 const noteBody=(r,img)=>nfields(r).filter(f=>f[0]!=="title"&&f[2]!=="big"&&f[2]!=="area"&&String(r[f[0]]||"").trim()).map(f=>"- **"+f[1]+"**: "+r[f[0]]).join("\n")+"\n\n"+nfields(r).filter(f=>(f[2]==="big"||f[2]==="area")&&String(r[f[0]]||"").trim()).map(f=>"## "+f[1]+"\n\n"+r[f[0]]).join("\n\n")+"\n"
-  +(img&&(r.photos||[]).length?"\n## 사진\n\n"+r.photos.map((p,i)=>`![사진 ${i+1}](asset:${p})`).join("\n\n")+"\n":"");
+  +(img&&(r.photos||[]).length?"\n## 사진\n\n"+r.photos.map((p,i)=>`![사진 ${i+1}](asset:${p})`).join("\n\n")+"\n":"")
+  +((r.files||[]).length?"\n## 첨부 파일\n\n"+r.files.map(f=>`- [첨부: ${String(f.name).replace(/[\[\]()]/g," ")}](asset:${f.asset})`).join("\n")+"\n":"");
 const noteMd=r=>"# "+(r.title||"실험노트")+"\n\n"+nfields(r).filter(f=>f[0]!=="title"&&f[2]!=="big"&&f[2]!=="area"&&String(r[f[0]]||"").trim()).map(f=>"- **"+f[1]+"**: "+r[f[0]]).join("\n")+"\n\n"+nfields(r).filter(f=>(f[2]==="big"||f[2]==="area")&&String(r[f[0]]||"").trim()).map(f=>"## "+f[1]+"\n\n"+r[f[0]]).join("\n\n")+"\n";
 /* note templates: a few common experiments built in, and any note can be saved as one */
 const TPL0=[
@@ -6776,7 +6798,7 @@ const TPL0=[
  {id:"b-ani",name:"동물 투여·관찰",kind:"동물",strain:"계통 · 성별 · 주령",n:"군당 마릿수 · 군 구성",model:"모델 · 유도 방법",dose:"물질 · 용량(mg/kg) · 경로 · 일정",aim:"",proc:"1. 순화\n2. 무작위 군 배정\n3. 모델 유도\n4. 투여\n5. 체중·상태 관찰\n6. 희생, 혈액·장기 채취",result:"| 군 | n | 체중 변화 | 주요 결과 |\n| --- | --- | --- | --- |\n|  |  |  |  |"},
  {id:"b-syn",name:"합성 (일반)",kind:"합성",cond:"용매 · 온도 · 시간 · 분위기",char:"¹H NMR, MS, HPLC 순도",aim:"",proc:"1. 반응물 투입\n2. 반응 진행 (TLC로 확인)\n3. 후처리 (추출·세척·건조)\n4. 정제\n5. 수득·건조"}];
 const tcol=()=>HUB.col("tpls");
-const TPLSKIP=new Set(["title","date","result","next","photos","log","id","addedAt","project","who"]);
+const TPLSKIP=new Set(["title","date","result","next","photos","files","log","id","addedAt","project","who"]);
 const tplList=()=>[...TPL0.map(t=>({...t,builtin:true})),...tcol().list.slice().sort((a,b)=>(a.addedAt||0)-(b.addedAt||0))];
 const tplSelect=()=>`<select class="btn" data-ntpl="1" aria-label="서식으로 새 노트" style="max-width:220px"><option value="">서식으로 새 노트…</option><optgroup label="기본 서식">${TPL0.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join("")}</optgroup>${tcol().list.length?`<optgroup label="내 서식">${tcol().list.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join("")}</optgroup>`:""}</select>`;
 const tplMan=()=>tcol().list.length?`<details class="tplman"><summary>내 서식 ${tcol().list.length}개</summary><div class="tplrows">${tcol().list.map(t=>`<div class="tplrow"><span class="tag nk-${({합성:"syn",세포:"cell",동물:"ani"})[t.kind]||"etc"}">${esc(t.kind||"")}</span><b>${esc(t.name)}</b><button class="btn sm ghost danger" type="button" data-r="tpldel" data-id="${t.id}">지우기</button></div>`).join("")}</div></details>`:"";
@@ -6793,18 +6815,66 @@ async function noteMethods(r){if(RS.busy)return;const key="note:"+r.id;if(MD.key
     if(!t)throw new Error("답이 비어 있어요");await toMethods(t,key);}
   catch(err){HUB.toast(err.message||"문장을 만들지 못했어요",5000);}
   RS.busy="";draw();}
-/* photos: no limit; added a few at a time so a long upload shows progress and keeps what is done */
-async function addPhotos(noteId,files){files=[...files].filter(f=>/^image\//.test(f.type));if(!files.length)return;let done=0,bad=0;
-  for(let i=0;i<files.length;i+=4){const ids=[];for(const f of files.slice(i,i+4)){try{ids.push((await HUB.assets.upload(await toJpeg(f,1600))).id);}catch(err){bad++;}}
-    const r=HUB.col("notes").list.find(x=>x.id===noteId);if(!r)return;if(ids.length){await HUB.col("notes").update(noteId,{photos:[...(r.photos||[]),...ids]});done+=ids.length;}
-    if(files.length>4)HUB.toast(`사진 올리는 중… ${Math.min(files.length,i+4)}/${files.length}`,2500);}
-  HUB.toast(done?`사진 ${done}장을 붙였어요${bad?` (${bad}장은 못 붙였어요)`:""}`:"사진을 붙이지 못했어요",4000);setTimeout(draw,80);}
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.nsel)return;if(t.checked)RS.nsel.add(t.dataset.nsel);else RS.nsel.delete(t.dataset.nsel);draw();});
-document.addEventListener("change",async e=>{const t=e.target;if(!t||t.id!=="nFile"||!t.files||!t.files.length)return;const fs=[...t.files],id=t.dataset.id;t.value="";addPhotos(id,fs);});
-document.addEventListener("paste",e=>{if(HUB.view!=="mat"||M.tab!=="notes"||!RS.open)return;const fs=[...((e.clipboardData&&e.clipboardData.files)||[])].filter(f=>/^image\//.test(f.type));if(!fs.length)return;e.preventDefault();addPhotos(RS.open,fs);});
-document.addEventListener("dragover",e=>{if(HUB.view==="mat"&&M.tab==="notes"&&e.target.closest&&e.target.closest(".mitem.on"))e.preventDefault();});
-document.addEventListener("drop",e=>{if(HUB.view!=="mat"||M.tab!=="notes"||!RS.open||!(e.target.closest&&e.target.closest(".mitem.on")))return;const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])];if(!fs.some(f=>/^image\//.test(f.type)))return;e.preventDefault();addPhotos(RS.open,fs);});
-const RS={q:"",chip:"*",open:"",adding:false,busy:"",nsel:new Set()};
+/* ---------- attachments for cells, orders, notes and plans: pictures go to photos[] (thumbnails; exported with notes), every other file to files[] ({asset,name,type,size,text});
+   Markdown and plain text keep a copy of their text so it can be read in place. Files picked while adding a record wait in a pending list until it is saved. ---------- */
+const ATT_COLS={cells:1,orders:1,notes:1,plans:1};
+const ATT_ACCEPT="image/*,.pdf,.md,.markdown,.txt,.csv,.tsv,.json,.docx,.doc,.xlsx,.xls,.pptx,.hwp,.hwpx,.zip";
+const ATT_HINT="그림, PDF, 마크다운(.md)·텍스트, 엑셀·워드 등 · 여러 개 · 끌어 놓기·붙여넣기도 돼요";
+const AV=new Set();
+const isRaster=f=>/^image\/(jpeg|png|webp|gif|bmp)$/.test(f.type||"");
+const isMdF=f=>/\.(md|markdown|txt)$/i.test(f.name||"")||/^text\/(markdown|plain)$/.test(f.type||"");
+const fext=n=>{const m=String(n||"").match(/\.([a-z0-9]{1,6})$/i);return m?m[1].toUpperCase():"파일";};
+const fsize=b=>!b?"":b>1048576?(b/1048576).toFixed(1)+" MB":Math.max(1,Math.round(b/1024))+" KB";
+const attN=r=>(r.photos||[]).length+(r.files||[]).length;
+const attTag=r=>attN(r)?`<span class="tag" title="붙인 파일·사진">첨부 ${attN(r)}</span>`:"";
+async function upAtt(files){files=[...files];const no=files.filter(f=>!isRaster(f)&&HUB.assetRefuse(f));files=files.filter(f=>!no.includes(f));
+  const photos=[],add=[];let bad=0;const N=files.length;
+  for(let i=0;i<N;i++){const f=files[i];try{
+      if(isRaster(f))photos.push((await HUB.assets.upload(await toJpeg(f,1600))).id);
+      else{const tp=HUB.fileType(f),bl=f.type===tp?f:new Blob([f],{type:tp});const r=await HUB.assets.upload(bl,{type:tp});
+        const o={asset:r.id,name:String(f.name||"파일").replace(/[\n\r]/g," ").slice(0,160),type:tp,size:f.size||0};
+        if(isMdF(f)&&f.size<400000){try{o.text=(await f.text()).slice(0,100000);}catch(e){}}add.push(o);}}
+    catch(err){bad++;}
+    if(N>3&&(i%3===2||i===N-1))HUB.toast(`올리는 중… ${i+1}/${N}`,2500);}
+  return {photos,add,bad,no};}
+const attMsg=u=>{const n=u.photos.length+u.add.length;HUB.toast((n?`${n}개를 붙였어요${u.bad?` (${u.bad}개는 못 붙였어요)`:""}`:u.no.length?"":"붙이지 못했어요")+(u.no.length?`${n?" · ":""}${u.no.map(f=>f.name).slice(0,3).join(", ")}${u.no.length>3?" 외":""}는 claude.ai 화면에서 저장할 수 없는 종류라 뺐어요. PDF로 바꾸거나 내려받은 파일·GitHub 주소에서 붙이세요.`:""),u.no.length?9000:4000);};
+async function attFiles(colName,id,files){if(!files||!files.length)return;const u=await upAtt(files);const r=HUB.col(colName).list.find(x=>x.id===id);
+  if(r&&(u.photos.length||u.add.length))await HUB.col(colName).update(id,{...(u.photos.length?{photos:[...(r.photos||[]),...u.photos]}:{}),...(u.add.length?{files:[...(r.files||[]),...u.add]}:{})});
+  attMsg(u);setTimeout(draw,80);}
+/* a stored file is removed only when no other record (repeated plans share theirs) still points at it */
+const attUsed=id=>Object.keys(ATT_COLS).some(c=>HUB.col(c).list.some(r=>(r.photos||[]).includes(id)||(r.files||[]).some(f=>f.asset===id)));
+async function attDrop(id){if(!attUsed(id)){try{await HUB.assets.delete(id);}catch(e){}}}
+function attHtml(colName,r){const ph=r.photos||[],fl=r.files||[];
+  return `<div class="attbox" data-attcol="${colName}" data-attid="${r.id}">
+    ${ph.length?`<div class="nphotos">${ph.map(p=>`<span class="nph"><a href="${esc(HUB.assetUrl(p))}" target="_blank" rel="noopener"><img alt="붙인 사진" loading="lazy" src="${esc(HUB.assetUrl(p))}"></a><button type="button" class="btn sm ghost danger" data-att="delp" data-p="${esc(p)}" aria-label="사진 빼기">빼기</button></span>`).join("")}</div>`:""}
+    ${fl.length?`<div class="attlist">${fl.map((f,i)=>{const on=AV.has(r.id+":"+i);return `<div class="attf"><span class="attx">${esc(fext(f.name))}</span><a class="attn" href="${esc(HUB.assetUrl(f.asset))}" download="${esc(f.name)}" target="_blank" rel="noopener">${esc(f.name)}</a><small class="muted">${fsize(f.size)}</small>${f.text!=null?`<button class="btn sm ghost" type="button" data-att="view" data-i="${i}" aria-expanded="${on}">${on?"접기":"내용 보기"}</button>`:""}<button class="btn sm ghost danger" type="button" data-att="delf" data-i="${i}">빼기</button></div>${on?`<div class="attmd md">${/\.txt$/i.test(f.name)?`<pre>${esc(f.text)}</pre>`:HUB.md(f.text)}</div>`:""}`;}).join("")}</div>`:""}
+    <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 붙이기<input type="file" data-attin="1" multiple hidden accept="${ATT_ACCEPT}"></label><span class="muted">${ATT_HINT}</span></div></div>`;}
+/* pending files in an add form (the record has no id yet) */
+function pendHtml(key,list){return `<div class="attbox attpend" data-attpend="${key}">${list.length?`<div class="attlist">${list.map((f,i)=>`<div class="attf"><span class="attx">${esc(isRaster(f)?"사진":fext(f.name))}</span><span class="attn">${esc(f.name)}</span><small class="muted">${fsize(f.size)}</small><button class="btn sm ghost danger" type="button" data-attpx="${i}">빼기</button></div>`).join("")}</div>`:""}
+  <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 함께 붙이기<input type="file" data-attpin="1" multiple hidden accept="${ATT_ACCEPT}"></label><span class="muted">${list.length?`저장하면 ${list.length}개가 함께 붙어요`:ATT_HINT}</span></div></div>`;}
+const pendList=key=>key==="plan"?(PS.pend||(PS.pend=[])):(RS.pend||(RS.pend=[]));
+document.addEventListener("click",async e=>{if(HUB.view!=="mat")return;
+  const px=e.target.closest("[data-attpx]");if(px){const box=px.closest("[data-attpend]");pendList(box.dataset.attpend).splice(+px.dataset.attpx,1);draw();return;}
+  const b=e.target.closest("[data-att]");if(!b)return;const box=b.closest("[data-attcol]");if(!box)return;const c=box.dataset.attcol,id=box.dataset.attid,r=HUB.col(c).list.find(x=>x.id===id);if(!r)return;e.preventDefault();e.stopPropagation();
+  const k=b.dataset.att;
+  if(k==="view"){const key=id+":"+b.dataset.i;if(AV.has(key))AV.delete(key);else AV.add(key);draw();}
+  else if(k==="delp"){if(arm(b,"한 번 더","빼기")){const p=b.dataset.p;await HUB.col(c).update(id,{photos:(r.photos||[]).filter(x=>x!==p)});await attDrop(p);setTimeout(draw,60);}}
+  else if(k==="delf"){if(arm(b,"한 번 더","빼기")){const i=+b.dataset.i,f=(r.files||[])[i];if(!f)return;await HUB.col(c).update(id,{files:(r.files||[]).filter((x,j)=>j!==i)});AV.clear();await attDrop(f.asset);setTimeout(draw,60);}}
+},true);
+document.addEventListener("change",e=>{const t=e.target;if(!t||!t.files||!t.files.length)return;
+  if(t.dataset.attin){const box=t.closest("[data-attcol]");const fs=[...t.files];t.value="";if(box)attFiles(box.dataset.attcol,box.dataset.attid,fs);}
+  else if(t.dataset.attpin){const box=t.closest("[data-attpend]");const fs=[...t.files];t.value="";if(box){pendList(box.dataset.attpend).push(...fs);draw();}}});
+/* paste or drop: onto an open record, a plan being edited, or an add form */
+const attTarget=el=>{if(HUB.view!=="mat")return null;const box=el&&el.closest&&el.closest("[data-attcol],[data-attpend]");if(box)return box;
+  const host=el&&el.closest&&el.closest(".mitem.on,[data-pedit],#rNew,#pNew");return host?host.querySelector("[data-attcol],[data-attpend]"):null;};
+const attTake=(box,fs)=>{if(box.dataset.attpend){pendList(box.dataset.attpend).push(...fs);draw();}else attFiles(box.dataset.attcol,box.dataset.attid,fs);};
+document.addEventListener("dragover",e=>{if(attTarget(e.target))e.preventDefault();});
+document.addEventListener("drop",e=>{const box=attTarget(e.target);if(!box)return;const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])];if(!fs.length)return;e.preventDefault();attTake(box,fs);});
+document.addEventListener("paste",e=>{if(e.defaultPrevented||HUB.view!=="mat")return;const fs=[...((e.clipboardData&&e.clipboardData.files)||[])];if(!fs.length)return;
+  let box=attTarget(document.activeElement);if(!box){const host=document.querySelector("#v-mat .mitem.on,#v-mat [data-pedit],#rNew,#pNew");box=host&&host.querySelector("[data-attcol],[data-attpend]");}
+  if(!box)return;e.preventDefault();attTake(box,fs);});
+const RS={q:"",chip:"*",open:"",adding:false,busy:"",nsel:new Set(),pend:[]};
 const rf=r=>M.tab==="notes"?nfields(r):REC[M.tab].fields;
 const rcol=()=>HUB.col(M.tab);
 const rview=()=>{const cf=REC[M.tab],q=RS.q.trim().toLowerCase();return rcol().list.filter(r=>inProj(r)&&(RS.chip==="*"||cf.match(r,RS.chip))&&(!q||cf.fields.map(f=>r[f[0]]).join(" ").toLowerCase().includes(q))).sort(cf.sort||((a,b)=>(b.addedAt||0)-(a.addedAt||0)));};
@@ -6821,8 +6891,8 @@ function recHtml(){const cf=REC[M.tab],all=rcol().list.filter(inProj),list=rview
     ${NT?tplMan():""}
     ${NT&&all.length&&!ns?`<p class="muted" style="margin:8px 0 0;font-size:12.5px">일부만 모으려면 노트 왼쪽 칸을 체크하세요. 체크하지 않으면 지금 보이는 노트 전체를 모아요.</p>`:""}
     ${all.length?`<p class="muted" style="margin:10px 0 0;font-size:13.5px">${cf.sum(all)}</p><div class="chips" style="margin:10px 0">${[["*","전체",all.length],...cf.chips(all)].map(([v,n,c])=>`<button class="chip" type="button" data-rchip="${esc(v)}" aria-pressed="${RS.chip===v}">${esc(n)}<span class="n">${c}</span></button>`).join("")}</div>`:""}
-    ${RS.adding?`<div class="mrev" id="rNew"><b>${cf.add}</b><div class="mgrid">${rf(RS.draft).map(f=>rfield(f,RS.draft,"data-rn")).join("")}</div><div class="row" style="gap:6px"><button class="btn primary" type="button" data-r="savenew">저장</button><button class="btn ghost" type="button" data-r="cancelnew">취소</button></div></div>`:""}
-    ${list.length?`<div class="mlist" style="margin-top:10px">${list.map(r=>{const on=RS.open===r.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-ropen="${r.id}">${NT?`<input type="checkbox" data-nsel="${r.id}" ${RS.nsel.has(r.id)?"checked":""} aria-label="${esc(cf.title(r))} 고르기">`:""}<div class="mn"><b>${pjDot(r.project)}${esc(cf.title(r))}</b><span>${esc([cf.sub(r),M.tab!=="notes"&&r.project].filter(Boolean).join(" · "))}</span></div>${cf.tags(r)}<span class="row" style="gap:6px;flex:none">${cf.quick(r)}</span></div>
+    ${RS.adding?`<div class="mrev" id="rNew"><b>${cf.add}</b><div class="mgrid">${rf(RS.draft).map(f=>rfield(f,RS.draft,"data-rn")).join("")}</div>${pendHtml("rec",RS.pend)}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-r="savenew">저장</button><button class="btn ghost" type="button" data-r="cancelnew">취소</button></div></div>`:""}
+    ${list.length?`<div class="mlist" style="margin-top:10px">${list.map(r=>{const on=RS.open===r.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-ropen="${r.id}">${NT?`<input type="checkbox" data-nsel="${r.id}" ${RS.nsel.has(r.id)?"checked":""} aria-label="${esc(cf.title(r))} 고르기">`:""}<div class="mn"><b>${pjDot(r.project)}${esc(cf.title(r))}</b><span>${esc([cf.sub(r),M.tab!=="notes"&&r.project].filter(Boolean).join(" · "))}</span></div>${cf.tags(r)}${attTag(r)}<span class="row" style="gap:6px;flex:none">${cf.quick(r)}</span></div>
       ${on?`<div class="mbody"><div class="mgrid">${rf(r).map(f=>rfield(f,r,"data-re")).join("")}</div>${cf.extra?cf.extra(r):""}${(r.log||[]).length?`<p class="muted" style="margin:0;font-size:12.5px">기록: ${r.log.slice(0,8).map(x=>esc(x.at+" "+x.what)).join(" · ")}</p>`:""}<div class="row"><button class="btn ghost danger" type="button" data-r="del" data-id="${r.id}">삭제</button></div></div>`:""}</div>`;}).join("")}</div>`
       :RS.adding?"":`<div class="placeholder" style="margin-top:10px">${all.length?"조건에 맞는 기록이 없어요.":cf.empty}</div>`}
     ${ns?`<div class="msel"><b>고른 노트 ${ns}건</b><button class="btn primary" type="button" data-r="nbdocx">Word·한글로 모으기</button><button class="btn" type="button" data-r="nbpdf">PDF로 모으기</button><button class="btn ghost" type="button" data-r="nselall">보이는 노트 모두 고르기</button><button class="btn ghost" type="button" data-r="nselnone">고르기 취소</button><span class="muted" style="font-size:12.5px">날짜순으로 한 파일에 담아요</span></div>`:""}</section>`;}
@@ -6833,15 +6903,15 @@ async function recClick(e,V){
     else if(k==="add")await rcol().update(r.id,{vials:String((+r.vials||0)+1),log:log("1개 추가")});
     else if(k==="ord")await rcol().update(r.id,{status:"발주",ordered:r.ordered||today(),log:log("발주")});
     else if(k==="recv")await rcol().update(r.id,{status:"입고",received:today(),log:log("입고")});
-    else if(k==="dup"){const d={...r,id:undefined,date:today(),result:"",next:"",photos:[],log:[],title:(r.title||"")+" (반복)",addedAt:Date.now()};delete d.id;const id=uid();await rcol().set(id,d);RS.open=id;HUB.toast("오늘 날짜로 복사했어요. 결과 칸은 비워 뒀어요");}
+    else if(k==="dup"){const d={...r,id:undefined,date:today(),result:"",next:"",photos:[],files:[],log:[],title:(r.title||"")+" (반복)",addedAt:Date.now()};delete d.id;const id=uid();await rcol().set(id,d);RS.open=id;HUB.toast("오늘 날짜로 복사했어요. 결과 칸은 비워 뒀어요");}
     else if(k==="tomat"){const id=uid();await HUB.col("materials").set(id,{name:r.item||"",vendor:r.vendor||"",catalog:r.kind==="동물"?"":r.catalog||"",lot:"",cas:"",spec:r.kind==="동물"?[r.sex,r.age&&r.age+(/주|w/i.test(r.age)?"":"주령")].filter(Boolean).join(", "):"",purity:"",storage:"",qty:r.qty||"",price:r.amount||"",date:r.received||r.ordered||"",expiry:"",category:r.kind==="동물"?"동물":"기타",asset:"",source:"발주 기록",project:r.project||"",memo:r.iacuc?"동물실험 승인번호 "+r.iacuc:"",protocol:"",addedAt:Date.now()});await rcol().update(r.id,{log:log("재료 목록에 추가")});HUB.toast("재료 목록에 추가했어요");}
     else if(k==="tocell"){await HUB.col("cells").set(uid(),{line:r.item||"",passage:"",vials:r.qty&&/^\d+$/.test(r.qty)?r.qty:"1",frozen:"",loc:"",medium:"",freeze:"",myco:"",source:r.vendor||"",by:"",project:r.project||"",memo:"발주 기록에서 추가 ("+(r.received||today())+" 입고)",addedAt:Date.now()});await rcol().update(r.id,{log:log("세포 stock에 추가")});HUB.toast("세포 stock에 추가했어요");}
     setTimeout(draw,60);return true;}
   const b=e.target.closest("[data-r]");if(b){const k=b.dataset.r,cf=REC[M.tab];
-    if(k==="new"){RS.adding=true;RS.draft={...cf.defaults(),project:M.proj||""};draw();const i=V.querySelector("#rNew input");if(i)i.focus();}
-    else if(k==="cancelnew"){RS.adding=false;draw();}
+    if(k==="new"){RS.pend=[];RS.adding=true;RS.draft={...cf.defaults(),project:M.proj||""};draw();const i=V.querySelector("#rNew input");if(i)i.focus();}
+    else if(k==="cancelnew"){RS.adding=false;RS.pend=[];draw();}
     else if(k==="savenew"){const d=RS.draft,main=cf.main||cf.fields[M.tab==="cells"?0:1][0];if(!String(d[main]||"").trim()){HUB.toast((cf.mainName||(M.tab==="cells"?"세포주 이름":"품목"))+"을 적어 주세요");return true;}
-      const doc={addedAt:Date.now()};cf.fields.forEach(f=>doc[f[0]]=String(d[f[0]]==null?"":d[f[0]]).trim());await rcol().set(uid(),doc);RS.adding=false;setTimeout(draw,60);HUB.toast("저장했어요");}
+      const doc={addedAt:Date.now()};cf.fields.forEach(f=>doc[f[0]]=String(d[f[0]]==null?"":d[f[0]]).trim());const nid=uid(),tab=M.tab,pend=RS.pend.splice(0);await rcol().set(nid,doc);RS.adding=false;setTimeout(draw,60);if(pend.length){HUB.toast("저장했어요. 붙인 파일을 올리는 중…",3000);attFiles(tab,nid,pend);}else HUB.toast("저장했어요");}
     else if(k==="exp"){try{HUB.save(cf.file,HUB.xlsx([{name:cf.label,rows:[cf.fields.map(f=>f[1]),...rview().map(r=>cf.fields.map(f=>r[f[0]]==null?"":r[f[0]]))]}]));}catch(err){HUB.toast(err.message||"엑셀로 내보내지 못했어요");}}
     else if(k==="del"){if(arm(b,"한 번 더 누르면 삭제","삭제")){await rcol().remove(b.dataset.id);RS.open="";setTimeout(draw,60);}}
     else if(k==="delphoto"){if(arm(b,"한 번 더","빼기")){const r=rcol().list.find(x=>x.id===b.dataset.id);if(r){await rcol().update(r.id,{photos:(r.photos||[]).filter(p=>p!==b.dataset.p)});try{await HUB.assets.delete(b.dataset.p);}catch(err){}setTimeout(draw,60);}}}
@@ -6885,14 +6955,14 @@ function planHtml(){const [Y,Mo]=PS.ym.split("-").map(Number),first=new Date(Y,M
   const up=pcol().list.filter(p=>inProj(p)&&!p.done&&p.date&&(p.end||p.date)>=td&&p.date<=addDays(td,14)).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||""))).slice(0,8);
   const late=pcol().list.filter(p=>inProj(p)&&!p.done&&p.date&&(p.end||p.date)<td).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
   const prow=p=>{const note=p.noteId&&HUB.col("notes").list.find(n=>n.id===p.noteId);
-    return PS.edit===p.id?`<div class="mrev" data-pedit="${p.id}">${planForm(p,"data-pe")}<div class="row" style="gap:6px"><button class="btn sm primary" type="button" data-p="editdone">닫기</button><button class="btn sm ghost danger" type="button" data-p="del" data-id="${p.id}">삭제</button></div></div>`
-    :`<div class="prow ${p.done?"done":""}"><label class="ck"><input type="checkbox" data-pdone="${p.id}" ${p.done?"checked":""} aria-label="끝냄"><span></span></label><div class="pt"><b>${pjDot(p.project)}${p.time?esc(p.time)+" · ":""}${esc(p.title||"(제목 없음)")}</b><span>${esc([p.end&&p.end>p.date?p.date.slice(5)+" ~ "+p.end.slice(5):"",p.project,p.memo].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(p.kind)}">${esc(p.kind||"분석·기타")}</span><span class="row" style="gap:6px;flex:none">${note?`<button class="btn sm" type="button" data-p="note" data-id="${note.id}">실험노트 보기</button>`:`<button class="btn sm" type="button" data-p="mknote" data-id="${p.id}">실험노트 쓰기</button>`}<button class="btn sm ghost" type="button" data-p="edit" data-id="${p.id}">고치기</button></span></div>`;};
+    return PS.edit===p.id?`<div class="mrev" data-pedit="${p.id}">${planForm(p,"data-pe")}${attHtml("plans",p)}<div class="row" style="gap:6px"><button class="btn sm primary" type="button" data-p="editdone">닫기</button><button class="btn sm ghost danger" type="button" data-p="del" data-id="${p.id}">삭제</button></div></div>`
+    :`<div class="prow ${p.done?"done":""}"><label class="ck"><input type="checkbox" data-pdone="${p.id}" ${p.done?"checked":""} aria-label="끝냄"><span></span></label><div class="pt"><b>${pjDot(p.project)}${p.time?esc(p.time)+" · ":""}${esc(p.title||"(제목 없음)")}</b><span>${esc([p.end&&p.end>p.date?p.date.slice(5)+" ~ "+p.end.slice(5):"",p.project,p.memo].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(p.kind)}">${esc(p.kind||"분석·기타")}</span>${attN(p)?`<button type="button" class="tag attpill" data-p="edit" data-id="${p.id}" title="붙인 파일 보기">첨부 ${attN(p)}</button>`:""}<span class="row" style="gap:6px;flex:none">${note?`<button class="btn sm" type="button" data-p="note" data-id="${note.id}">실험노트 보기</button>`:`<button class="btn sm" type="button" data-p="mknote" data-id="${p.id}">실험노트 쓰기</button>`}<button class="btn sm ghost" type="button" data-p="edit" data-id="${p.id}">고치기</button></span></div>`;};
   return `<section class="card pad" id="planBox"><div class="mbar"><div class="row" style="gap:6px;align-items:center"><button class="btn sm" type="button" data-p="prev" aria-label="이전 달">‹</button><b class="pym">${Y}년 ${Mo}월</b><button class="btn sm" type="button" data-p="next" aria-label="다음 달">›</button><button class="btn sm ghost" type="button" data-p="today">오늘</button><button class="btn sm ghost" type="button" data-p="ics" title="구글 캘린더 등에서 가져오기로 넣을 수 있어요">캘린더 파일(.ics)로 내보내기</button></div><span class="muted" style="font-size:13px">날짜를 누르면 그날의 계획과 실험노트가 아래에 나와요</span></div>
     <div class="pcal"><div class="pwd">${WD.map((w,i)=>`<span class="${i===0?"psun":i===6?"psat":""}">${w}</span>`).join("")}</div><div class="pgrid">${cal}</div></div>
     <div class="pday"><div class="mbar"><h3 style="margin:0">${dlabel(PS.day)}${PS.day===td?" · 오늘":""}</h3><span class="row" style="gap:6px"><button class="btn primary" type="button" data-p="new">일정 추가</button><button class="btn" type="button" data-p="newnote">이 날 실험노트 쓰기</button></span></div>
-      ${PS.adding?`<div class="mrev" id="pNew"><b>일정 추가</b>${planForm(PS.draft,"data-pln")}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-p="save">저장</button><button class="btn ghost" type="button" data-p="cancel">취소</button></div></div>`:""}
+      ${PS.adding?`<div class="mrev" id="pNew"><b>일정 추가</b>${planForm(PS.draft,"data-pln")}${pendHtml("plan",PS.pend||[])}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-p="save">저장</button><button class="btn ghost" type="button" data-p="cancel">취소</button></div></div>`:""}
       <h4 class="psec">계획 <span class="mono">${x.plans.length}</span></h4>${x.plans.length?x.plans.map(prow).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 잡아 둔 계획이 없어요.</p>`}
-      <h4 class="psec">실험노트 <span class="mono">${x.notes.length}</span></h4>${x.notes.length?x.notes.map(n=>`<div class="prow"><div class="pt"><b>${pjDot(n.project)}${esc(n.title||"(제목 없음)")}</b><span>${esc([n.project,REC.notes.sub(n).split(" · ").slice(n.project?2:1).join(" · "),HUB.embedsPlain(n.result||"").replace(/\s+/g," ").slice(0,90)].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(n.kind)}">${esc(n.kind||"분석·기타")}</span>${(n.photos||[]).length?`<span class="tag">사진 ${n.photos.length}</span>`:""}<button class="btn sm" type="button" data-p="note" data-id="${n.id}">열기</button></div>`).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 쓴 실험노트가 없어요.</p>`}
+      <h4 class="psec">실험노트 <span class="mono">${x.notes.length}</span></h4>${x.notes.length?x.notes.map(n=>`<div class="prow"><div class="pt"><b>${pjDot(n.project)}${esc(n.title||"(제목 없음)")}</b><span>${esc([n.project,REC.notes.sub(n).split(" · ").slice(n.project?2:1).join(" · "),HUB.embedsPlain(n.result||"").replace(/\s+/g," ").slice(0,90)].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(n.kind)}">${esc(n.kind||"분석·기타")}</span>${attTag(n)}<button class="btn sm" type="button" data-p="note" data-id="${n.id}">열기</button></div>`).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 쓴 실험노트가 없어요.</p>`}
       ${x.orders.length||x.cells.length?`<h4 class="psec">발주·세포 기록 <span class="mono">${x.orders.length+x.cells.length}</span></h4>${x.orders.map(o=>`<div class="prow"><div class="pt"><b>${esc(o.item||"")}</b><span>${esc([o.vendor,o.qty&&"수량 "+o.qty].filter(Boolean).join(" · "))}</span></div><span class="tag">${o.received===PS.day?"입고":o.due===PS.day&&o.status!=="입고"?"입고 예정":"발주"}</span></div>`).join("")}${x.cells.map(c=>`<div class="prow"><div class="pt"><b>${esc(c.line||"")}</b><span>${esc([c.passage&&"P"+c.passage,c.loc].filter(Boolean).join(" · "))}</span></div><span class="tag nk-cell">세포 동결</span></div>`).join("")}`:""}
     </div>
     ${up.length||late.length?`<div class="pup">${up.length?`<div><h4 class="psec">다가오는 일정 (2주)</h4>${up.map(p=>`<button type="button" class="pupi" data-pday="${p.date<td?td:p.date}"><span class="mono">${p.date.slice(5)}</span><span class="tag ${kcls(p.kind)}">${esc(p.kind||"")}</span>${pjDot(p.project)}${esc(p.title||"")}</button>`).join("")}</div>`:""}${late.length?`<div><h4 class="psec">지났는데 끝내지 않은 일정</h4>${late.map(p=>`<button type="button" class="pupi" data-pday="${p.date}"><span class="mono">${p.date.slice(5)}</span><span class="tag ${kcls(p.kind)}">${esc(p.kind||"")}</span>${esc(p.title||"")}</button>`).join("")}</div>`:""}</div>`:""}
@@ -6905,11 +6975,12 @@ async function planClick(e){
   if(k==="prev"||k==="next"){const [y,m]=PS.ym.split("-").map(Number),d=new Date(y,m-1+(k==="next"?1:-1),1);PS.ym=dstr(d.getFullYear(),d.getMonth()+1,1).slice(0,7);draw();}
   else if(k==="today"){PS.day=today();PS.ym=PS.day.slice(0,7);draw();}
   else if(k==="ics")icsMonth();
-  else if(k==="new"){PS.adding=true;PS.edit="";PS.draft={kind:"세포",date:PS.day,project:M.proj||""};draw();const i=document.querySelector("#pNew input");if(i)i.focus();}
-  else if(k==="cancel"){PS.adding=false;draw();}
+  else if(k==="new"){PS.pend=[];PS.adding=true;PS.edit="";PS.draft={kind:"세포",date:PS.day,project:M.proj||""};draw();const i=document.querySelector("#pNew input");if(i)i.focus();}
+  else if(k==="cancel"){PS.adding=false;PS.pend=[];draw();}
   else if(k==="save"){const d=PS.draft;if(!String(d.title||"").trim()){HUB.toast("할 일을 적어 주세요");return;}if(!d.date)d.date=PS.day;if(d.end&&d.end<d.date)d.end="";
     const rep=Math.max(0,Math.min(60,parseInt(d.rep,10)||0)),cnt=rep?Math.max(1,Math.min(60,parseInt(d.cnt,10)||1)):1;
-    for(let i=0;i<cnt;i++)await pcol().set(uid(),{title:d.title.trim()+(cnt>1?" ("+(i+1)+"/"+cnt+")":""),kind:d.kind||"분석·기타",date:addDays(d.date,i*rep),end:d.end?addDays(d.end,i*rep):"",time:d.time||"",project:(d.project||"").trim(),memo:(d.memo||"").trim(),done:false,noteId:"",addedAt:Date.now()+i});
+    const pend=(PS.pend||[]).splice(0),u=pend.length?await upAtt(pend):null;if(u)attMsg(u);
+    for(let i=0;i<cnt;i++)await pcol().set(uid(),{photos:u?u.photos.slice():[],files:u?u.add.map(f=>({...f})):[],title:d.title.trim()+(cnt>1?" ("+(i+1)+"/"+cnt+")":""),kind:d.kind||"분석·기타",date:addDays(d.date,i*rep),end:d.end?addDays(d.end,i*rep):"",time:d.time||"",project:(d.project||"").trim(),memo:(d.memo||"").trim(),done:false,noteId:"",addedAt:Date.now()+i});
     PS.adding=false;PS.day=d.date;PS.ym=d.date.slice(0,7);setTimeout(draw,60);HUB.toast(cnt>1?"일정 "+cnt+"개를 저장했어요":"일정을 저장했어요");}
   else if(k==="edit"){PS.edit=b.dataset.id;PS.adding=false;draw();}
   else if(k==="editdone"){PS.edit="";draw();}
