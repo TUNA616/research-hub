@@ -1231,7 +1231,10 @@ function wrapDb(){
   const lst=[];
   const view=name=>(udocs||[]).filter(d=>d.id.startsWith(name+"__")).map(d=>{const v=d.data();return{id:d.id.slice(name.length+2),data:()=>v};});
   uready=new Promise(res=>{const t=setTimeout(()=>res(false),10000);
-    try{ubase.onSnapshot(s=>{udocs=s.docs;lst.forEach(l=>{try{l.fn();}catch(e){console.error(e);}});clearTimeout(t);res(true);},err=>{lst.forEach(l=>{try{l.err&&l.err(err);}catch(e){}});clearTimeout(t);res(false);});}catch(e){clearTimeout(t);res(false);}});
+    try{ubase.onSnapshot(s=>{const fc=!!(s.metadata&&s.metadata.fromCache);
+        if(fc&&udocs){const m=new Map(udocs.map(d=>[d.id,d]));s.docs.forEach(d=>m.set(d.id,d));udocs=[...m.values()];}else udocs=s.docs;
+        if(!fc&&!H.cloudFull){H.cloudFull=true;setTimeout(()=>keepCheck(),1500);}
+        lst.forEach(l=>{try{l.fn();}catch(e){console.error(e);}});clearTimeout(t);res(true);},err=>{lst.forEach(l=>{try{l.err&&l.err(err);}catch(e){}});clearTimeout(t);res(false);});}catch(e){clearTimeout(t);res(false);}});
   const on=(fn,err)=>{const l={fn,err};lst.push(l);if(udocs)fn();};
   /* all collections live in one per-user collection, so every write sends a snapshot to every listener; pass it on only when this collection really changed */
   const sig=v=>{const s=JSON.stringify(v.map(d=>[d.id,d.data()]));let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return s.length+":"+h;};
@@ -1266,20 +1269,46 @@ let PD=false;const PDQ=new Set();
 document.addEventListener("pointerdown",()=>{PD=true;},true);
 const pdEnd=()=>setTimeout(()=>{PD=false;const q=[...PDQ];PDQ.clear();q.forEach(f=>{try{f();}catch(e){console.error(e);}});},0);
 document.addEventListener("pointerup",pdEnd,true);document.addEventListener("pointercancel",pdEnd,true);
+/* ---------- nothing a person saved disappears unless they delete it ----------
+   On claude.ai every collection is also copied into this browser (research-hub-more, key "mirror__<name>"). After the store has answered in full,
+   a record that is in the copy but not in the store, and was never deleted (deletions leave a small "tomb__" note in the store, so other devices know too),
+   is written back. Bodies are cleaned to plain JSON before a write, and a failed write is reported instead of passing silently. */
+const cleanDoc=d=>{try{return JSON.parse(JSON.stringify(d,(k,v)=>v===undefined?null:v));}catch(e){return d;}};
+let saveWarned=0;const saveFail=(e,what)=>{console.error(e);if(Date.now()-saveWarned<15000)return;saveWarned=Date.now();
+  const c=e&&e.code;H.toast(c==="quota_exceeded"?"저장 공간이 가득 차서 저장하지 못했어요. 쓰지 않는 기록이나 큰 파일을 지워 주세요.":c==="invalid_argument"?"기록이 너무 커서(한 건에 256KB까지) 저장하지 못했어요. 긴 글이나 표를 나눠 주세요.":`${what||"기록"}을 저장하지 못했어요${c?" ("+c+")":""}. 잠시 뒤 다시 해 보세요. 이 브라우저에는 남겨 두었다가 다음에 다시 올려요.`,9000);};
+const mirrorKey=n=>"mirror__"+n;
+const mirrorT={},unsent={};
+/* the copy is rewritten only after the check below has run (so a store that lost something cannot overwrite the copy first), and it keeps writes that failed */
+const mirrorSave=(n,list)=>{if(!keepDone)return;clearTimeout(mirrorT[n]);mirrorT[n]=setTimeout(()=>{const u=unsent[n]||{},ids=new Set(list.map(x=>x.id));const all=[...list,...Object.values(u).filter(x=>!ids.has(x.id))];
+  tx2("readwrite",s=>s.put({k:mirrorKey(n),d:{list:cleanDoc(all),at:Date.now()}})).catch(()=>{});},800);};
+const mirrorGet=n=>tx2("readonly",s=>s.get(mirrorKey(n))).then(r=>r&&r.d&&Array.isArray(r.d.list)?r.d.list:[]).catch(()=>[]);
+const tombs=()=>new Set((udocs||[]).filter(d=>d.id.startsWith("tomb__")).map(d=>d.id.slice(6)));
+let keepDone=false;
+async function keepCheck(){if(keepDone||!cdb||!H.cloudFull)return;keepDone=true;const T=tombs();let n=0;
+  for(const [name,c] of Object.entries(cols)){if(!c.loaded)continue;const have=new Set(c.list.map(x=>x.id));const mine=await mirrorGet(name);
+    for(const x of mine){if(!x||!x.id||have.has(x.id)||T.has(name+"__"+x.id))continue;if(n>=300)break;const {id,...body}=x;
+      try{await cdb.collection(name).doc(id).set(cleanDoc(body));n++;}catch(e){(unsent[name]||(unsent[name]={}))[id]=x;saveFail(e);}}}
+  if(n)H.toast(`저장소에서 빠져 있던 기록 ${n}건을 이 브라우저에 남아 있던 사본으로 되살렸어요.`,8000);
+  for(const [name,c] of Object.entries(cols))if(c.loaded)mirrorSave(name,c.list);}
 function makeCol(name){
   const subs=[];const c={list:[],loaded:false,error:null};
   const emit=()=>{c.list.sort((a,b)=>(b.addedAt||0)-(a.addedAt||0));subs.forEach(f=>{try{f(c.list);}catch(e){console.error(e);}});};
   const base=STORES.includes(name);
-  const put=d=>{if(H.storage==="browser")return (base?tx(name,"readwrite",s=>s.put(d)):X.put(name,d)).catch(()=>{});return Promise.resolve();};
+  const put=d=>{if(H.storage!=="browser")return Promise.resolve();const w=v=>base?tx(name,"readwrite",s=>s.put(v)):X.put(name,v);return w(d).catch(()=>w(cleanDoc(d))).catch(e=>saveFail(e));};
   c.subscribe=f=>{subs.push(f);if(c.loaded)f(c.list);};
   c.start=async()=>{
-    if(cdb){try{cdb.collection(name).onSnapshot(snap=>{c.list=snap.docs.map(d=>({...d.data(),id:d.id}));c.loaded=true;c.error=null;if(PD)PDQ.add(emit);else emit();},err=>{c.error=(err&&err.code)||"오류";c.loaded=true;emit();});}catch(e){c.error="오류";c.loaded=true;emit();}return;}
+    if(cdb){try{cdb.collection(name).onSnapshot(snap=>{c.list=snap.docs.map(d=>({...d.data(),id:d.id}));c.loaded=true;c.error=null;if(H.cloudFull||c.list.length)mirrorSave(name,c.list);if(PD)PDQ.add(emit);else emit();if(H.cloudFull)setTimeout(()=>keepCheck(),1500);},err=>{c.error=(err&&err.code)||"오류";c.loaded=true;emit();});}catch(e){c.error="오류";c.loaded=true;emit();}return;}
     try{c.list=(base?await tx(name,"readonly",s=>s.getAll()):await X.all(name))||[];}catch(e){if(base)H.storage="memory";c.list=[];}
     c.loaded=true;emit();
   };
-  c.set=async(id,data)=>{if(cdb)return cdb.collection(name).doc(id).set(data);const d={...data,id};const i=c.list.findIndex(x=>x.id===id);if(i>=0)c.list[i]=d;else c.list.unshift(d);await put(d);emit();};
-  c.update=async(id,patch)=>{if(cdb)return cdb.collection(name).doc(id).update(patch);const d=c.list.find(x=>x.id===id);if(!d)return;Object.assign(d,patch);await put(d);emit();};
-  c.remove=async id=>{if(cdb)return cdb.collection(name).doc(id).delete();c.list=c.list.filter(x=>x.id!==id);if(H.storage==="browser")await (base?tx(name,"readwrite",s=>s.delete(id)):X.del(name,id)).catch(()=>{});emit();};
+  const keepUnsent=(id,body)=>{(unsent[name]||(unsent[name]={}))[id]={...body,id};mirrorGet(name).then(l=>{l=l.filter(x=>x.id!==id);l.unshift({...body,id});tx2("readwrite",s=>s.put({k:mirrorKey(name),d:{list:l,at:Date.now()}})).catch(()=>{});});};
+  const sent=id=>{if(unsent[name])delete unsent[name][id];};
+  c.set=async(id,data)=>{if(cdb){const body=cleanDoc(data);try{await cdb.collection(name).doc(id).set(body);sent(id);return;}catch(e){saveFail(e);keepUnsent(id,body);return;}}const d={...data,id};const i=c.list.findIndex(x=>x.id===id);if(i>=0)c.list[i]=d;else c.list.unshift(d);await put(d);emit();};
+  c.update=async(id,patch)=>{if(cdb){const body=cleanDoc(patch);try{return await cdb.collection(name).doc(id).update(body);}catch(e){
+      /* update needs the record to exist in the store; if an earlier save never arrived, write the whole record instead */
+      const cur=c.list.find(x=>x.id===id)||(unsent[name]&&unsent[name][id]);if(cur){const {id:_i,...rest}=cur;const full=cleanDoc({...rest,...body});try{await cdb.collection(name).doc(id).set(full);sent(id);return;}catch(e2){saveFail(e2);keepUnsent(id,full);return;}}saveFail(e);return;}}const d=c.list.find(x=>x.id===id);if(!d)return;Object.assign(d,patch);await put(d);emit();};
+  c.remove=async id=>{if(cdb){sent(id);try{await ubase.doc("tomb__"+name+"__"+id).set({at:Date.now()});}catch(e){}try{await cdb.collection(name).doc(id).delete();}catch(e){saveFail(e,"삭제");}
+      mirrorGet(name).then(l=>tx2("readwrite",s=>s.put({k:mirrorKey(name),d:{list:l.filter(x=>x.id!==id),at:Date.now()}})).catch(()=>{}));return;}c.list=c.list.filter(x=>x.id!==id);if(H.storage==="browser")await (base?tx(name,"readwrite",s=>s.delete(id)):X.del(name,id)).catch(()=>{});emit();};
   return c;
 }
 const cols={papers:makeCol("papers"),reports:makeCol("reports"),figs:makeCol("figs"),drafts:makeCol("drafts"),materials:makeCol("materials"),cells:makeCol("cells"),orders:makeCol("orders"),notes:makeCol("notes"),plans:makeCol("plans"),projects:makeCol("projects"),grants:makeCol("grants"),tpls:makeCol("tpls")};
@@ -7015,7 +7044,7 @@ function recHtml(){const cf=REC[M.tab],all=rcol().list.filter(inProj),list=rview
     ${RS.adding?`<div class="mrev" id="rNew"><b>${cf.add}</b><div class="mgrid">${rf(RS.draft).map(f=>rfield(f,RS.draft,"data-rn")).join("")}</div>${pendHtml("rec",RS.pend)}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-r="savenew">저장</button><button class="btn ghost" type="button" data-r="cancelnew">취소</button></div></div>`:""}
     ${list.length?`<div class="mlist" style="margin-top:10px">${list.map(r=>{const on=RS.open===r.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-ropen="${r.id}">${NT?`<input type="checkbox" data-nsel="${r.id}" ${RS.nsel.has(r.id)?"checked":""} aria-label="${esc(cf.title(r))} 고르기">`:""}<div class="mn"><b>${pjDot(r.project)}${esc(cf.title(r))}</b><span>${esc([cf.sub(r),M.tab!=="notes"&&r.project].filter(Boolean).join(" · "))}</span></div>${cf.tags(r)}${attTag(r)}<span class="row" style="gap:6px;flex:none">${cf.quick(r)}</span></div>
       ${on?`<div class="mbody"><div class="mgrid">${rf(r).map(f=>rfield(f,r,"data-re")).join("")}</div>${cf.extra?cf.extra(r):""}${(r.log||[]).length?`<p class="muted" style="margin:0;font-size:12.5px">기록: ${r.log.slice(0,8).map(x=>esc(x.at+" "+x.what)).join(" · ")}</p>`:""}<div class="row"><button class="btn ghost danger" type="button" data-r="del" data-id="${r.id}">삭제</button></div></div>`:""}</div>`;}).join("")}</div>`
-      :RS.adding?"":`<div class="placeholder" style="margin-top:10px">${all.length?"조건에 맞는 기록이 없어요.":cf.empty}</div>`}
+      :RS.adding?"":`<div class="placeholder" style="margin-top:10px">${all.length?"조건에 맞는 기록이 없어요.":rcol().list.length?`'${esc(M.proj==="__none"?"프로젝트 없음":M.proj)}' 프로젝트로 거르고 있어서 안 보여요. 전체 ${rcol().list.length}건이 있어요. <button class="btn sm" type="button" data-r="pjall">전체 보기</button>`:cf.empty}</div>`}
     ${ns?`<div class="msel"><b>고른 노트 ${ns}건</b><button class="btn primary" type="button" data-r="nbdocx">Word·한글로 모으기</button><button class="btn" type="button" data-r="nbpdf">PDF로 모으기</button><button class="btn ghost" type="button" data-r="nselall">보이는 노트 모두 고르기</button><button class="btn ghost" type="button" data-r="nselnone">고르기 취소</button><span class="muted" style="font-size:12.5px">날짜순으로 한 파일에 담아요</span></div>`:""}</section>`;}
 async function recClick(e,V){
   const ch=e.target.closest("[data-rchip]");if(ch){RS.chip=ch.dataset.rchip;draw();return true;}
@@ -7030,6 +7059,7 @@ async function recClick(e,V){
     setTimeout(draw,60);return true;}
   const b=e.target.closest("[data-r]");if(b){const k=b.dataset.r,cf=REC[M.tab];
     if(k==="new"){RS.pend=[];RS.adding=true;RS.draft={...cf.defaults(),project:M.proj||""};draw();const i=V.querySelector("#rNew input");if(i)i.focus();}
+    else if(k==="pjall"){if(HUB.proj&&HUB.proj.set)HUB.proj.set("");else{M.proj="";save();}draw();}
     else if(k==="cancelnew"){RS.adding=false;RS.pend=[];draw();}
     else if(k==="savenew"){const d=RS.draft,main=cf.main||cf.fields[M.tab==="cells"?0:1][0];if(!String(d[main]||"").trim()){HUB.toast((cf.mainName||(M.tab==="cells"?"세포주 이름":"품목"))+"을 적어 주세요");return true;}
       const doc={addedAt:Date.now()};cf.fields.forEach(f=>doc[f[0]]=String(d[f[0]]==null?"":d[f[0]]).trim());const nid=uid(),tab=M.tab,pend=RS.pend.splice(0);await rcol().set(nid,doc);RS.adding=false;setTimeout(draw,60);if(pend.length){HUB.toast("저장했어요. 붙인 파일을 올리는 중…",3000);attFiles(tab,nid,pend,true);}else HUB.toast("저장했어요");}
