@@ -883,6 +883,12 @@ html{height:100%}body{height:auto;min-height:100%}
 .attadd{cursor:pointer}
 .attpend{margin-top:8px}
 button.attpill{cursor:pointer;font:inherit;font-size:12px}
+
+/* library intake running in the background: a chip on every tab */
+.libjob{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:10px 14px;border:1px solid var(--line2);border-radius:999px;background:var(--surface);color:var(--ink);box-shadow:0 6px 24px rgba(0,0,0,.14);font:inherit;font-size:13.5px;cursor:pointer;text-align:left}
+.libjob small{color:var(--muted);font-size:12px}
+.libjob .spin{flex:none}
+@media (max-width:600px){.libjob{left:10px;right:10px;bottom:10px;border-radius:12px}.libjob small{display:none}}
 </style>
 </head>
 <body>
@@ -1993,6 +1999,7 @@ async function parsePdf(buf,step){
   const n=doc.numPages;let raw="";let titleCand="";const figs=[];const seen=new Set();
   const OPS=pdfjsLib.OPS;const IMG_OPS=[OPS.paintImageXObject,OPS.paintInlineImageXObject,OPS.paintImageMaskXObject,OPS.paintJpegXObject,OPS.paintImageXObjectRepeat].filter(x=>x!=null);
   for(let i=1;i<=n;i++){
+    await new Promise(r=>setTimeout(r,0));
     step(`텍스트·그림 찾는 중 (${i}/${n}쪽)`);
     const page=await doc.getPage(i);const vp=page.getViewport({scale:1});
     const tc=await page.getTextContent();const items=tc.items.filter(it=>typeof it.str==="string");
@@ -2235,11 +2242,11 @@ ${caps||"(없음)"}
 ${text}`;
   return sample.json(prompt,{modelTier:tier});
 }
-function errMsg(e){const c=e&&e.code;return c==="not_granted"?"Claude 사용이 허용되지 않았어요":c==="rate_limited"?"요청이 많아 잠시 막혔어요. 조금 뒤 '다시 요약'을 눌러 주세요":c==="invalid_json"?"요약 형식이 깨졌어요. '다시 요약'을 눌러 주세요":(e&&e.message)||"알 수 없는 오류";}
+function errMsg(e){const c=e&&e.code;return c==="timeout"?e.message:c==="not_granted"?"Claude 사용이 허용되지 않았어요":c==="rate_limited"?"요청이 많아 잠시 막혔어요. 조금 뒤 '다시 요약'을 눌러 주세요":c==="invalid_json"?"요약 형식이 깨졌어요. '다시 요약'을 눌러 주세요":(e&&e.message)||"알 수 없는 오류";}
 
 /* ---------- pipeline ---------- */
 function addFiles(list){
-  HUB.go("library");
+  if(HUB.view!=="library")HUB.toast(`라이브러리에서 ${list.length}개 파일 정리를 시작했어요. 다른 작업을 계속해도 돼요. 아래 진행 표시를 누르면 라이브러리로 가요.`,6000);
   for(const f of list){
     const ext=(f.name.split(".").pop()||"").toLowerCase();
     const q={id:uid(),file:f,name:f.name,step:"대기 중",state:"wait"};
@@ -2288,7 +2295,9 @@ async function processFile(q){
     return out;
   })();
 
-  if(HUB.ai.auto&&!S.sampleOff){
+  const bgAI=HUB.ai.auto&&!S.sampleOff;
+  if(bgAI){rec.summaryPending=true;rec.summaryError=null;}
+  else if(false){
     step("서지정보 읽는 중 (Claude)");
     try{const m=await askMeta(parsed,cats());if(m&&typeof m==="object")mergeMeta(rec,m);}catch(e){if(e&&e.code==="not_granted")S.sampleOff=true;rec.summaryError=errMsg(e);}
     if(!S.sampleOff){
@@ -2308,8 +2317,33 @@ async function processFile(q){
   const dup=(q.refId&&S.papers.find(x=>x.id===q.refId))||rec.doi&&S.papers.find(x=>x.fileType==="ref"&&x.doi&&x.doi.toLowerCase()===rec.doi.toLowerCase());
   if(dup){fileCache.set(dup.id,fileCache.get(id));id=dup.id;rec.addedAt=dup.addedAt||rec.addedAt;if(dup.memo)rec.memo=dup.memo;if(dup.category&&dup.category!=="미분류")rec.category=dup.category;["abstract","IF","cited","oaUrl","url"].forEach(k=>{if(dup[k])rec[k]=dup[k];});}
   await store.set(id,rec);
-  if(!q.quiet&&(!S.sel||window.innerWidth>860))select(id);
+  if(bgAI)bgPush({id,parsed});
+  if(!q.quiet&&HUB.view==="library"&&!S.sel)select(id);
 }
+/* background summaries: one at a time, each Claude call stopped after BG_MS so nothing waits forever */
+const BG_MS=180000,BGQ=[];let bgOn=false,bgNow=null;
+const withTO=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej({code:"timeout",message:"시간이 너무 오래 걸려 멈췄어요. '다시 요약'을 눌러 주세요"}),ms))]);
+function bgPush(j){BGQ.push(j);jobChip();bgRun();}
+async function bgRun(){if(bgOn)return;bgOn=true;
+  while(BGQ.length){const j=BGQ.shift();bgNow=j;jobChip();const p0=S.papers.find(x=>x.id===j.id);if(!p0)continue;const up={summaryPending:false};
+    try{
+      if(!S.sampleOff){try{const m=await withTO(askMeta(j.parsed,cats()),BG_MS);if(m&&typeof m==="object"){const t={};mergeMeta(t,m);Object.assign(up,t);}}catch(e){if(e&&e.code==="not_granted")S.sampleOff=true;up.summaryError=errMsg(e);}}
+      if(!S.sampleOff){const tier=S.settings.tier||"default",p=S.papers.find(x=>x.id===j.id)||p0;
+        const [a,b]=await Promise.allSettled([withTO(askSummary(j.parsed.text,tier),BG_MS),withTO(askNote(j.parsed.text,p.figures||[],S.settings.context||DEFAULT_CONTEXT,tier),BG_MS)]);
+        if(a.status==="fulfilled"&&a.value&&a.value.ko){up.summary=a.value;if(!up.summaryError)up.summaryError=null;}else if(a.status==="rejected")up.summaryError=errMsg(a.reason);
+        if(b.status==="fulfilled"&&b.value)up.note=b.value;else if(b.status==="rejected"&&!up.summaryError)up.summaryError=errMsg(b.reason);
+        up.summarizedAt=Date.now();}
+      else if(!up.summaryError)up.summaryError="Claude 사용이 허용되지 않아 요약을 건너뛰었어요";
+      if(S.papers.some(x=>x.id===j.id))await store.update(j.id,up);}
+    catch(e){try{await store.update(j.id,{summaryPending:false,summaryError:errMsg(e)});}catch(err){}}
+    j.parsed=null;}
+  bgNow=null;bgOn=false;jobChip();}
+/* a small chip on every tab while files are being read or summarised */
+function jobChip(){let c=document.getElementById("libJob");if(!c){c=document.createElement("button");c.id="libJob";c.type="button";c.className="libjob";c.hidden=true;c.addEventListener("click",()=>HUB.go("library"));document.body.appendChild(c);}
+  const read=S.queue.filter(q=>q.state==="wait"||q.state==="run").length,sum=BGQ.length+(bgNow?1:0);
+  if(!read&&!sum){c.hidden=true;return;}
+  c.hidden=false;c.innerHTML=`<span class="spin"></span><span>${read?`논문 읽는 중 ${read}개`:""}${read&&sum?" · ":""}${sum?`요약 쓰는 중 ${sum}편`:""}</span><small>${HUB.view==="library"?"다른 탭에서 작업해도 계속돼요":"눌러서 라이브러리 보기"}</small>`;}
+document.addEventListener("hub:view",jobChip);
 function mergeMeta(rec,m){
   const s=v=>typeof v==="string"?v.trim():v==null?"":String(v);
   if(s(m.title))rec.title=s(m.title);
@@ -2576,7 +2610,7 @@ function relatedHtml(p){
 }
 const ul=a=>a&&a.length?`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p class="muted">—</p>`;
 const sec=(t,body)=>`<section class="sec"><h3>${t}</h3>${body}</section>`;
-function noSummary(p){return `<div class="placeholder"><span>${esc(p.summaryError||"아직 요약이 없어요.")}</span><button class="btn primary" type="button" data-act="resum">요약 만들기</button></div>`+(p.abstract?sec("초록 (원문)",`<p>${esc(p.abstract)}</p>`):"")+(p.oaUrl?`<p style="margin:0"><a href="${esc(p.oaUrl)}" target="_blank" rel="noopener">오픈액세스 원문 열기</a></p>`:"");}
+function noSummary(p){const pend=p.summaryPending&&((bgNow&&bgNow.id===p.id)||BGQ.some(j=>j.id===p.id));if(pend)return `<div class="placeholder"><span class="spin"></span><span>Claude가 서지정보와 요약을 쓰는 중이에요${BGQ.findIndex(j=>j.id===p.id)>=0?` (앞에 ${BGQ.findIndex(j=>j.id===p.id)+(bgNow?1:0)}편 대기)`:""}. 다른 논문을 읽거나 다른 탭에서 작업해도 돼요.</span></div>`;return `<div class="placeholder"><span>${esc(p.summaryError||(p.summaryPending?"요약이 중간에 멈췄어요 (페이지를 다시 열었거나 연결이 끊겼어요).":"아직 요약이 없어요."))}</span><button class="btn primary" type="button" data-act="resum">요약 만들기</button></div>`+(p.abstract?sec("초록 (원문)",`<p>${esc(p.abstract)}</p>`):"")+(p.oaUrl?`<p style="margin:0"><a href="${esc(p.oaUrl)}" target="_blank" rel="noopener">오픈액세스 원문 열기</a></p>`:"");}
 function pane(p,ko,en,n){
   if(S.tab==="qa")return `<div data-qabox="${esc(p.id)}" class="qabox">${qaHtml(p)}</div>`;
   if(S.tab==="ko"){if(!ko)return noSummary(p);
@@ -2622,7 +2656,7 @@ function pane(p,ko,en,n){
   </form>`;
 }
 function renderQueue(){
-  const el=$("#queue");if(!S.queue.length){el.hidden=true;return;}
+  jobChip();const el=$("#queue");if(!S.queue.length){el.hidden=true;return;}
   el.hidden=false;const done=S.queue.filter(q=>q.state==="done").length;
   el.innerHTML=`<header><span>정리 중 ${done}/${S.queue.length}</span>${S.queue.every(q=>q.state==="done"||q.state==="err")?`<button class="btn ghost" type="button" data-act="qclose">닫기</button>`:""}</header>`+
     S.queue.map(q=>`<div class="q">${q.state==="run"?`<span class="spin"></span>`:`<span class="qd ${q.state==="err"?"err":q.state==="wait"?"wait":""}"></span>`}<div style="min-width:0"><div class="nm">${esc(q.name)}</div><div class="st ${q.state==="err"?"err":""}">${esc(q.step)}</div></div></div>`).join("");
@@ -2725,10 +2759,11 @@ $("#exportBtn").onclick=()=>{const m=$("#exportMenu");m.hidden=!m.hidden;$("#exp
 $("#q").oninput=e=>{S.q=e.target.value;render();};
 $("#sort").onchange=e=>{S.sort=e.target.value;lsSet("pd.sort",S.sort);render();};
 let dragN=0;
-window.addEventListener("dragenter",e=>{if(e.dataTransfer&&Array.from(e.dataTransfer.types||[]).includes("Files")){dragN++;$("#dropOverlay").hidden=false;}});
+const dropTab=()=>HUB.view==="library"||HUB.view==="research"||HUB.view==="illust";
+window.addEventListener("dragenter",e=>{if(dropTab()&&e.dataTransfer&&Array.from(e.dataTransfer.types||[]).includes("Files")){dragN++;$("#dropOverlay").hidden=false;}});
 window.addEventListener("dragleave",()=>{dragN=Math.max(0,dragN-1);if(!dragN)$("#dropOverlay").hidden=true;});
 window.addEventListener("dragover",e=>e.preventDefault());
-window.addEventListener("drop",e=>{e.preventDefault();dragN=0;$("#dropOverlay").hidden=true;const fs=Array.from(e.dataTransfer.files||[]);if(!fs.length)return;if(HUB.view==="research"&&HUB.research)HUB.research.attach(fs);else if(HUB.view==="illust"&&HUB.illust)HUB.illust.fromFile(fs[0]);else addFiles(fs);});
+window.addEventListener("drop",e=>{const done=e.defaultPrevented;e.preventDefault();dragN=0;$("#dropOverlay").hidden=true;if(done)return;const fs=Array.from((e.dataTransfer&&e.dataTransfer.files)||[]);if(!fs.length)return;if(HUB.view==="research"&&HUB.research)HUB.research.attach(fs);else if(HUB.view==="illust"&&HUB.illust)HUB.illust.fromFile(fs[0]);else if(HUB.view==="library")addFiles(fs);else HUB.toast("논문 파일을 라이브러리에 넣으려면 라이브러리 탭에서 끌어 놓으세요. 이 화면에서는 파일을 받는 칸에 놓아 주세요.",5000);});
 $("#cropClose").onclick=()=>{$("#cropModal").hidden=true;if(C.doc){C.doc.destroy();C.doc=null;}};
 $("#cropPrev").onclick=()=>{if(C.page>1){C.page--;renderCropPage();}};
 $("#cropNext").onclick=()=>{if(C.doc&&C.page<C.doc.numPages){C.page++;renderCropPage();}};
@@ -6687,7 +6722,7 @@ async function runJobs(){if(busy)return;const todo=jobs.filter(j=>j.status==="pe
   const see=await HUB.ai.canSee();busy=true;draw();
   for(const j of todo){j.status="working";j.note=M.precise&&j.blob?"꼼꼼히 읽는 중…":"읽는 중…";draw();
     try{if(j.blob&&!see)throw{message:"사진을 볼 수 있는 AI 연결이 없어요"};
-      const items=j.blob?await readImage(j):await readText(j);
+      const items=await Promise.race([j.blob?readImage(j):readText(j),new Promise((_,rej)=>setTimeout(()=>rej({message:"시간이 너무 오래 걸려 멈췄어요. 다시 넣어 보세요"}),180000))]);
       let asset="";if(j.blob&&items.length){try{asset=(await HUB.assets.upload(await toJpeg(j.blob,1400))).id;}catch(e){}}
       items.forEach(c=>review.push({...c,rid:uid(),source:j.name,asset}));
       j.status="done";j.note=items.length?`물품 ${items.length}개`:"물품 정보를 찾지 못했어요";
@@ -6839,41 +6874,127 @@ async function upAtt(files){files=[...files];const no=files.filter(f=>!isRaster(
     if(N>3&&(i%3===2||i===N-1))HUB.toast(`올리는 중… ${i+1}/${N}`,2500);}
   return {photos,add,bad,no};}
 const attMsg=u=>{const n=u.photos.length+u.add.length;HUB.toast((n?`${n}개를 붙였어요${u.bad?` (${u.bad}개는 못 붙였어요)`:""}`:u.no.length?"":"붙이지 못했어요")+(u.no.length?`${n?" · ":""}${u.no.map(f=>f.name).slice(0,3).join(", ")}${u.no.length>3?" 외":""}는 claude.ai 화면에서 저장할 수 없는 종류라 뺐어요. PDF로 바꾸거나 내려받은 파일·GitHub 주소에서 붙이세요.`:""),u.no.length?9000:4000);};
-async function attFiles(colName,id,files){if(!files||!files.length)return;const u=await upAtt(files);const r=HUB.col(colName).list.find(x=>x.id===id);
+async function attFiles(colName,id,files,noFill){if(!files||!files.length)return;const u=await upAtt(files);const r=HUB.col(colName).list.find(x=>x.id===id);
   if(r&&(u.photos.length||u.add.length))await HUB.col(colName).update(id,{...(u.photos.length?{photos:[...(r.photos||[]),...u.photos]}:{}),...(u.add.length?{files:[...(r.files||[]),...u.add]}:{})});
-  attMsg(u);setTimeout(draw,80);}
+  attMsg(u);setTimeout(draw,80);
+  if(!noFill){const tx=u.add.filter(f=>f.text).map(f=>f.text).join("\n\n");if(tx.trim())setTimeout(()=>mdFillRec(colName,id,tx,true),400);}}
 /* a stored file is removed only when no other record (repeated plans share theirs) still points at it */
 const attUsed=id=>Object.keys(ATT_COLS).some(c=>HUB.col(c).list.some(r=>(r.photos||[]).includes(id)||(r.files||[]).some(f=>f.asset===id)));
 async function attDrop(id){if(!attUsed(id)){try{await HUB.assets.delete(id);}catch(e){}}}
 function attHtml(colName,r){const ph=r.photos||[],fl=r.files||[];
   return `<div class="attbox" data-attcol="${colName}" data-attid="${r.id}">
     ${ph.length?`<div class="nphotos">${ph.map(p=>`<span class="nph"><a href="${esc(HUB.assetUrl(p))}" target="_blank" rel="noopener"><img alt="붙인 사진" loading="lazy" src="${esc(HUB.assetUrl(p))}"></a><button type="button" class="btn sm ghost danger" data-att="delp" data-p="${esc(p)}" aria-label="사진 빼기">빼기</button></span>`).join("")}</div>`:""}
-    ${fl.length?`<div class="attlist">${fl.map((f,i)=>{const on=AV.has(r.id+":"+i);return `<div class="attf"><span class="attx">${esc(fext(f.name))}</span><a class="attn" href="${esc(HUB.assetUrl(f.asset))}" download="${esc(f.name)}" target="_blank" rel="noopener">${esc(f.name)}</a><small class="muted">${fsize(f.size)}</small>${f.text!=null?`<button class="btn sm ghost" type="button" data-att="view" data-i="${i}" aria-expanded="${on}">${on?"접기":"내용 보기"}</button>`:""}<button class="btn sm ghost danger" type="button" data-att="delf" data-i="${i}">빼기</button></div>${on?`<div class="attmd md">${/\.txt$/i.test(f.name)?`<pre>${esc(f.text)}</pre>`:HUB.md(f.text)}</div>`:""}`;}).join("")}</div>`:""}
+    ${fl.length?`<div class="attlist">${fl.map((f,i)=>{const on=AV.has(r.id+":"+i);return `<div class="attf"><span class="attx">${esc(fext(f.name))}</span><a class="attn" href="${esc(HUB.assetUrl(f.asset))}" download="${esc(f.name)}" target="_blank" rel="noopener">${esc(f.name)}</a><small class="muted">${fsize(f.size)}</small>${f.text!=null?`<button class="btn sm ghost" type="button" data-att="view" data-i="${i}" aria-expanded="${on}">${on?"접기":"내용 보기"}</button><button class="btn sm" type="button" data-att="fill" data-i="${i}" title="파일에 적힌 내용으로 이 기록의 칸을 채워요 (이미 쓴 칸도 바꿔요)">이 내용으로 칸 채우기</button>`:""}<button class="btn sm ghost danger" type="button" data-att="delf" data-i="${i}">빼기</button></div>${on?`<div class="attmd md">${/\.txt$/i.test(f.name)?`<pre>${esc(f.text)}</pre>`:HUB.md(f.text)}</div>`:""}`;}).join("")}</div>`:""}
     <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 붙이기<input type="file" data-attin="1" multiple hidden accept="${ATT_ACCEPT}"></label><span class="muted">${ATT_HINT}</span></div></div>`;}
 /* pending files in an add form (the record has no id yet) */
 function pendHtml(key,list){return `<div class="attbox attpend" data-attpend="${key}">${list.length?`<div class="attlist">${list.map((f,i)=>`<div class="attf"><span class="attx">${esc(isRaster(f)?"사진":fext(f.name))}</span><span class="attn">${esc(f.name)}</span><small class="muted">${fsize(f.size)}</small><button class="btn sm ghost danger" type="button" data-attpx="${i}">빼기</button></div>`).join("")}</div>`:""}
-  <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 함께 붙이기<input type="file" data-attpin="1" multiple hidden accept="${ATT_ACCEPT}"></label><span class="muted">${list.length?`저장하면 ${list.length}개가 함께 붙어요`:ATT_HINT}</span></div></div>`;}
+  <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 함께 붙이기<input type="file" data-attpin="1" multiple hidden accept="${ATT_ACCEPT}"></label><span class="muted">${list.length?`저장하면 ${list.length}개가 함께 붙어요 · `:""}마크다운(.md)·텍스트 파일은 내용을 읽어 위 칸을 채우고 원본도 붙여요</span></div></div>`;}
 const pendList=key=>key==="plan"?(PS.pend||(PS.pend=[])):(RS.pend||(RS.pend=[]));
 document.addEventListener("click",async e=>{if(HUB.view!=="mat")return;
   const px=e.target.closest("[data-attpx]");if(px){const box=px.closest("[data-attpend]");pendList(box.dataset.attpend).splice(+px.dataset.attpx,1);draw();return;}
   const b=e.target.closest("[data-att]");if(!b)return;const box=b.closest("[data-attcol]");if(!box)return;const c=box.dataset.attcol,id=box.dataset.attid,r=HUB.col(c).list.find(x=>x.id===id);if(!r)return;e.preventDefault();e.stopPropagation();
   const k=b.dataset.att;
-  if(k==="view"){const key=id+":"+b.dataset.i;if(AV.has(key))AV.delete(key);else AV.add(key);draw();}
+  if(k==="fill"){const f=(r.files||[])[+b.dataset.i];if(f&&f.text!=null)mdFillRec(c,id,f.text,false);}
+  else if(k==="view"){const key=id+":"+b.dataset.i;if(AV.has(key))AV.delete(key);else AV.add(key);draw();}
   else if(k==="delp"){if(arm(b,"한 번 더","빼기")){const p=b.dataset.p;await HUB.col(c).update(id,{photos:(r.photos||[]).filter(x=>x!==p)});await attDrop(p);setTimeout(draw,60);}}
   else if(k==="delf"){if(arm(b,"한 번 더","빼기")){const i=+b.dataset.i,f=(r.files||[])[i];if(!f)return;await HUB.col(c).update(id,{files:(r.files||[]).filter((x,j)=>j!==i)});AV.clear();await attDrop(f.asset);setTimeout(draw,60);}}
 },true);
 document.addEventListener("change",e=>{const t=e.target;if(!t||!t.files||!t.files.length)return;
   if(t.dataset.attin){const box=t.closest("[data-attcol]");const fs=[...t.files];t.value="";if(box)attFiles(box.dataset.attcol,box.dataset.attid,fs);}
-  else if(t.dataset.attpin){const box=t.closest("[data-attpend]");const fs=[...t.files];t.value="";if(box){pendList(box.dataset.attpend).push(...fs);draw();}}});
+  else if(t.dataset.attpin){const box=t.closest("[data-attpend]");const fs=[...t.files];t.value="";if(box)pendTake(box.dataset.attpend,fs);}});
 /* paste or drop: onto an open record, a plan being edited, or an add form */
 const attTarget=el=>{if(HUB.view!=="mat")return null;const box=el&&el.closest&&el.closest("[data-attcol],[data-attpend]");if(box)return box;
   const host=el&&el.closest&&el.closest(".mitem.on,[data-pedit],#rNew,#pNew");return host?host.querySelector("[data-attcol],[data-attpend]"):null;};
-const attTake=(box,fs)=>{if(box.dataset.attpend){pendList(box.dataset.attpend).push(...fs);draw();}else attFiles(box.dataset.attcol,box.dataset.attid,fs);};
-document.addEventListener("dragover",e=>{if(attTarget(e.target))e.preventDefault();});
-document.addEventListener("drop",e=>{const box=attTarget(e.target);if(!box)return;const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])];if(!fs.length)return;e.preventDefault();attTake(box,fs);});
+const pendTake=async(key,fs)=>{const tx=fs.filter(isTextF),ot=fs.filter(f=>!isTextF(f));for(const f of tx)await mdFillDraft(key,f);if(ot.length){pendList(key).push(...ot);draw();}};
+const attTake=(box,fs)=>{if(box.dataset.attpend)pendTake(box.dataset.attpend,fs);else attFiles(box.dataset.attcol,box.dataset.attid,fs);};
+document.addEventListener("dragover",e=>{if(attTarget(e.target)||(HUB.view==="mat"&&(REC[M.tab]||M.tab==="plan")))e.preventDefault();});
+document.addEventListener("drop",e=>{const box=attTarget(e.target);if(!box){if(HUB.view!=="mat"||!(REC[M.tab]||M.tab==="plan"))return;const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])].filter(isTextF);if(!fs.length)return;e.preventDefault();mdNew(M.tab==="plan"?"plan":M.tab,fs);return;}const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])];if(!fs.length)return;e.preventDefault();attTake(box,fs);});
 document.addEventListener("paste",e=>{if(e.defaultPrevented||HUB.view!=="mat")return;const fs=[...((e.clipboardData&&e.clipboardData.files)||[])];if(!fs.length)return;
   let box=attTarget(document.activeElement);if(!box){const host=document.querySelector("#v-mat .mitem.on,#v-mat [data-pedit],#rNew,#pNew");box=host&&host.querySelector("[data-attcol],[data-attpend]");}
   if(!box)return;e.preventDefault();attTake(box,fs);});
+/* ---------- fill a record from a Markdown (or plain text) file: "# 제목", "- **라벨**: 값" / "라벨: 값" lines, 2-column tables, YAML front matter and "## 칸 이름" sections
+   are matched to the form's fields by label (Korean or common English). Text that fits no field goes to the memo-like field. When little matches and an AI is set up, the AI maps it. ---------- */
+const PLAN_F=()=>[["title","할 일",""],["kind","분류",KINDS],["date","날짜","date"],["end","끝나는 날","date"],["time","시간","time"],["project","프로젝트","proj"],["memo","메모","area"]];
+const MD_ALIAS={title:"title name 제목 실험명 실험제목 할일 일정 task",date:"date 날짜 실험일 일자 day",project:"project 프로젝트 과제명",who:"experimenter 실험자 담당 담당자 author by",kind:"type category 분류 종류 구분",
+  aim:"aim purpose objective goal 목적 목표 배경",proc:"procedure protocol method methods steps 절차 방법 실험방법 실험절차 과정 순서",result:"result results observation observations finding findings data 결과 관찰 결과및관찰",
+  next:"next todo note notes memo comment comments 다음 메모 비고 할일메모 다음에할일",mats:"materials reagents reagent 재료 시약 사용재료 사용한재료",
+  line:"cell cellline cell_line 세포 세포주",passage:"passage 계대 p",vials:"vials vial 바이알 남은바이알",frozen:"frozen freeze date 동결일 동결날짜",loc:"location storage 위치 보관위치",medium:"medium media 배지",freeze:"freezing 동결배지 동결조건",myco:"mycoplasma 마이코 마이코플라스마",source:"source origin vendor 출처 구입처",by:"by 동결자 담당",memo:"memo note notes 메모 비고",
+  item:"item product 품목 제품 물품 동물",vendor:"vendor supplier company 업체 공급사 제조사",catalog:"catalog cat 카탈로그 견적번호",qty:"qty quantity amount 수량",amount:"price cost amount 금액 가격",status:"status 상태",ordered:"ordered order 발주일",due:"due eta 입고예정일 예정일",received:"received 입고일",requester:"requester 요청자",account:"account grant 과제 계정 연구비",
+  time:"time 시간",end:"end until 끝나는날 종료일",
+  cell:"cell cellline 세포주 계대",seed:"seeding density plate 시딩 seeding밀도",treat:"treatment treat 처리",assay:"assay readout 측정 분석법",target:"target product compound 목표화합물 산물",scale:"scale equivalent 스케일 당량",cond:"conditions condition 반응조건 조건",yield:"yield purity 수율 순도",char:"characterization nmr ms hplc 확인 분석",
+  strain:"strain 계통",n:"n animals group 마릿수 군구성",model:"model 모델 유도",dose:"dose dosing administration 투여 용량",iacuc:"iacuc irb 승인번호",method:"method instrument 분석법 장비",sample:"sample 시료"};
+const mdNorm=s=>String(s||"").toLowerCase().replace(/\*\*|__|`/g,"").replace(/[\s·.,:;_\-\/()\[\]{}'"’]+/g,"");
+const mdFields=(tab,draft)=>tab==="plan"?PLAN_F():tab==="notes"?nfields(draft||{}):REC[tab].fields;
+function mdMatch(fields,label){const c=mdNorm(label);if(!c)return null;
+  for(const f of fields){const full=mdNorm(f[1]),base=mdNorm(String(f[1]).split("(")[0]);if(c===full||c===base)return f;}
+  for(const f of fields){const al=(MD_ALIAS[f[0]]||"").split(" ").map(mdNorm).filter(Boolean);if(al.includes(c))return f;}
+  for(const f of fields){const base=mdNorm(String(f[1]).split("(")[0]);if(base.length>=2&&c.length>=2&&(base.startsWith(c)||c.startsWith(base)))return f;}
+  return null;}
+const mdDate=v=>{const m=String(v).match(/(\d{4})[.\-\/년\s]+(\d{1,2})[.\-\/월\s]+(\d{1,2})/);return m?`${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`:"";};
+function mdVal(f,v){v=String(v==null?"":v).trim();if(!v)return null;const t=f[2];
+  if(Array.isArray(t)){const c=mdNorm(v),hit=t.find(o=>mdNorm(o)===c)||t.find(o=>c.includes(mdNorm(o))||mdNorm(o).includes(c));
+    if(hit)return hit;if(f[0]==="kind"){if(/synth|합성|chem/i.test(v))return "합성";if(/cell|세포|in ?vitro/i.test(v))return "세포";if(/animal|mouse|rat|동물|in ?vivo|마우스/i.test(v))return "동물";if(t.includes("분석·기타"))return "분석·기타";}return null;}
+  if(t==="date")return mdDate(v)||null;if(t==="time"){const m=v.match(/(\d{1,2}):(\d{2})/);return m?m[1].padStart(2,"0")+":"+m[2]:null;}if(t==="number"){const m=v.match(/\d+/);return m?m[0]:null;}
+  return v;}
+const MD_FALL={notes:"next",cells:"memo",orders:"memo",plan:"memo"};
+const MD_MAIN={notes:"title",cells:"line",orders:"item",plan:"title"};
+/* returns {data, n}: data holds only the fields the file spoke to */
+function mdParse(tab,text,draft){const out={},extra=[];let fields=mdFields(tab,draft);const put=(f,v,append)=>{const x=mdVal(f,v);if(x==null)return false;out[f[0]]=append&&out[f[0]]?out[f[0]]+"\n\n"+x:x;if(f[0]==="kind"&&tab==="notes")fields=mdFields(tab,{...draft,...out});return true;};
+  let src=String(text||"").replace(/\r/g,"").replace(/^﻿/,"");
+  const fm=src.match(/^---\n([\s\S]*?)\n---\n?/);if(fm){src=src.slice(fm[0].length);fm[1].split("\n").forEach(l=>{const m=l.match(/^\s*([^:#]{1,40}):\s*(.+)$/);if(m){const f=mdMatch(fields,m[1]);if(f)put(f,m[2].replace(/^["']|["']$/g,""));}});}
+  const L=src.split("\n");let sec=null,buf=[],tp=[];
+  const flush=()=>{const body=buf.join("\n").replace(/^\n+|\n+$/g,"");buf=[];if(!body){sec=null;return;}
+    if(sec&&sec.f){if(!put(sec.f,body,true))extra.push(`## ${sec.h}\n\n${body}`);}else if(sec)extra.push(`## ${sec.h}\n\n${body}`);else extra.push(body);sec=null;};
+  for(let i=0;i<L.length;i++){const l=L[i];
+    const h1=l.match(/^#\s+(.+)$/);if(h1&&!out[MD_MAIN[tab]]&&!sec){const f=fields.find(x=>x[0]===MD_MAIN[tab]);if(f)put(f,h1[1].replace(/\*\*/g,""));continue;}
+    const h=l.match(/^#{1,4}\s+(.+?)\s*#*$/);if(h){if(tp.length){buf.push(...tp);tp=[];}flush();sec={h:h[1],f:mdMatch(fields,h[1])};continue;}
+    const kv=l.match(/^\s*(?:[-*+]\s+)?(?:\*\*([^*]{1,40})\*\*|([^:：|#\n]{1,30}?))\s*[:：]\s*(.+)$/);
+    if(kv&&!(sec&&sec.f&&(sec.f[2]==="big"||sec.f[2]==="area"))){const lab=kv[1]||kv[2],f=mdMatch(fields,lab);if(f&&put(f,kv[3].replace(/\*\*/g,"")))continue;}
+    const tr=l.match(/^\s*\|([^|]+)\|([^|]+)\|\s*$/);if(tr&&!sec){const f=mdMatch(fields,tr[1]);if(f&&!/^[\s:-]+$/.test(tr[2])&&put(f,tr[2].trim())){tp=[];continue;}tp.push(l);continue;}
+    if(tp.length){buf.push(...tp);tp=[];}buf.push(l);}
+  if(tp.length)buf.push(...tp);
+  flush();
+  const rest=extra.join("\n\n").trim();if(rest){const f=fields.find(x=>x[0]===MD_FALL[tab]);if(f)out[f[0]]=out[f[0]]?out[f[0]]+"\n\n"+rest:rest;}
+  return {data:out,n:Object.keys(out).filter(k=>k!==MD_FALL[tab]||!rest).length};}
+async function mdRead(tab,text,draft){let r=mdParse(tab,text,draft);
+  if(r.n<2&&HUB.ai&&HUB.ai.kind!=="manual"&&String(text).trim().length>20){try{const fields=mdFields(tab,draft);
+      const j=await HUB.ai.json(`아래 문서를 실험 기록 양식의 칸에 나눠 넣으세요. 문서에 있는 내용만 쓰고 지어내지 마세요. 없는 칸은 빼세요. 날짜는 YYYY-MM-DD.
+칸 (키: 이름${tab==="notes"?", 분류(kind)가 정해지면 그 분류의 칸을 쓰세요":""}):
+${(tab==="notes"?REC.notes.fields:fields).map(f=>`${f[0]}: ${f[1]}${Array.isArray(f[2])?" (다음 중 하나: "+f[2].join(", ")+")":""}`).join("\n")}
+형식: {"키":"값", ...}
+
+문서:
+${String(text).slice(0,12000)}`,{modelTier:"fast"});
+      const all=tab==="notes"?REC.notes.fields:fields,out={};Object.keys(j||{}).forEach(k=>{const f=all.find(x=>x[0]===k);if(f){const v=mdVal(f,j[k]);if(v!=null)out[k]=v;}});
+      if(Object.keys(out).length>r.n)r={data:out,n:Object.keys(out).length,ai:true};}catch(e){}}
+  return r;}
+const isTextF=f=>isMdF(f)||/\.(markdown)$/i.test(f.name||"");
+/* new records straight from files: one file → the add form filled in for a check; several → one saved record each */
+async function mdNew(tab,files){files=[...files].filter(isTextF);if(!files.length){HUB.toast("마크다운(.md)이나 텍스트(.txt) 파일을 골라 주세요");return;}
+  if(files.length===1){const f=files[0],t=await f.text();
+    if(tab==="plan"){PS.adding=true;PS.edit="";PS.draft={kind:"세포",date:PS.day,project:M.proj||""};const r=await mdRead("plan",t,PS.draft);Object.assign(PS.draft,r.data);PS.pend=[f];if(PS.draft.date){PS.day=PS.draft.date;PS.ym=PS.day.slice(0,7);}draw();HUB.toast(`'${f.name}'에서 ${r.n}칸을 채웠어요${r.ai?" (AI가 나눴어요)":""}. 확인하고 저장하세요. 원본 파일도 함께 붙어요.`,6000);return;}
+    const cf=REC[tab];RS.adding=true;RS.draft={...cf.defaults(),project:M.proj||""};const r=await mdRead(tab,t,RS.draft);Object.assign(RS.draft,r.data);RS.pend=[f];draw();
+    const el=document.querySelector("#rNew");if(el)el.scrollIntoView({block:"start",behavior:"smooth"});
+    HUB.toast(`'${f.name}'에서 ${r.n}칸을 채웠어요${r.ai?" (AI가 나눴어요)":""}. 확인하고 저장하세요. 원본 파일도 함께 붙어요.`,6000);return;}
+  let made=0;for(const f of files){try{const t=await f.text();
+      if(tab==="plan"){const d={kind:"세포",date:PS.day,project:M.proj||""};Object.assign(d,(await mdRead("plan",t,d)).data);if(!d.title)d.title=f.name.replace(/\.\w+$/,"");const id=uid();
+        await pcol().set(id,{title:String(d.title).trim(),kind:d.kind||"분석·기타",date:d.date||PS.day,end:d.end||"",time:d.time||"",project:(d.project||"").trim(),memo:(d.memo||"").trim(),done:false,noteId:"",photos:[],files:[],addedAt:Date.now()});await attFiles("plans",id,[f],true);made++;continue;}
+      const cf=REC[tab],d={...cf.defaults(),project:M.proj||""};Object.assign(d,(await mdRead(tab,t,d)).data);const main=MD_MAIN[tab];if(!String(d[main]||"").trim())d[main]=f.name.replace(/\.\w+$/,"");
+      const doc={addedAt:Date.now()};cf.fields.forEach(x=>doc[x[0]]=String(d[x[0]]==null?"":d[x[0]]).trim());const id=uid();await HUB.col(tab).set(id,doc);await attFiles(tab,id,[f],true);made++;}catch(e){}}
+  setTimeout(draw,80);HUB.toast(`파일 ${files.length}개로 기록 ${made}건을 만들었어요. 각 기록에 원본 파일도 붙였어요.`,6000);}
+/* an add form already open: fill it from the file */
+/* fill only what is still empty or a default, so what the user already typed stays */
+const mdKeep=(draft,data,def)=>{const o={};Object.keys(data).forEach(k=>{const v=String(draft[k]==null?"":draft[k]).trim();if(!v||v===String(def[k]==null?"":def[k]))o[k]=data[k];});return o;};
+async function mdFillDraft(key,f){const t=await f.text();if(key==="plan"){const r=await mdRead("plan",t,PS.draft||{});PS.draft=Object.assign(PS.draft||{},mdKeep(PS.draft||{},r.data,{kind:"세포",date:PS.day,project:M.proj||""}));(PS.pend||(PS.pend=[])).push(f);draw();HUB.toast(`'${f.name}'에서 ${r.n}칸을 채웠어요${r.ai?" (AI가 나눴어요)":""}`,4500);return;}
+  const r=await mdRead(M.tab,t,RS.draft||{});RS.draft=Object.assign(RS.draft||{},mdKeep(RS.draft||{},r.data,{...REC[M.tab].defaults(),project:M.proj||""}));RS.pend.push(f);draw();HUB.toast(`'${f.name}'에서 ${r.n}칸을 채웠어요${r.ai?" (AI가 나눴어요)":""}`,4500);}
+/* a saved record: fill from one of its attached text files (only=empty → leave filled fields alone) */
+async function mdFillRec(colName,id,text,onlyEmpty){const r0=HUB.col(colName).list.find(x=>x.id===id);if(!r0)return;const tab=colName==="plans"?"plan":colName;const r=await mdRead(tab,text,r0);
+  const up={};Object.keys(r.data).forEach(k=>{if(!onlyEmpty||!String(r0[k]||"").trim())up[k]=r.data[k];});
+  if(Object.keys(up).length){await HUB.col(colName).update(id,up);setTimeout(draw,60);}
+  HUB.toast(Object.keys(up).length?`${onlyEmpty?"빈 칸 ":""}${Object.keys(up).length}칸을 파일 내용으로 채웠어요${r.ai?" (AI가 나눴어요)":""}`:onlyEmpty&&r.n?"파일 내용과 맞는 칸이 이미 다 채워져 있어요. 덮어쓰려면 '이 내용으로 칸 채우기'를 누르세요":"파일에서 양식 칸과 맞는 내용을 찾지 못했어요",5000);}
+document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.files||!t.files.length||!t.dataset)return;
+  if(t.dataset.mdnew){const fs=[...t.files];t.value="";mdNew(t.dataset.mdnew==="plan"?"plan":M.tab,fs);}
+  else if(t.dataset.mdfill){const fs=[...t.files].filter(isTextF);t.value="";for(const f of fs)await mdFillDraft(t.dataset.mdfill,f);}});
 const RS={q:"",chip:"*",open:"",adding:false,busy:"",nsel:new Set(),pend:[]};
 const rf=r=>M.tab==="notes"?nfields(r):REC[M.tab].fields;
 const rcol=()=>HUB.col(M.tab);
@@ -6887,7 +7008,7 @@ const rfield=(f,r,attr)=>{const [k,l,t]=f,v=r[k]==null?"":r[k];
 function recHtml(){const cf=REC[M.tab],all=rcol().list.filter(inProj),list=rview(),NT=M.tab==="notes";
   if(NT)[...RS.nsel].forEach(id=>{if(!rcol().list.some(x=>x.id===id))RS.nsel.delete(id);});const ns=NT?RS.nsel.size:0;
   if(RS.chip!=="*"&&!cf.chips(all).some(c=>c[0]===RS.chip))RS.chip="*";
-  return `<section class="card pad"><div class="mbar"><input id="rQ" class="search" type="search" placeholder="${cf.ph}" value="${esc(RS.q)}" autocomplete="off"><button class="btn primary" type="button" data-r="new">${cf.add}</button><button class="btn" type="button" data-r="exp" ${all.length?"":"disabled"}>엑셀로 내보내기</button>${NT?tplSelect():""}${NT&&all.length&&!ns?`<button class="btn" type="button" data-r="nbdocx" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요. 일부만 담으려면 노트 왼쪽 칸을 체크하세요">노트 모음 Word·한글</button><button class="btn" type="button" data-r="nbpdf" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요">노트 모음 PDF</button>`:""}</div>
+  return `<section class="card pad"><div class="mbar"><input id="rQ" class="search" type="search" placeholder="${cf.ph}" value="${esc(RS.q)}" autocomplete="off"><button class="btn primary" type="button" data-r="new">${cf.add}</button><label class="btn" title="마크다운(.md)·텍스트 파일의 내용을 읽어 칸을 채워요. 여러 개를 고르면 파일마다 기록을 하나씩 만들어요. 이 화면에 파일을 끌어 놓아도 돼요." style="cursor:pointer">마크다운 파일로 등록<input type="file" data-mdnew="rec" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><button class="btn" type="button" data-r="exp" ${all.length?"":"disabled"}>엑셀로 내보내기</button>${NT?tplSelect():""}${NT&&all.length&&!ns?`<button class="btn" type="button" data-r="nbdocx" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요. 일부만 담으려면 노트 왼쪽 칸을 체크하세요">노트 모음 Word·한글</button><button class="btn" type="button" data-r="nbpdf" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요">노트 모음 PDF</button>`:""}</div>
     ${NT?tplMan():""}
     ${NT&&all.length&&!ns?`<p class="muted" style="margin:8px 0 0;font-size:12.5px">일부만 모으려면 노트 왼쪽 칸을 체크하세요. 체크하지 않으면 지금 보이는 노트 전체를 모아요.</p>`:""}
     ${all.length?`<p class="muted" style="margin:10px 0 0;font-size:13.5px">${cf.sum(all)}</p><div class="chips" style="margin:10px 0">${[["*","전체",all.length],...cf.chips(all)].map(([v,n,c])=>`<button class="chip" type="button" data-rchip="${esc(v)}" aria-pressed="${RS.chip===v}">${esc(n)}<span class="n">${c}</span></button>`).join("")}</div>`:""}
@@ -6911,7 +7032,7 @@ async function recClick(e,V){
     if(k==="new"){RS.pend=[];RS.adding=true;RS.draft={...cf.defaults(),project:M.proj||""};draw();const i=V.querySelector("#rNew input");if(i)i.focus();}
     else if(k==="cancelnew"){RS.adding=false;RS.pend=[];draw();}
     else if(k==="savenew"){const d=RS.draft,main=cf.main||cf.fields[M.tab==="cells"?0:1][0];if(!String(d[main]||"").trim()){HUB.toast((cf.mainName||(M.tab==="cells"?"세포주 이름":"품목"))+"을 적어 주세요");return true;}
-      const doc={addedAt:Date.now()};cf.fields.forEach(f=>doc[f[0]]=String(d[f[0]]==null?"":d[f[0]]).trim());const nid=uid(),tab=M.tab,pend=RS.pend.splice(0);await rcol().set(nid,doc);RS.adding=false;setTimeout(draw,60);if(pend.length){HUB.toast("저장했어요. 붙인 파일을 올리는 중…",3000);attFiles(tab,nid,pend);}else HUB.toast("저장했어요");}
+      const doc={addedAt:Date.now()};cf.fields.forEach(f=>doc[f[0]]=String(d[f[0]]==null?"":d[f[0]]).trim());const nid=uid(),tab=M.tab,pend=RS.pend.splice(0);await rcol().set(nid,doc);RS.adding=false;setTimeout(draw,60);if(pend.length){HUB.toast("저장했어요. 붙인 파일을 올리는 중…",3000);attFiles(tab,nid,pend,true);}else HUB.toast("저장했어요");}
     else if(k==="exp"){try{HUB.save(cf.file,HUB.xlsx([{name:cf.label,rows:[cf.fields.map(f=>f[1]),...rview().map(r=>cf.fields.map(f=>r[f[0]]==null?"":r[f[0]]))]}]));}catch(err){HUB.toast(err.message||"엑셀로 내보내지 못했어요");}}
     else if(k==="del"){if(arm(b,"한 번 더 누르면 삭제","삭제")){await rcol().remove(b.dataset.id);RS.open="";setTimeout(draw,60);}}
     else if(k==="delphoto"){if(arm(b,"한 번 더","빼기")){const r=rcol().list.find(x=>x.id===b.dataset.id);if(r){await rcol().update(r.id,{photos:(r.photos||[]).filter(p=>p!==b.dataset.p)});try{await HUB.assets.delete(b.dataset.p);}catch(err){}setTimeout(draw,60);}}}
@@ -6959,7 +7080,7 @@ function planHtml(){const [Y,Mo]=PS.ym.split("-").map(Number),first=new Date(Y,M
     :`<div class="prow ${p.done?"done":""}"><label class="ck"><input type="checkbox" data-pdone="${p.id}" ${p.done?"checked":""} aria-label="끝냄"><span></span></label><div class="pt"><b>${pjDot(p.project)}${p.time?esc(p.time)+" · ":""}${esc(p.title||"(제목 없음)")}</b><span>${esc([p.end&&p.end>p.date?p.date.slice(5)+" ~ "+p.end.slice(5):"",p.project,p.memo].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(p.kind)}">${esc(p.kind||"분석·기타")}</span>${attN(p)?`<button type="button" class="tag attpill" data-p="edit" data-id="${p.id}" title="붙인 파일 보기">첨부 ${attN(p)}</button>`:""}<span class="row" style="gap:6px;flex:none">${note?`<button class="btn sm" type="button" data-p="note" data-id="${note.id}">실험노트 보기</button>`:`<button class="btn sm" type="button" data-p="mknote" data-id="${p.id}">실험노트 쓰기</button>`}<button class="btn sm ghost" type="button" data-p="edit" data-id="${p.id}">고치기</button></span></div>`;};
   return `<section class="card pad" id="planBox"><div class="mbar"><div class="row" style="gap:6px;align-items:center"><button class="btn sm" type="button" data-p="prev" aria-label="이전 달">‹</button><b class="pym">${Y}년 ${Mo}월</b><button class="btn sm" type="button" data-p="next" aria-label="다음 달">›</button><button class="btn sm ghost" type="button" data-p="today">오늘</button><button class="btn sm ghost" type="button" data-p="ics" title="구글 캘린더 등에서 가져오기로 넣을 수 있어요">캘린더 파일(.ics)로 내보내기</button></div><span class="muted" style="font-size:13px">날짜를 누르면 그날의 계획과 실험노트가 아래에 나와요</span></div>
     <div class="pcal"><div class="pwd">${WD.map((w,i)=>`<span class="${i===0?"psun":i===6?"psat":""}">${w}</span>`).join("")}</div><div class="pgrid">${cal}</div></div>
-    <div class="pday"><div class="mbar"><h3 style="margin:0">${dlabel(PS.day)}${PS.day===td?" · 오늘":""}</h3><span class="row" style="gap:6px"><button class="btn primary" type="button" data-p="new">일정 추가</button><button class="btn" type="button" data-p="newnote">이 날 실험노트 쓰기</button></span></div>
+    <div class="pday"><div class="mbar"><h3 style="margin:0">${dlabel(PS.day)}${PS.day===td?" · 오늘":""}</h3><span class="row" style="gap:6px"><button class="btn primary" type="button" data-p="new">일정 추가</button><label class="btn" title="마크다운(.md)·텍스트 파일로 일정을 만들어요. 여러 개면 파일마다 하나씩" style="cursor:pointer">마크다운 파일로 일정<input type="file" data-mdnew="plan" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><button class="btn" type="button" data-p="newnote">이 날 실험노트 쓰기</button></span></div>
       ${PS.adding?`<div class="mrev" id="pNew"><b>일정 추가</b>${planForm(PS.draft,"data-pln")}${pendHtml("plan",PS.pend||[])}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-p="save">저장</button><button class="btn ghost" type="button" data-p="cancel">취소</button></div></div>`:""}
       <h4 class="psec">계획 <span class="mono">${x.plans.length}</span></h4>${x.plans.length?x.plans.map(prow).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 잡아 둔 계획이 없어요.</p>`}
       <h4 class="psec">실험노트 <span class="mono">${x.notes.length}</span></h4>${x.notes.length?x.notes.map(n=>`<div class="prow"><div class="pt"><b>${pjDot(n.project)}${esc(n.title||"(제목 없음)")}</b><span>${esc([n.project,REC.notes.sub(n).split(" · ").slice(n.project?2:1).join(" · "),HUB.embedsPlain(n.result||"").replace(/\s+/g," ").slice(0,90)].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(n.kind)}">${esc(n.kind||"분석·기타")}</span>${attTag(n)}<button class="btn sm" type="button" data-p="note" data-id="${n.id}">열기</button></div>`).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 쓴 실험노트가 없어요.</p>`}
