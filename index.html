@@ -1008,6 +1008,11 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .mbar.nbar .rbtns{display:flex;flex-wrap:nowrap;gap:8px;align-items:center;width:100%;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
 .mbar.nbar .rbtns>.btn,.mbar.nbar .rbtns>label.btn,.mbar.nbar .rbtns>select{flex:0 0 auto;white-space:nowrap;width:auto}
 .mbar.nbar .rbtns>select{max-width:190px;align-self:stretch;height:auto}
+.mtabrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.mtabrow .mtabs{flex:0 1 auto}
+.toolgo{margin-left:auto;flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);text-decoration:none;transition:border-color .15s,background .15s}
+.toolgo:hover,.studylink.toollink:hover{border-color:var(--accent);background:var(--accent-soft)}
+.toolgo>span:first-child{font-size:20px;line-height:1}.toolgo b{display:block;font-size:14px;line-height:1.3;white-space:nowrap}.toolgo small{display:block;color:var(--accent);font-size:12px;margin-top:2px;font-weight:600}
+@media (max-width:760px){.toolgo{margin-left:0;max-width:none;width:100%}}
 </style>
 </head>
 <body>
@@ -1219,7 +1224,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
         <input id="setKw" autocomplete="off" placeholder="비우면 연구 주제에서 자동으로 뽑아요"></label>
       <div class="row" style="margin:-6px 0 14px"><button class="btn sm" type="button" id="setKwAuto">연구 주제에서 자동으로 뽑기</button></div>
       <label class="field" for="setLinks">바로가기 (맨 위에 버튼으로 뜨고 새 탭에서 열려요 · 한 줄에 하나씩 "이름 | 주소")
-        <textarea id="setLinks" style="min-height:64px" placeholder="실험 도구모음 | https://claude.ai/artifact/…"></textarea></label>
+        <textarea id="setLinks" style="min-height:64px" placeholder="실험도구모음 | https://claude.ai/artifact/…"></textarea></label>
       <label class="field" for="cfgTheme">화면 테마
         <select id="cfgTheme"><option value="">기기 설정 따라가기</option><option value="light">라이트</option><option value="dark">다크</option></select></label>
       <label class="field" for="setGroup">정리본 ZIP 폴더 기준
@@ -1824,6 +1829,10 @@ H.go=function(v,silent){if(!VIEWS.includes(v))v="home";H.view=v;
   if(!silent){try{if(location.hash.slice(1)!==v)location.hash=v;}catch(e){}}ls.set("view",v);
   if(v==="home")H.renderHome();window.scrollTo(0,0);H.navFit(true);
   try{document.dispatchEvent(new CustomEvent("hub:view",{detail:v}));}catch(e){}};
+/* 실험도구모음: one address used by the home banner and the lab tab banner (fill TOOLKIT_URL once the site is up) */
+const TOOLKIT_URL="https://tuna616.github.io/research-hub/lab-tools/";
+H.toolkitUrl=()=>{if(TOOLKIT_URL)return TOOLKIT_URL;const a=[...document.querySelectorAll("#quick a.qlink")].find(x=>/도구/.test(x.textContent));return a?a.href:"";};
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-toolkit]");if(!a)return;e.preventDefault();const u=H.toolkitUrl();if(u)window.open(u,"_blank","noopener");else H.toast("실험도구모음 사이트 주소가 아직 연결되지 않았어요. 곧 추가돼요.",5000);});
 H.navFit=function(center){const nav=$("#nav"),q=$("#quick");if(!nav)return;const narrow=matchMedia("(max-width:760px)").matches;
   if(q){if(narrow&&q.parentNode!==nav)nav.appendChild(q);else if(!narrow&&q.parentNode===nav)nav.parentNode.insertBefore(q,$("#settingsBtn"));}
   if(narrow&&center){const cur=nav.querySelector('[aria-current="true"]');if(cur){const l=cur.offsetLeft-(nav.clientWidth-cur.offsetWidth)/2;try{nav.scrollTo({left:Math.max(0,l),behavior:"smooth"});}catch(e){nav.scrollLeft=Math.max(0,l);}}}
@@ -1850,7 +1859,8 @@ H.renderHome=function(){
     ["저장",H.storage!=="memory",H.storage==="cloud"?"claude.ai 계정에 저장돼 어느 기기에서 열어도 같아요. 이 사이트를 공유받은 사람과 자료가 섞이지 않고, 각자 자기 것만 보여요.":H.storage==="browser"?"이 브라우저에만 저장돼요. 설정에서 백업 파일을 내보내 두세요.":"이 창에서는 저장이 안 돼요. 닫으면 사라져요."]];
   el.innerHTML=`<div class="page">
     <section class="hero"><div><h2>찾고, 읽고, 분석하고, 쓰고, 그리기</h2><p>논문 검색부터 정리, 리서치, 원고 작성, 그림까지 한 곳에 모았어요. 기준 연구 주제: <b>${esc((H.lib&&H.lib.context)||"")}</b> <button class="btn sm ghost" type="button" id="homeSet">바꾸기</button></p></div>
-      <div class="herobox"><a class="studylink" href="https://tuna616.github.io/study-room/" target="_blank" rel="noopener"><span class="sl-ic" aria-hidden="true">📚</span><span class="sl-tx"><b>전공 공부나 수업 자료를 만들고 싶다면?</b><small>전공 학습실에서 공부 노트·요약·시험 대비 문제를 만들어요</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
+      <div class="herobox"><a class="studylink toollink" href="#" data-toolkit="1"><span class="sl-ic" aria-hidden="true">🧪</span><span class="sl-tx"><b>실험하는 도중에 실험 TOOL이 어디있는지 헷갈린다면?</b><small>실험도구모음 — 농도·희석, BCA, SDS-PAGE, DAR, 투여량 계산</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
+<a class="studylink" href="https://tuna616.github.io/study-room/" target="_blank" rel="noopener"><span class="sl-ic" aria-hidden="true">📚</span><span class="sl-tx"><b>전공 공부나 수업 자료를 만들고 싶다면?</b><small>전공 학습실에서 공부 노트·요약·시험 대비 문제를 만들어요</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
       <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">문헌 검색 GO</button></form></div></section>
     ${H.lib&&H.lib.recentHtml?H.lib.recentHtml():""}
     <div class="steps">
@@ -2080,7 +2090,7 @@ const siteName=()=>S.settings.siteName||(KNOWN?"나의 연구 허브":"나의 �
 const OWNER_LINKS="";
 const linksText=()=>S.settings.links!=null?S.settings.links:(KNOWN?OWNER_LINKS:"");
 const quickLinks=()=>linksText().split(/\n/).map(l=>{const m=l.match(/^\s*(?:(.*?)\s*\|\s*)?(https?:\/\/\S+)\s*$/);return m?{name:(m[1]||"").trim()||m[2].replace(/^https?:\/\//,"").slice(0,24),url:m[2]}:null;}).filter(Boolean).slice(0,8);
-function applyName(){const n=siteName();document.title=n;const h=document.querySelector(".brand h1");if(h)h.textContent=n;const q=document.getElementById("quick");if(q)q.innerHTML=quickLinks().map(l=>`<a class="qlink" href="${esc(l.url)}" target="_blank" rel="noopener" title="새 탭에서 열기">${esc(l.name)} ↗</a>`).join("");}
+function applyName(){const n=siteName();document.title=n;const h=document.querySelector(".brand h1");if(h)h.textContent=n;const q=document.getElementById("quick");if(q)q.innerHTML=quickLinks().map(l=>`<a class="qlink" href="${esc(l.url)}" target="_blank" rel="noopener" title="새 탭에서 열기">${esc(l.name.replace(/실험 도구모음/g,"실험도구모음"))} ↗</a>`).join("");}
 
 if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }
 
@@ -8236,7 +8246,7 @@ document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.dataset|
   const line=m.name+([m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).length?" ("+[m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).join(", ")+")":"");
   const cur=String(r.mats||"");if(cur.split("\n").includes(line)){HUB.toast("이미 넣은 물품이에요");return;}await HUB.col("notes").update(r.id,{mats:(cur.trim()?cur.trim()+"\n":"")+line});setTimeout(draw,80);});
 const TABS=[["proj","프로젝트"],["grant","과제 계획·평가"],["materials","재료 및 방법"],["cells","세포 관리 기록부"],["animals","동물 관리 기록부"],["notes","실험노트 (합성, 세포, 동물 등)"],["plan","실험 일정"]];
-const tabBar=()=>`<div class="seg mtabs">${TABS.map(([k,n])=>`<button type="button" data-mtab="${k}" aria-pressed="${M.tab===k||(k==="materials"&&M.tab==="orders")}">${n} <span class="mono">${k==="materials"?((HUB.col("materials").list.filter(inProj).length+HUB.col("orders").list.filter(inProj).length)||""):k==="proj"?(prcol().list.length||""):k==="grant"?(gcol().list.filter(inProj).length||""):k==="plan"?(pcol().list.filter(p=>inProj(p)&&!p.done).length||""):(HUB.col(k).list.filter(inProj).length||"")}</span></button>`).join("")}</div>${M.tab==="proj"?"":pjBar()}${M.tab==="materials"||M.tab==="orders"?subSeg():""}`;
+const tabBar=()=>`<div class="mtabrow"><div class="seg mtabs">${TABS.map(([k,n])=>`<button type="button" data-mtab="${k}" aria-pressed="${M.tab===k||(k==="materials"&&M.tab==="orders")}">${n} <span class="mono">${k==="materials"?((HUB.col("materials").list.filter(inProj).length+HUB.col("orders").list.filter(inProj).length)||""):k==="proj"?(prcol().list.length||""):k==="grant"?(gcol().list.filter(inProj).length||""):k==="plan"?(pcol().list.filter(p=>inProj(p)&&!p.done).length||""):(HUB.col(k).list.filter(inProj).length||"")}</span></button>`).join("")}</div><a class="toolgo" href="#" data-toolkit="1" title="실험도구모음 사이트를 새 탭에서 열어요"><span aria-hidden="true">🧪</span><span><b>실험도구모음 바로가기 ↗</b></span></a></div>${M.tab==="proj"?"":pjBar()}${M.tab==="materials"||M.tab==="orders"?subSeg():""}`;
 const subSeg=()=>`<div class="seg msub" role="group" aria-label="재료 및 방법 안의 목록"><button type="button" data-mtab="materials" aria-pressed="${M.tab==="materials"}">물품 목록 <span class="mono">${HUB.col("materials").list.filter(inProj).length||""}</span></button><button type="button" data-mtab="orders" aria-pressed="${M.tab==="orders"}">발주 기록 <span class="mono">${HUB.col("orders").list.filter(inProj).length||""}</span></button></div>`;
 function draw(){const V=$("#v-mat");if(!V||HUB.view!=="mat")return;
   if(M.tab==="grant"){const y=window.scrollY;V.innerHTML=`<div class="page">${tabBar()}${grantHtml()}</div>`;window.scrollTo({top:y});return;}
