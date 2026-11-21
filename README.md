@@ -73,6 +73,9 @@
   - 분야를 고르면 **사이트 안에서 바로 조회**되는 DB와 **다른 사이트 바로가기**가 그 분야로 좁혀집니다.
   - 바로가기 중 🔍 표시가 붙은 곳은 조회칸에 넣은 말로 그 사이트의 검색 결과가 바로 열립니다. (예: DrugBank, GTEx, AlphaFold DB, NASA ADS, SIMBAD, RISS, DBpia, Google Patents, Zenodo)
   - '데이터베이스 찾기' 칸으로 DB 이름을 찾습니다.
+- **Curieus 연동:** [Curieus](https://curieus.net/)는 구조 예측, 도킹, 분자동역학(MD), 단백질 디자인, scRNA-seq 분석을 코드 없이 돌리는 분석 플랫폼입니다.
+  - **결과에서 넘기기:** UniProt 결과의 단백질 서열, PDB 결과의 PDB ID, PubChem 결과의 SMILES 옆에 Curieus 링크가 붙습니다. 누르면 값이 클립보드에 복사되고 Curieus 분석 화면이 열립니다.
+  - **Curieus 연결 (시험 기능):** 설정에 Curieus API 키(마이페이지에서 발급)를 넣으면 DB 조회 화면에서 Curieus 도구 목록을 불러와 실행할 수 있습니다. 작업 제출처럼 크레딧이 쓰일 수 있는 도구는 한 번 더 눌러야 실행됩니다. claude.ai 안에서는 외부 연결이 막혀 있으니 내려받은 HTML이나 GitHub 사이트에서 쓰세요.
 - **실패해도 계속 찾을 수 있어요:** 조회가 실패하면 같은 내용을 찾을 수 있는 사이트 바로가기를 보여 줍니다. **연결 점검** 버튼으로 이 브라우저에서 어느 DB가 연결되는지 한 번에 확인합니다.
 
 | 묶음 | DB |
@@ -248,6 +251,7 @@ AI 기능은 설정에 넣은 **본인 API 키**로 실행됩니다. 키는 본�
 | OpenAI API 키 | 이미지 생성(OpenAI) | platform.openai.com |
 | Unpaywall 이메일 (키 아님) | 원문 오픈액세스 찾기. 비우면 OpenAlex 정보로 찾음 | unpaywall.org/products/api |
 | GtoPdb API 키 | 표적–리간드 약리 (2026년 8월 말부터 키 필요) | guidetopharmacology.org |
+| Curieus API 키 | DB 조회의 Curieus 연결 (시험 기능) | curieus.net 마이페이지 |
 | OpenAlex, Semantic Scholar 키 | 검색이 막히거나 느릴 때만 (선택) | 각 서비스 |
 
 - **Google 모델 이름은 적지 않아도 됩니다.** 비워 두면 쓸 수 있는 모델을 자동으로 고릅니다. 적어 둔 모델이 종료됐거나 이름이 틀리면 다른 모델로 이어서 쓰고 알려 줍니다.
