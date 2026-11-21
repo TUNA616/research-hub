@@ -1,20 +1,20 @@
-# 연구 허브 + 수업 학습실
+# 연구 허브 + 전공 학습실
 
 대학원 연구와 전공 수업을 한 주소에서 쓰는 정적 웹앱 두 개입니다. 서버도 빌드도 없이 HTML 파일만 올리면 동작하고, 두 페이지가 같은 브라우저 저장소와 같은 설정을 공유합니다.
 
-| 파일 | 하는 일 |
-|---|---|
-| `index.html` | **연구 허브** — 문헌 검색(OpenAlex·Europe PMC·PubMed·Crossref·Semantic Scholar), 라이브러리·요약·관계도, 리서치 도구, 실험실(프로젝트·재료·방법·일정), 원고, 일러스트레이터, DB 조회, 보고서 |
-| `study.html` | **수업 학습실** — 강의자료 → 공부 노트 → 암기카드 → 시험 문제 → 오답노트 |
+| 주소 | 파일 | 하는 일 |
+|---|---|---|
+| `/` | `index.html` | **연구 허브** — 문헌 검색(OpenAlex·Europe PMC·PubMed·Crossref·Semantic Scholar), 라이브러리·요약·관계도, 리서치 도구, 실험실(프로젝트·재료·방법·일정), 원고, 일러스트레이터, DB 조회, 보고서 |
+| `/study/` | `study/index.html` | **전공 학습실** — 강의자료 → 공부 노트 → 암기카드 → 시험 문제 → 오답노트 |
 
-두 페이지는 헤더에서 서로 오갑니다. 허브의 `수업 학습실 ↗`, 학습실의 `연구 허브 ↗`.
+두 페이지는 헤더에서 서로 오갑니다. 허브의 `전공 학습실 ↗` → `study/`, 학습실의 `연구 허브 ↗` → `../`.
 
 ## GitHub Pages로 올리기
 
 ```bash
 git init
 git add .
-git commit -m "연구 허브 + 수업 학습실"
+git commit -m "연구 허브 + 전공 학습실"
 git branch -M main
 git remote add origin https://github.com/<아이디>/<저장소>.git
 git push -u origin main
@@ -23,11 +23,11 @@ git push -u origin main
 저장소 **Settings → Pages → Source**를 `Deploy from a branch`, 브랜치를 `main` / `/ (root)`로 두면 1~2분 뒤 열립니다.
 
 - 연구 허브 → `https://<아이디>.github.io/<저장소>/`
-- 수업 학습실 → `https://<아이디>.github.io/<저장소>/study.html`
+- 전공 학습실 → `https://<아이디>.github.io/<저장소>/study/`
 
-두 파일은 **반드시 같은 폴더**에 두세요. 서로를 상대 경로(`study.html`, `index.html`)로 찾고, 같은 출처(origin)일 때만 저장소와 설정을 공유합니다.
+폴더가 달라도 괜찮습니다. 브라우저 저장소(IndexedDB·localStorage)는 폴더가 아니라 **사이트(origin) 단위**로 공유되므로, 같은 저장소 안에 있으면 `/`와 `/study/`가 라이브러리와 설정을 그대로 함께 씁니다. 다만 **다른 저장소나 다른 도메인으로 쪼개면** 공유가 끊기니 한 저장소에 함께 두세요.
 
-## 수업 학습실이 하는 일
+## 전공 학습실이 하는 일
 
 1. **자료함** — PDF·PPTX·DOCX·텍스트·이미지를 끌어다 놓으면 쪽·슬라이드 번호(`[p.N]`)까지 붙여 글자를 뽑습니다. 글자가 없는 스캔본은 이미지 인식으로 읽습니다. 과목·주차로 묶어 둘 수 있습니다.
 2. **공부 노트** — 한눈에 보기 → 핵심 개념(정의·기전·중요성·예시) → 용어표 → 비교표 → 시험 포인트 → 헷갈리는 것 → 스스로 점검 질문. 긴 자료는 나눠 읽은 뒤 합칩니다. 자료에 없는 내용은 `💡 보충:`으로 구분합니다.
@@ -43,7 +43,7 @@ git push -u origin main
 
 읽는 순서는 이렇습니다.
 
-1. 같은 출처에 있는 허브의 브라우저 저장소(IndexedDB `research-hub` → `papers`)
+1. 같은 사이트에 있는 허브의 브라우저 저장소(IndexedDB `research-hub` → `papers`)
 2. claude.ai에서 열었을 때는 계정 저장소
 3. 둘 다 없으면 허브에서 내려받은 **백업 JSON** 가져오기
 
@@ -58,7 +58,7 @@ git push -u origin main
 3. **Google AI 키** — 대안입니다.
 4. **복사·붙여넣기** — 키가 없어도 모든 기능을 쓸 수 있습니다. 질문을 복사해 Claude에 붙여넣고, 받은 답을 되돌려 붙이면 됩니다.
 
-키는 **이 브라우저에만** 저장됩니다(`localStorage`의 `hub:cfg`). 허브와 같은 칸을 쓰므로 한쪽에 넣으면 양쪽에서 씁니다. 저장소에는 올라가지 않습니다 — 키를 HTML 안에 적어 커밋하지 마세요.
+키는 **이 브라우저에만** 저장됩니다(`localStorage`의 `hub:cfg`). 허브와 같은 칸을 쓰므로 한쪽에 넣으면 양쪽에서 씁니다(폴더가 달라도 마찬가지입니다). 저장소에는 올라가지 않습니다 — 키를 HTML 안에 적어 커밋하지 마세요.
 
 ## 자료가 보관되는 곳
 
@@ -82,13 +82,17 @@ git push -u origin main
 
 ```
 .
-├── index.html    연구 허브 (단일 파일)
-├── study.html    수업 학습실 (단일 파일)
-├── .nojekyll     GitHub Pages의 Jekyll 처리 끄기
+├── index.html          연구 허브 (단일 파일)
+├── study/
+│   └── index.html      전공 학습실 (단일 파일)
+├── .nojekyll           GitHub Pages의 Jekyll 처리 끄기
+├── .gitignore
 └── README.md
 ```
 
-두 파일 모두 의존성 없는 단일 HTML입니다. 그대로 내려받아 더블클릭해도 열립니다(`file://`에서도 동작하지만, 브라우저에 따라 저장소가 제한될 수 있어 Pages로 올려 쓰는 편이 낫습니다).
+두 페이지 모두 의존성 없는 단일 HTML입니다. 폴더 이름(`study`)을 바꾸려면 `index.html`의 `location.href="study/"` 한 곳만 같이 고치면 됩니다.
+
+그대로 내려받아 더블클릭해도 열립니다(`file://`에서도 동작하지만, 브라우저에 따라 저장소가 제한될 수 있어 Pages로 올려 쓰는 편이 낫습니다).
 
 ---
 

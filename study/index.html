@@ -981,7 +981,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 /* 문헌 검색: the four ranking buttons on one row */
 #sSort{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;flex-wrap:nowrap}
 #sSort button{min-width:0;width:100%;padding:8px 2px;font-size:13px;white-space:nowrap;text-align:center;justify-content:center;margin:0}
-/* 같은 폴더의 수업 학습실(study.html)로 가는 칸 — 화면 이동이 아니라 다른 페이지라서 선으로 구분해 둠 */
+/* 전공 학습실(study/ 폴더)로 가는 칸 — 화면 이동이 아니라 다른 페이지라서 선으로 구분해 둠 */
 #goStudy{color:var(--accent);margin-left:4px;border-left:1px solid var(--line)!important;border-radius:0 8px 8px 0;padding-left:13px}
 #goStudy:hover{background:var(--accent-soft)}
 </style>
@@ -1000,7 +1000,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
     <button type="button" data-go="illust">일러스트레이터</button>
     <button type="button" data-go="lookup">DB 조회</button>
     <button type="button" data-go="reports">보고서<span class="n" id="navRep"></span></button>
-    <button type="button" id="goStudy" title="전공 수업 자료로 공부 노트·시험 문제 만들기 (같은 폴더의 study.html)">수업 학습실 ↗</button>
+    <button type="button" id="goStudy" title="전공 수업 자료로 공부 노트·시험 문제 만들기 (study 폴더)">전공 학습실 ↗</button>
   </nav>
   <span id="quick" class="quick"></span>
   <button class="btn ghost" id="settingsBtn" type="button">설정</button>
@@ -7935,11 +7935,11 @@ document.addEventListener("DOMContentLoaded",init);
 
 </script>
 <script>
-/* 수업 학습실로 이동. 같은 폴더에 study.html이 있어야 열립니다.
+/* 전공 학습실(study/ 폴더)로 이동.
    nav의 다른 칸은 [data-go] 위임 핸들러가 화면을 바꾸므로, 이 칸만 따로 묶었습니다. */
 document.addEventListener("DOMContentLoaded",function(){
   var b=document.getElementById("goStudy");
-  if(b)b.addEventListener("click",function(){location.href="study.html";});
+  if(b)b.addEventListener("click",function(){location.href="study/";});
 });
 </script>
 </body>
