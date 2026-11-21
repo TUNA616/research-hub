@@ -1,7 +1,0 @@
-.DS_Store
-Thumbs.db
-*.log
-
-# 백업 JSON은 자료와 API 키가 들어갈 수 있어 저장소에 올리지 않습니다
-전공학습실-백업-*.json
-*-백업-*.json
