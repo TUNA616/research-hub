@@ -1013,6 +1013,8 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .toolgo:hover,.studylink.toollink:hover{border-color:var(--accent);background:var(--accent-soft)}
 .toolgo>span:first-child{font-size:20px;line-height:1}.toolgo b{display:block;font-size:14px;line-height:1.3;white-space:nowrap}.toolgo small{display:block;color:var(--accent);font-size:12px;margin-top:2px;font-weight:600}
 @media (max-width:760px){.toolgo{margin-left:0;max-width:none;width:100%}}
+.dbfield{flex-wrap:nowrap!important;overflow-x:auto;gap:4px!important;padding-bottom:3px;scrollbar-width:thin}
+.dbfield>*{flex:0 0 auto;white-space:nowrap}.dbfield .chip.sm{padding:4px 8px;font-size:12px}
 </style>
 </head>
 <body>
@@ -1155,14 +1157,14 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
   <div class="card pad">
     <h3 class="cap" style="margin-top:0">DB 고르기 — 분야별</h3>
     <form class="qform" id="dbForm"><label class="sr" for="dbQ">찾을 이름</label><input id="dbQ" type="search" autocomplete="off"><button class="btn primary" type="submit">조회</button></form>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin:0 0 10px"><label class="sr" for="dbFilter">데이터베이스 찾기</label><input id="dbFilter" class="search" type="search" placeholder="데이터베이스 찾기" style="flex:1;min-width:180px"><button class="btn sm" type="button" id="dbCheck" title="이 브라우저에서 각 DB 서버에 연결되는지 확인해요">연결 점검</button></div>
     <p class="dbhint" id="dbHint"></p>
     <div class="row" id="dbHist" style="gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
     <div id="dbField" class="row dbfield"></div>
     <p class="dbsub" id="dbSegHead">사이트 안에서 바로 조회</p><div id="dbSeg" class="dbseg"></div><div class="row" style="justify-content:flex-end"><span class="tag" id="dbFrom"></span></div>
-    <div class="row" style="gap:8px;flex-wrap:wrap;margin:12px 0 0"><label class="sr" for="dbFilter">데이터베이스 찾기</label><input id="dbFilter" class="search" type="search" placeholder="데이터베이스 찾기" style="flex:1;min-width:180px"><button class="btn sm" type="button" id="dbCheck" title="이 브라우저에서 각 DB 서버에 연결되는지 확인해요">연결 점검</button></div>
     <div class="note-bar warn" id="dbBlocked" hidden>claude.ai 안에서는 외부 DB에 연결할 수 없어요. 내려받은 HTML 파일에서 조회하세요.</div>
-    <details class="labpanel" id="cuPanel" style="margin-top:16px"><summary><b>Curieus 연결 (시험 기능)</b> <span class="muted">내 API 키로 Curieus의 구조 예측·도킹·MD 도구를 이 화면에서 불러요</span></summary><div id="cuBody"></div></details>
     <div id="dbCat" class="dbcat"><div class="dbcath"><b id="dbCatHead">분야별 바로가기 DB</b><span class="muted" id="dbCatNote"></span></div><div id="dbCatList"></div></div>
+    <details class="labpanel" id="cuPanel" style="margin-top:18px"><summary><b>Curieus 연결 (시험 기능)</b> <span class="muted">내 API 키로 Curieus의 구조 예측·도킹·MD 도구를 이 화면에서 불러요</span></summary><div id="cuBody"></div></details>
   </div>
   <div class="card" id="dbOut"></div>
 </div></div>
