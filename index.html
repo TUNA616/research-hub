@@ -981,6 +981,29 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 /* 문헌 검색: the four ranking buttons on one row */
 #sSort{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;flex-wrap:nowrap}
 #sSort button{min-width:0;width:100%;padding:8px 2px;font-size:13px;white-space:nowrap;text-align:center;justify-content:center;margin:0}
+.dbfield{gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.catf{margin:14px 0 8px;font-size:13px;color:var(--ink)}
+.catgrp a.chip{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-decoration:none;color:var(--ink);position:relative}
+.catgrp a.chip small{color:var(--muted);font-size:11.5px;font-weight:400}
+.catgrp a.chip b{font-weight:600;font-size:13px;padding-right:18px}
+.catgrp .catgo{position:absolute;right:8px;top:6px;font-size:11px}
+.dbsub{margin:4px 0 8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.dbcat{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.dbcath{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:10px}.dbcath b{font-size:14px}.dbcath .muted{font-size:12.5px}
+.dbcat details>summary{cursor:pointer;font-size:13px;color:var(--accent);margin-bottom:8px}
+.seg.msub{margin:-4px 0 14px;display:inline-flex;flex-wrap:wrap}.seg.msub button{font-size:13px}
+.cprot{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.studylink{display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);text-decoration:none;transition:border-color .15s,background .15s}
+.studylink:hover{border-color:var(--accent);background:var(--accent-soft)}
+.studylink .sl-ic{font-size:20px;line-height:1}.studylink .sl-tx{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.studylink b{font-size:14.5px}.studylink small{color:var(--muted);font-size:12.5px}.studylink .sl-go{color:var(--accent);font-weight:600}
+.herobox{display:flex;flex-direction:column;align-items:stretch;min-width:0}.herobox .qform{margin:0}
+.labpanel{margin:12px 0;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.labpanel>summary{cursor:pointer;font-size:13.5px;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}.labpanel .mdt{margin-top:8px}
+.labpanel td.err{color:var(--err,#b3261e);font-weight:600}.labpanel td.warnc{color:#a15c00;font-weight:600}
+.abar{height:5px;background:var(--line);border-radius:3px;margin-top:4px;min-width:70px;overflow:hidden}.abar i{display:block;height:100%;background:var(--accent)}.abar i.near{background:#d08a00}.abar i.over{background:var(--err,#b3261e)}
+.wchart{display:block;width:100%;max-width:460px;height:auto;margin:10px 0 4px}.wchart .wp{fill:none;stroke:var(--accent);stroke-width:2}.wchart .wd{fill:var(--accent)}.wchart .wl15{stroke:#d08a00;stroke-dasharray:4 3;stroke-width:1}.wchart .wl20{stroke:var(--err,#b3261e);stroke-dasharray:4 3;stroke-width:1}.wchart .wt{font-size:10px;fill:var(--muted)}
+.wlist{display:flex;flex-wrap:wrap;gap:6px}.wlist .chip{gap:6px}.wlist .linkbtn{font-size:12px}
 </style>
 </head>
 <body>
@@ -992,7 +1015,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
     <button type="button" data-go="library">라이브러리<span class="n" id="navLib"></span></button>
     <button type="button" data-go="graph">관계도</button>
     <button type="button" data-go="research">리서치</button>
-    <button type="button" data-go="mat">실험실(프로젝트, 재료, 방법, 일정)</button>
+    <button type="button" data-go="mat">실험실(프로젝트, 재료/방법, 관리/기록, 일정 등)</button>
     <button type="button" data-go="write">원고</button>
     <button type="button" data-go="illust">일러스트레이터</button>
     <button type="button" data-go="lookup">DB 조회</button>
@@ -1121,13 +1144,15 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
     <p class="muted" style="margin:8px 0 0;font-size:.85em">AI가 질문에 맞는 DB를 1–3개 골라 조회하고, 그 결과만 근거로 답해요. 어느 DB를 어떤 검색어로 찾았는지 같이 보여줘요.</p>
   </div>
   <div class="card pad">
-    <h3 class="cap" style="margin-top:0">DB 직접 고르기</h3>
-    <div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:10px"><label class="sr" for="dbFilter">데이터베이스 찾기</label><input id="dbFilter" class="search" type="search" placeholder="데이터베이스 찾기" style="flex:1;min-width:180px"><button class="btn sm" type="button" id="dbCheck" title="이 브라우저에서 각 DB 서버에 연결되는지 확인해요">연결 점검</button></div>
-    <div class="row" id="dbHist" style="gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
-    <div id="dbSeg" class="dbseg"></div><div class="row" style="justify-content:flex-end"><span class="tag" id="dbFrom"></span></div>
+    <h3 class="cap" style="margin-top:0">DB 고르기 — 분야별</h3>
     <form class="qform" id="dbForm"><label class="sr" for="dbQ">찾을 이름</label><input id="dbQ" type="search" autocomplete="off"><button class="btn primary" type="submit">조회</button></form>
     <p class="dbhint" id="dbHint"></p>
+    <div class="row" id="dbHist" style="gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
+    <div id="dbField" class="row dbfield"></div>
+    <p class="dbsub" id="dbSegHead">사이트 안에서 바로 조회</p><div id="dbSeg" class="dbseg"></div><div class="row" style="justify-content:flex-end"><span class="tag" id="dbFrom"></span></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin:12px 0 0"><label class="sr" for="dbFilter">데이터베이스 찾기</label><input id="dbFilter" class="search" type="search" placeholder="데이터베이스 찾기" style="flex:1;min-width:180px"><button class="btn sm" type="button" id="dbCheck" title="이 브라우저에서 각 DB 서버에 연결되는지 확인해요">연결 점검</button></div>
     <div class="note-bar warn" id="dbBlocked" hidden>claude.ai 안에서는 외부 DB에 연결할 수 없어요. 내려받은 HTML 파일에서 조회하세요.</div>
+    <div id="dbCat" class="dbcat"><div class="dbcath"><b id="dbCatHead">분야별 바로가기 DB</b><span class="muted" id="dbCatNote"></span></div><div id="dbCatList"></div></div>
   </div>
   <div class="card" id="dbOut"></div>
 </div></div>
@@ -1404,7 +1429,7 @@ function makeCol(name){
       mirrorGet(name).then(l=>tx2("readwrite",s=>s.put({k:mirrorKey(name),d:{list:l.filter(x=>x.id!==id),at:Date.now()}})).catch(()=>{}));return;}c.list=c.list.filter(x=>x.id!==id);if(H.storage==="browser")await (base?tx(name,"readwrite",s=>s.delete(id)):X.del(name,id)).catch(()=>{});emit();};
   return c;
 }
-const cols={papers:makeCol("papers"),reports:makeCol("reports"),figs:makeCol("figs"),drafts:makeCol("drafts"),materials:makeCol("materials"),cells:makeCol("cells"),orders:makeCol("orders"),notes:makeCol("notes"),plans:makeCol("plans"),projects:makeCol("projects"),grants:makeCol("grants"),tpls:makeCol("tpls"),lfolders:makeCol("lfolders")};
+const cols={papers:makeCol("papers"),reports:makeCol("reports"),figs:makeCol("figs"),drafts:makeCol("drafts"),materials:makeCol("materials"),cells:makeCol("cells"),animals:makeCol("animals"),approvals:makeCol("approvals"),orders:makeCol("orders"),notes:makeCol("notes"),plans:makeCol("plans"),projects:makeCol("projects"),grants:makeCol("grants"),tpls:makeCol("tpls"),lfolders:makeCol("lfolders")};
 H.col=n=>cols[n];
 /* API keys come from this browser's settings, which can also be filled from a pasted or imported settings code. Before a key goes into a request header or URL
    it must look like a key: printable ASCII with no spaces or line breaks (so it cannot add headers or break the URL) and a sane length. Anything else is ignored. */
@@ -1821,7 +1846,8 @@ H.renderHome=function(){
     ["저장",H.storage!=="memory",H.storage==="cloud"?"claude.ai 계정에 저장돼 어느 기기에서 열어도 같아요. 이 사이트를 공유받은 사람과 자료가 섞이지 않고, 각자 자기 것만 보여요.":H.storage==="browser"?"이 브라우저에만 저장돼요. 설정에서 백업 파일을 내보내 두세요.":"이 창에서는 저장이 안 돼요. 닫으면 사라져요."]];
   el.innerHTML=`<div class="page">
     <section class="hero"><div><h2>찾고, 읽고, 분석하고, 쓰고, 그리기</h2><p>논문 검색부터 정리, 리서치, 원고 작성, 그림까지 한 곳에 모았어요. 기준 연구 주제: <b>${esc((H.lib&&H.lib.context)||"")}</b> <button class="btn sm ghost" type="button" id="homeSet">바꾸기</button></p></div>
-      <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">문헌 검색 GO</button></form></section>
+      <div class="herobox"><a class="studylink" href="https://tuna616.github.io/study-room/" target="_blank" rel="noopener"><span class="sl-ic" aria-hidden="true">📚</span><span class="sl-tx"><b>전공 공부나 수업 자료를 만들고 싶다면?</b><small>전공 학습실에서 공부 노트·요약·시험 대비 문제를 만들어요</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
+      <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">문헌 검색 GO</button></form></div></section>
     ${H.lib&&H.lib.recentHtml?H.lib.recentHtml():""}
     <div class="steps">
       <button class="step" type="button" data-go="search"><span class="mono">1 찾기</span><b>다중 DB 검색</b><span>하위 질의로 나눠 5개 DB에서 찾고, 중복을 합쳐 5계층 점수로 줄 세워요.</span><em class="mono">${ns?ns+"편 찾아 둠":"아직 검색 전"}</em></button>
@@ -1861,9 +1887,9 @@ H.renderHome=function(){
       <tr><td><b>아이디어·설계</b></td><td>가설 생성, 실험 설계 점검, 소크라테스 대화</td><td>모두</td><td>scientific-agent-skills · academic-research-skills</td></tr>
       <tr class="skst"><td colspan="4">④ 쓰기</td></tr>
       <tr><td><b>원고</b></td><td>섹션별 작성, 본문 중간에 표·그림·파일 넣기(미리보기와 Word에 반영), 써 둔 원고 파일(Word·PDF·한글)을 섹션별로 나눠 가져오기, 라이브러리 논문 바로 인용, 섹션 단위 AI 다듬기·번역·점검, 버전 저장, 완성본 미리보기, 인용·참고문헌이 들어간 Word 저장, 원고 하나로 점검·투고 준비 도구 이어 돌리기</td><td>모두</td><td>직접 만듦</td></tr>
-      <tr><td><b>프로젝트·과제</b><br><small class="muted">실험실(프로젝트, 재료, 방법, 일정) 탭</small></td><td>프로젝트 이름과 색을 등록해 재료·세포·발주·실험노트·일정·과제 문서를 프로젝트별로 걸러 보기, 원고·라이브러리 논문·보고서도 프로젝트에 연결, 프로젝트별 요약 카드, 이름을 바꾸면 기록도 함께 바뀜. 과제 계획·평가: 연구계획서·연차·최종보고서를 항목별로 쓰기(메모로 초안 쓰기, 다듬기, 줄이기, 평가 기준에 맞춰 보완), 본문 중간에 표·그림·파일 넣기(엑셀 표 붙여넣기, 표 고치기, 그림 붙여넣기·끌어 놓기, 미리보기), 연차보고서는 프로젝트의 실험노트를 근거로 사용, 연구비 표(비목×연차 자동 합계)와 추진 일정표, 평가 기준별 점수표·약점·예상 질문, 파일 여러 개 올리기, 고른 문서를 단순히 합치거나 새 양식으로 재구성, Word 내려받기</td><td>모두</td><td>직접 만듦</td></tr>
-      <tr><td><b>재료·세포·발주</b><br><small class="muted">실험실(프로젝트, 재료, 방법, 일정) 탭</small></td><td>시약병 라벨이나 거래명세서 사진을 올리면 물품명·제조사·카탈로그 번호·Lot를 읽어 저장(정밀 인식: 사진 보정, 구간 확대, 불확실한 칸 재확인), Materials 문장과 Key Resources Table, 물품에 맞는 표준 프로토콜 제안과 Word·Markdown 내려받기. 세포 stock 대장(바이알 수, 보관 위치, 꺼낸 기록), 물품·동물 발주 기록(요청→발주→입고, 입고 지연 표시)</td><td>모두</td><td>직접 만듦 (정밀 인식은 기존 명단 인식 방식을 옮김)</td></tr>
-      <tr><td><b>실험노트·일정</b><br><small class="muted">실험실(프로젝트, 재료, 방법, 일정) 탭</small></td><td>실험노트를 합성·세포·동물·분석으로 나눠 기록(분류별 칸, 목적·절차·결과 칸 중간에 표·그림·파일 넣기, 사진 무제한, 재료 목록에서 넣기, 복사해서 새 노트, 서식(템플릿)으로 새 노트 — 기본 서식 4종과 내 서식 저장, Word·PDF 내려받기, 고른 노트만 한 파일로 모으기, 한글 .hwpx 내보내기(시험판), Methods 문장으로 다듬어 원고에 넣기 — 비슷한 문단이 이미 있으면 알려 줌). 실험 일정 달력(프로젝트 색, 주말 색, 반복 일정, 날짜별 계획·노트·발주 함께 보기, 계획에서 바로 노트 쓰기, .ics 내보내기). 홈의 실험실 카드와 오늘의 실험</td><td>모두</td><td>직접 만듦</td></tr>
+      <tr><td><b>프로젝트·과제</b><br><small class="muted">실험실(프로젝트, 재료/방법, 관리/기록, 일정 등) 탭</small></td><td>프로젝트 이름과 색을 등록해 재료·세포·발주·실험노트·일정·과제 문서를 프로젝트별로 걸러 보기, 원고·라이브러리 논문·보고서도 프로젝트에 연결, 프로젝트별 요약 카드, 이름을 바꾸면 기록도 함께 바뀜. 과제 계획·평가: 연구계획서·연차·최종보고서를 항목별로 쓰기(메모로 초안 쓰기, 다듬기, 줄이기, 평가 기준에 맞춰 보완), 본문 중간에 표·그림·파일 넣기(엑셀 표 붙여넣기, 표 고치기, 그림 붙여넣기·끌어 놓기, 미리보기), 연차보고서는 프로젝트의 실험노트를 근거로 사용, 연구비 표(비목×연차 자동 합계)와 추진 일정표, 평가 기준별 점수표·약점·예상 질문, 파일 여러 개 올리기, 고른 문서를 단순히 합치거나 새 양식으로 재구성, Word 내려받기</td><td>모두</td><td>직접 만듦</td></tr>
+      <tr><td><b>재료·발주·세포/동물 관리</b><br><small class="muted">실험실(프로젝트, 재료/방법, 관리/기록, 일정 등) 탭</small></td><td>시약병 라벨이나 거래명세서 사진을 올리면 물품명·제조사·카탈로그 번호·Lot를 읽어 저장(정밀 인식: 사진 보정, 구간 확대, 불확실한 칸 재확인), Materials 문장과 Key Resources Table, 물품에 맞는 표준 프로토콜 제안과 Word·Markdown 내려받기. 세포 관리 기록부(바이알 수, 보관 위치, 꺼낸 기록, 세포주별 표준 프로토콜), 동물 관리 기록부(계통·마리 수·케이지·승인번호, 동물 표준 프로토콜), 물품·세포·동물 발주 기록(요청→발주→입고, 입고 지연 표시, 입고하면 물품 목록·세포/동물 기록부에 자동 추가), 사진·명세서로 기록 등록</td><td>모두</td><td>직접 만듦 (정밀 인식은 기존 명단 인식 방식을 옮김)</td></tr>
+      <tr><td><b>실험노트·일정</b><br><small class="muted">실험실(프로젝트, 재료/방법, 관리/기록, 일정 등) 탭</small></td><td>실험노트를 합성·세포·동물·분석으로 나눠 기록(분류별 칸, 목적·절차·결과 칸 중간에 표·그림·파일 넣기, 사진 무제한, 물품 목록에서 넣기, 복사해서 새 노트, 서식(템플릿)으로 새 노트 — 기본 서식 4종과 내 서식 저장, Word·PDF 내려받기, 고른 노트만 한 파일로 모으기, 한글 .hwpx 내보내기(시험판), Methods 문장으로 다듬어 원고에 넣기 — 비슷한 문단이 이미 있으면 알려 줌). 실험 일정 달력(프로젝트 색, 주말 색, 반복 일정, 날짜별 계획·노트·발주 함께 보기, 계획에서 바로 노트 쓰기, .ics 내보내기). 홈의 실험실 카드와 오늘의 실험</td><td>모두</td><td>직접 만듦</td></tr>
       <tr><td><b>리서치 · 쓰기·심사</b></td><td>초록·서론 초안, 동료 심사 패널, 심사 답변서, 투고 저널 추천, 한국어 글 다듬기, 자동 개선 루프</td><td>모두</td><td>academic-research-skills · k-skill · autoresearch</td></tr>
       <tr><td><b>서지 도구 · 원고에 인용 넣기</b></td><td>[@키]를 번호나 (저자, 연도)로 바꾸고 참고문헌 목록 붙이기</td><td>모두</td><td>직접 만듦</td></tr>
       <tr class="skst"><td colspan="4">⑤ 그리기 (일러스트레이터)</td></tr>
@@ -1929,7 +1955,7 @@ async function guideRun(q){
   - library: 라이브러리 (담은 논문·파일 요약, 연구 노트, Figure 정리)
   - research: 리서치 도구 (문헌 리뷰, 증거 표(조건·결과 추출), 가설 생성, 실험 설계 점검, 체계적 선별, 비판적 읽기)
   - lookup: DB 조회 (아래 DB들)
-  - write: 원고 · mat: 실험실(프로젝트·재료·실험노트·일정) · illust: 그림
+  - write: 원고 · mat: 실험실(프로젝트·재료/방법·발주·세포/동물 관리 기록부·실험노트·일정) · illust: 그림
 쓸 수 있는 DB (키: 설명):
 ${dbs}
 형식: {"steps":[{"t":"단계 제목(한국어)","w":"search|library|research|lookup|write|mat|illust","db":"lookup일 때 DB 키, 아니면 빈 문자열","q":"그 DB나 검색에 넣을 검색어(영문 권장, 없으면 빈 문자열)","why":"왜 이 단계가 필요한지 한국어 한두 문장","how":"구체적으로 무엇을 넣고 무엇을 볼지 한국어 한두 문장"}],"watch":["빠뜨리기 쉬운 것 한국어, 최대 3개"]}
@@ -1966,7 +1992,7 @@ function bindSettings(){
   $("#cfgTheme").addEventListener("change",e=>{H.cfg.theme=e.target.value;ls.set("cfg",H.cfg);H.applyTheme();});
   $("#settingsBtn").addEventListener("click",()=>{$("#cfgAiKey").value=H.cfg.aiKey;$("#cfgAiModel").value=H.cfg.aiModel;$("#cfgOaKey").value=H.cfg.oaKey;$("#cfgS2Key").value=H.cfg.s2Key;$("#cfgUpMail").value=H.cfg.upMail||"";$("#cfgGtpKey").value=H.cfg.gtpKey||"";$("#cfgGKey").value=H.cfg.gKey||"";$("#cfgOKey").value=H.cfg.oKey||"";$("#cfgTheme").value=H.cfg.theme||"";});
   $("#setSave").addEventListener("click",()=>{Object.assign(H.cfg,{aiKey:$("#cfgAiKey").value.trim(),aiModel:$("#cfgAiModel").value.trim()||"claude-sonnet-5-5",oaKey:$("#cfgOaKey").value.trim(),s2Key:$("#cfgS2Key").value.trim(),upMail:$("#cfgUpMail").value.trim(),gtpKey:$("#cfgGtpKey").value.trim(),gKey:$("#cfgGKey").value.trim(),oKey:$("#cfgOKey").value.trim(),theme:$("#cfgTheme").value});ls.set("cfg",H.cfg);H.applyTheme();H.renderHome();});
-  const BKC=()=>[["papers",cols.papers],["reports",cols.reports],["figs",cols.figs],["drafts",cols.drafts],["materials",cols.materials],["cells",cols.cells],["orders",cols.orders],["notes",cols.notes],["plans",cols.plans],["projects",cols.projects],["grants",cols.grants],["tpls",cols.tpls],["lfolders",cols.lfolders]];
+  const BKC=()=>[["papers",cols.papers],["reports",cols.reports],["figs",cols.figs],["drafts",cols.drafts],["materials",cols.materials],["cells",cols.cells],["animals",cols.animals],["approvals",cols.approvals],["orders",cols.orders],["notes",cols.notes],["plans",cols.plans],["projects",cols.projects],["grants",cols.grants],["tpls",cols.tpls],["lfolders",cols.lfolders]];
   const bkData=()=>{const d={app:"research-hub",exportedAt:Date.now()};BKC().forEach(([k,c])=>d[k]=c.list);return d;};
   const bkName=ext=>"연구허브_백업_"+new Date().toISOString().slice(0,10)+"."+ext;
   const prog=t=>{const p=$("#bkProg");if(p){p.hidden=!t;p.textContent=t||"";}};
@@ -5537,6 +5563,159 @@ Object.assign(DB,{
 });
 const ENRICHLINKS=(G,org)=>{const t=G.join("%0A");return `### 다른 도구로도 확인\n- [Enrichr](https://maayanlab.cloud/Enrichr/) · [DAVID](https://david.ncifcrf.gov/) · [g:Profiler 웹](https://biit.cs.ut.ee/gprofiler/gost?organism=${org}&query=${t}) · [Metascape](https://metascape.org/) · [GSEA·MSigDB](https://www.gsea-msigdb.org/gsea/msigdb)\n- 단백질 상호작용은 아래 '같은 목록으로 STRING 상호작용망 보기' 버튼으로 바로 볼 수 있어요.`;};
 const DBGROUPS=["유전자·서열","단백질·구조","변이·질병","경로·기능","기전 분석·발현","암·면역·오믹스 공공데이터","세포주·항체·동물 모델","독성·도핑·마약류","화합물","문헌·임상"];
+/* ---------- field catalog: in-site DBs mapped to research fields + link-out DBs by field ---------- */
+const FIELDS=[["ai","AI·데이터"],["robot","로봇·기계"],["semi","반도체·양자"],["echem","전기화학·전지"],["energy","수소·에너지"],["env","환경·기후"],["mat","소재·화학"],["bio","의과학·생명"],["pharm","의·약학"],["basic","기초과학 (물리·화학·생명·지구)"],["astro","천문·우주"],["common","공통 (국내 연구정보·특허·데이터 보관소)"]];
+const FNAME=Object.fromEntries(FIELDS);
+const GFIELD={"유전자·서열":["bio","basic"],"단백질·구조":["bio","basic","pharm"],"변이·질병":["bio","pharm"],"경로·기능":["bio","basic"],"기전 분석·발현":["bio"],"암·면역·오믹스 공공데이터":["bio"],"세포주·항체·동물 모델":["bio"],"독성·도핑·마약류":["pharm","env"],"화합물":["pharm","mat","basic"],"문헌·임상":["bio","pharm","common"]};
+const KFIELD={trials:["pharm","bio"],unpaywall:["common","bio","pharm","mat","ai","semi","echem","energy","env","basic","astro","robot"],portals:["common","bio","pharm"],spectra:["mat","basic","pharm"],rxn:["mat","basic"],tox:["pharm","env"],foodrec:["env","pharm"]};
+const fieldsOf=k=>KFIELD[k]||GFIELD[(DB[k]||{}).g]||[];
+/* [field, sub-group, name, what it holds, home url, search url with {q} (optional)] */
+const CAT=[
+ ["ai","논문·코드","arXiv (cs·stat)","AI·머신러닝 프리프린트","https://arxiv.org/","https://arxiv.org/search/?query={q}&searchtype=all"],
+ ["ai","논문·코드","DBLP","컴퓨터과학 논문 서지","https://dblp.org/","https://dblp.org/search?q={q}"],
+ ["ai","논문·코드","Semantic Scholar","AI 기반 논문 검색·인용 그래프","https://www.semanticscholar.org/","https://www.semanticscholar.org/search?q={q}"],
+ ["ai","논문·코드","Hugging Face Papers","화제의 AI 논문과 연결된 모델·데이터","https://huggingface.co/papers"],
+ ["ai","모델·데이터셋","Hugging Face 모델","공개 모델 저장소","https://huggingface.co/models","https://huggingface.co/models?search={q}"],
+ ["ai","모델·데이터셋","Hugging Face 데이터셋","공개 데이터셋 저장소","https://huggingface.co/datasets","https://huggingface.co/datasets?search={q}"],
+ ["ai","모델·데이터셋","Kaggle Datasets","경진대회·공개 데이터셋","https://www.kaggle.com/datasets","https://www.kaggle.com/datasets?search={q}"],
+ ["ai","모델·데이터셋","UCI ML Repository","고전 머신러닝 벤치마크 데이터","https://archive.ics.uci.edu/","https://archive.ics.uci.edu/datasets?search={q}"],
+ ["ai","모델·데이터셋","OpenML","데이터셋·실험 결과 공유","https://www.openml.org/"],
+ ["ai","모델·데이터셋","Google Dataset Search","웹 전체 데이터셋 검색","https://datasetsearch.research.google.com/","https://datasetsearch.research.google.com/search?query={q}"],
+ ["ai","국내","AI Hub","한국어·영상·의료 등 AI 학습용 데이터 (NIA)","https://www.aihub.or.kr/"],
+ ["ai","국내","공공데이터포털","정부 기관 공개 데이터","https://www.data.go.kr/","https://www.data.go.kr/tcs/dss/selectDataSetList.do?keyword={q}"],
+ ["robot","논문·표준","IEEE Xplore","로봇·제어·전자 논문과 표준","https://ieeexplore.ieee.org/","https://ieeexplore.ieee.org/search/searchresult.jsp?queryText={q}"],
+ ["robot","논문·표준","arXiv cs.RO","로봇공학 프리프린트","https://arxiv.org/list/cs.RO/recent","https://arxiv.org/search/?query={q}&searchtype=all"],
+ ["robot","데이터·소프트웨어","Open X-Embodiment","여러 로봇의 조작 시연 데이터 모음","https://robotics-transformer-x.github.io/"],
+ ["robot","데이터·소프트웨어","LeRobot (Hugging Face)","로봇 학습 데이터셋·정책 모델","https://huggingface.co/lerobot"],
+ ["robot","데이터·소프트웨어","ROS Index","ROS 패키지 목록","https://index.ros.org/"],
+ ["robot","데이터·소프트웨어","YCB 물체 세트","조작 실험용 표준 물체 모델","https://www.ycbbenchmarks.com/"],
+ ["robot","재료 물성","MatWeb","금속·고분자 기계적 물성표","https://www.matweb.com/"],
+ ["semi","논문·로드맵","IEEE Xplore","소자·회로·공정 논문 (IEDM·VLSI 포함)","https://ieeexplore.ieee.org/","https://ieeexplore.ieee.org/search/searchresult.jsp?queryText={q}"],
+ ["semi","논문·로드맵","IRDS 로드맵","반도체 기술 로드맵","https://irds.ieee.org/"],
+ ["semi","소재 계산 DB","Materials Project","무기 소재 밴드갭·구조 계산값","https://next-gen.materialsproject.org/"],
+ ["semi","소재 계산 DB","JARVIS (NIST)","DFT·머신러닝 소재 물성","https://jarvis.nist.gov/"],
+ ["semi","소재 계산 DB","C2DB","2차원 소재 계산 물성","https://c2db.fysik.dtu.dk/"],
+ ["semi","소재 계산 DB","2DMatPedia","2차원 소재 백과","http://www.2dmatpedia.org/"],
+ ["semi","양자","arXiv quant-ph","양자정보·양자소자 프리프린트","https://arxiv.org/list/quant-ph/recent","https://arxiv.org/search/?query={q}&searchtype=all"],
+ ["semi","국내 장비","나노종합기술원 (NNFC)","반도체 공정 장비·서비스","https://www.nnfc.re.kr/"],
+ ["echem","전지 데이터","Battery Archive","전지 수명 사이클 데이터 모음","https://www.batteryarchive.org/"],
+ ["echem","전지 데이터","Materials Project 전지 탐색기","전극 소재 전압·용량 계산값","https://next-gen.materialsproject.org/batteries"],
+ ["echem","전지 데이터","NASA PCoE 데이터","전지 열화·고장 예측 데이터","https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/"],
+ ["echem","촉매","Catalysis-Hub","표면 반응 에너지 계산값","https://www.catalysis-hub.org/"],
+ ["echem","촉매","Open Catalyst Project","촉매 흡착 DFT 데이터·모델","https://opencatalystproject.org/"],
+ ["echem","열역학·물성","NIST Chemistry WebBook","생성 엔탈피·열역학 값","https://webbook.nist.gov/chemistry/","https://webbook.nist.gov/cgi/cbook.cgi?Name={q}&Units=SI"],
+ ["echem","논문","ECS 학술지 (IOP)","전기화학회 학술지","https://iopscience.iop.org/journal/1945-7111"],
+ ["energy","수소","H2Tools (PNNL)","수소 안전·물성 자료","https://h2tools.org/"],
+ ["energy","수소","NIST 유체 물성","수소·기체의 상태량 계산","https://webbook.nist.gov/chemistry/fluid/"],
+ ["energy","에너지 데이터","NREL Data Catalog","재생에너지 측정·실험 데이터","https://data.nrel.gov/"],
+ ["energy","에너지 데이터","OpenEI","에너지 공개 데이터 허브","https://openei.org/"],
+ ["energy","에너지 데이터","IEA 통계","국가별 에너지 통계","https://www.iea.org/data-and-statistics"],
+ ["energy","에너지 데이터","미국 EIA","에너지 생산·가격 통계","https://www.eia.gov/"],
+ ["energy","국내","국가에너지통계 (KESIS)","국내 에너지 통계","https://www.kesis.net/"],
+ ["env","대기·기상","에어코리아","국내 대기질 측정값","https://www.airkorea.or.kr/"],
+ ["env","대기·기상","기상자료개방포털","국내 기상 관측 자료","https://data.kma.go.kr/"],
+ ["env","대기·기상","Copernicus Climate Data Store","기후 재분석·전망 자료","https://cds.climate.copernicus.eu/"],
+ ["env","대기·기상","NOAA NCEI","기후·해양 관측 기록","https://www.ncei.noaa.gov/"],
+ ["env","수질·화학물질","물환경정보시스템","국내 수질 측정망","https://water.nier.go.kr/"],
+ ["env","수질·화학물질","화학물질정보시스템 (NCIS)","국내 화학물질 유해성·규제","https://ncis.nier.go.kr/"],
+ ["env","수질·화학물질","EPA CompTox","화학물질 독성·노출 자료","https://comptox.epa.gov/dashboard/"],
+ ["env","수질·화학물질","ECHA 화학물질 정보","EU 등록 화학물질 자료","https://echa.europa.eu/information-on-chemicals"],
+ ["env","통계","Our World in Data","기후·환경·보건 통계 그래프","https://ourworldindata.org/","https://ourworldindata.org/search?q={q}"],
+ ["mat","구조","CCDC (CSD)","유기·금속유기 결정 구조","https://www.ccdc.cam.ac.uk/structures/"],
+ ["mat","구조","COD","공개 결정 구조","https://www.crystallography.net/cod/"],
+ ["mat","계산 물성","Materials Project","무기 소재 계산 물성","https://next-gen.materialsproject.org/"],
+ ["mat","계산 물성","AFLOW","소재 계산 데이터","https://aflowlib.org/"],
+ ["mat","계산 물성","OQMD","소재 형성 에너지 계산값","https://oqmd.org/"],
+ ["mat","계산 물성","NIMS MatNavi","소재 물성 실측 DB (일본)","https://mits.nims.go.jp/en/"],
+ ["mat","화합물·스펙트럼","ChemSpider","화합물 구조·이름 검색","https://www.chemspider.com/"],
+ ["mat","화합물·스펙트럼","SDBS","유기화합물 NMR·IR·MS 스펙트럼","https://sdbs.db.aist.go.jp/"],
+ ["mat","화합물·스펙트럼","NIST Chemistry WebBook","열역학·IR·MS 자료","https://webbook.nist.gov/chemistry/","https://webbook.nist.gov/cgi/cbook.cgi?Name={q}&Units=SI"],
+ ["mat","반응 (구독)","Reaxys","반응·물성 (기관 구독)","https://www.reaxys.com/"],
+ ["mat","반응 (구독)","SciFinder (CAS)","화합물·반응 (기관 구독)","https://scifinder-n.cas.org/"],
+ ["bio","오믹스","NCBI SRA","시퀀싱 원자료","https://www.ncbi.nlm.nih.gov/sra","https://www.ncbi.nlm.nih.gov/sra/?term={q}"],
+ ["bio","오믹스","BioStudies·ArrayExpress","EBI 실험 데이터","https://www.ebi.ac.uk/biostudies/","https://www.ebi.ac.uk/biostudies/search?query={q}"],
+ ["bio","오믹스","GTEx","정상 조직별 유전자 발현","https://gtexportal.org/","https://gtexportal.org/home/gene/{q}"],
+ ["bio","오믹스","Human Cell Atlas","단일세포 아틀라스","https://data.humancellatlas.org/"],
+ ["bio","구조·질병","AlphaFold DB","예측 단백질 구조","https://alphafold.ebi.ac.uk/","https://alphafold.ebi.ac.uk/search/text/{q}"],
+ ["bio","구조·질병","OMIM","유전 질환과 유전자","https://www.omim.org/","https://www.omim.org/search?search={q}"],
+ ["bio","모델 생물·뇌","MGI (마우스)","마우스 유전자·표현형","https://www.informatics.jax.org/"],
+ ["bio","모델 생물·뇌","Allen Brain Map","뇌 발현·연결 아틀라스","https://portal.brain-map.org/"],
+ ["bio","국내","국가바이오데이터스테이션 (K-BDS)","국내 연구 생명 데이터 등록·공유","https://kbds.re.kr/"],
+ ["bio","국내","KOBIC","국가생명연구자원정보센터","https://www.kobic.re.kr/"],
+ ["pharm","약물 정보","DrugBank","약물 표적·약동학","https://go.drugbank.com/","https://go.drugbank.com/unearth/q?query={q}&searcher=drugs"],
+ ["pharm","약물 정보","KEGG DRUG","약물 구조·표적·경로","https://www.kegg.jp/kegg/drug/"],
+ ["pharm","약물 정보","CLUE (CMap·LINCS)","약물 처리 후 발현 변화","https://clue.io/"],
+ ["pharm","약물 정보","SIDER","약물 부작용","http://sideeffects.embl.de/"],
+ ["pharm","허가·라벨","의약품안전나라 (식약처)","국내 허가 의약품 정보","https://nedrug.mfds.go.kr/"],
+ ["pharm","허가·라벨","약학정보원","국내 의약품 검색","https://www.health.kr/"],
+ ["pharm","허가·라벨","Drugs@FDA","미국 허가 의약품","https://www.accessdata.fda.gov/scripts/cder/daf/"],
+ ["pharm","허가·라벨","DailyMed","미국 의약품 라벨","https://dailymed.nlm.nih.gov/","https://dailymed.nlm.nih.gov/dailymed/search.cfm?query={q}"],
+ ["pharm","허가·라벨","EMA 의약품","유럽 허가 의약품","https://www.ema.europa.eu/en/medicines"],
+ ["pharm","허가·라벨","openFDA","부작용 보고·리콜 API","https://open.fda.gov/"],
+ ["pharm","임상·근거","WHO ICTRP","세계 임상시험 등록","https://trialsearch.who.int/"],
+ ["pharm","임상·근거","CRIS","국내 임상연구 등록","https://cris.nih.go.kr/"],
+ ["pharm","임상·근거","Cochrane Library","체계적 문헌고찰","https://www.cochranelibrary.com/"],
+ ["pharm","임상·근거","보건의료빅데이터개방시스템 (심평원)","국내 진료·처방 통계","https://opendata.hira.or.kr/"],
+ ["basic","물리","Particle Data Group","입자 물성 표준값","https://pdg.lbl.gov/"],
+ ["basic","물리","INSPIRE-HEP","고에너지물리 논문","https://inspirehep.net/","https://inspirehep.net/search?p={q}"],
+ ["basic","물리","NIST 물리 기준 자료","물리 상수·원자 스펙트럼","https://www.nist.gov/pml/productsservices/physical-reference-data"],
+ ["basic","물리","NIST 원자 스펙트럼 (ASD)","원자 선 스펙트럼","https://physics.nist.gov/PhysRefData/ASD/lines_form.html"],
+ ["basic","물리","IAEA 핵자료","핵반응·붕괴 자료","https://www-nds.iaea.org/"],
+ ["basic","물리","CERN Open Data","입자물리 실험 공개 데이터","https://opendata.cern.ch/","https://opendata.cern.ch/search?q={q}"],
+ ["basic","화학","NIST Chemistry WebBook","열역학·스펙트럼","https://webbook.nist.gov/chemistry/","https://webbook.nist.gov/cgi/cbook.cgi?Name={q}&Units=SI"],
+ ["basic","화학","SDBS","유기화합물 스펙트럼","https://sdbs.db.aist.go.jp/"],
+ ["basic","화학","COD","공개 결정 구조","https://www.crystallography.net/cod/"],
+ ["basic","생명","NCBI","유전자·서열·문헌 통합 검색","https://www.ncbi.nlm.nih.gov/","https://www.ncbi.nlm.nih.gov/search/all/?term={q}"],
+ ["basic","생명","GBIF","생물 종 분포 기록","https://www.gbif.org/","https://www.gbif.org/search?q={q}"],
+ ["basic","지구","PANGAEA","지구·환경과학 데이터 보관소","https://www.pangaea.de/","https://www.pangaea.de/?q={q}"],
+ ["basic","지구","NASA Earthdata","위성 관측 자료","https://search.earthdata.nasa.gov/","https://search.earthdata.nasa.gov/search?q={q}"],
+ ["basic","지구","USGS 지진 목록","전 세계 지진 기록","https://earthquake.usgs.gov/earthquakes/search/"],
+ ["basic","지구","EarthChem","암석 지화학 자료","https://www.earthchem.org/"],
+ ["basic","지구","한국지질자원연구원 지질정보","국내 지질도·자원 자료","https://data.kigam.re.kr/"],
+ ["basic","지구","국립해양조사원","국내 해양 관측","https://www.khoa.go.kr/"],
+ ["astro","문헌","NASA ADS","천문학 논문","https://ui.adsabs.harvard.edu/","https://ui.adsabs.harvard.edu/search/q={q}"],
+ ["astro","천체 목록","SIMBAD","천체 이름·좌표·문헌","https://simbad.cds.unistra.fr/simbad/","https://simbad.cds.unistra.fr/simbad/sim-id?Ident={q}"],
+ ["astro","천체 목록","VizieR","천문 목록 모음","https://vizier.cds.unistra.fr/"],
+ ["astro","천체 목록","NED","외부은하 자료","https://ned.ipac.caltech.edu/"],
+ ["astro","천체 목록","NASA Exoplanet Archive","외계행성 목록","https://exoplanetarchive.ipac.caltech.edu/"],
+ ["astro","천체 목록","JPL 소천체 DB","소행성·혜성 궤도","https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html"],
+ ["astro","관측 자료","MAST","허블·제임스웹 관측 자료","https://archive.stsci.edu/"],
+ ["astro","관측 자료","Gaia Archive","별 위치·운동 자료","https://gea.esac.esa.int/archive/"],
+ ["astro","관측 자료","SDSS SkyServer","슬론 전천 탐사 자료","https://skyserver.sdss.org/"],
+ ["astro","관측 자료","HEASARC","X선·감마선 관측 자료","https://heasarc.gsfc.nasa.gov/"],
+ ["astro","국내","한국천문연구원","국내 천문 관측·자료","https://www.kasi.re.kr/"],
+ ["common","국내 연구정보","ScienceON (KISTI)","국내외 논문·특허·보고서 통합","https://scienceon.kisti.re.kr/"],
+ ["common","국내 연구정보","NTIS","국가 R&D 과제·성과","https://www.ntis.go.kr/"],
+ ["common","국내 연구정보","KCI","국내 학술지 논문","https://www.kci.go.kr/"],
+ ["common","국내 연구정보","RISS","학위논문·국내 학술자료","https://www.riss.kr/","https://www.riss.kr/search/Search.do?query={q}"],
+ ["common","국내 연구정보","DBpia","국내 학술 논문","https://www.dbpia.co.kr/","https://www.dbpia.co.kr/search/topSearch?searchOption=all&query={q}"],
+ ["common","특허","KIPRIS","국내 특허·실용신안","https://www.kipris.or.kr/"],
+ ["common","특허","Google Patents","세계 특허 전문 검색","https://patents.google.com/","https://patents.google.com/?q={q}"],
+ ["common","특허","Espacenet","유럽특허청 특허 검색","https://worldwide.espacenet.com/","https://worldwide.espacenet.com/patent/search?q={q}"],
+ ["common","특허","WIPO PATENTSCOPE","국제출원(PCT) 특허","https://patentscope.wipo.int/search/en/search.jsf"],
+ ["common","데이터 보관소","Zenodo","연구 데이터·코드 보관 (DOI 발급)","https://zenodo.org/","https://zenodo.org/search?q={q}"],
+ ["common","데이터 보관소","Figshare","연구 데이터 공유","https://figshare.com/","https://figshare.com/search?q={q}"],
+ ["common","데이터 보관소","Dryad","논문 첨부 데이터","https://datadryad.org/","https://datadryad.org/search?q={q}"],
+ ["common","데이터 보관소","re3data","분야별 데이터 저장소 찾기","https://www.re3data.org/","https://www.re3data.org/search?query={q}"],
+ ["common","데이터 보관소","FAIRsharing","데이터 표준·DB 목록","https://fairsharing.org/"]
+];
+let RCAT=false,RCATT=0;let dbFld=(f=>FNAME[f]?f:"")(ls.get("dbfld",""));const dbCatQv=()=>{const i=$("#dbQ");return i?i.value:"";};
+const catHit=c=>!dbF||(c[2]+" "+c[3]+" "+c[1]+" "+FNAME[c[0]].replace(/ \(.*\)$/,"")).toLowerCase().includes(dbF);
+function catLink(c){const q=dbCatQv().trim(),u=q&&c[5]?c[5].replace("{q}",encodeURIComponent(q)):c[4];return `<a class="chip" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(c[3])}${q&&c[5]?" — '"+esc(q)+"' 검색으로 열기":""}"><b>${esc(c[2])}</b>${q&&c[5]?'<span class="catgo" aria-hidden="true">🔍</span>':""}<small>${esc(c[3])}</small></a>`;}
+function renderField(){
+  const box=$("#dbField");if(!box)return;
+  const n=f=>Object.keys(DB).filter(k=>fieldsOf(k).includes(f)).length+CAT.filter(c=>c[0]===f).length;
+  box.innerHTML=`<span class="muted" style="font-size:.85em">분야</span><button type="button" class="chip sm" data-dbfld="" aria-pressed="${!dbFld}">전체</button>`+FIELDS.map(([k,nm])=>`<button type="button" class="chip sm" data-dbfld="${k}" aria-pressed="${dbFld===k}">${esc(nm.replace(/ \(.*\)$/,""))} <span class="muted">${n(k)}</span></button>`).join("");
+  const cat=$("#dbCat");if(!cat)return;
+  const fs=dbFld?[dbFld]:FIELDS.map(f=>f[0]);
+  const html=fs.map(f=>{const items=CAT.filter(c=>c[0]===f&&catHit(c));if(!items.length)return "";const subs=[...new Set(items.map(c=>c[1]))];
+    return (dbFld?"":`<h4 class="catf">${esc(FNAME[f])}</h4>`)+`<div class="dbseg">`+subs.map(s=>`<div class="dbgrp catgrp"><span>${esc(s)}</span>${items.filter(c=>c[1]===s).map(catLink).join("")}</div>`).join("")+`</div>`;}).join("");
+  const inSite=dbFld?Object.keys(DB).filter(k=>fieldsOf(k).includes(dbFld)).length:0;
+  const open=!!dbFld||!!dbF;
+  $("#dbCatList").innerHTML=html?(open?html:`<details${RCAT?" open":""}><summary>12개 분야 바로가기 ${CAT.length}곳 모두 펼치기 (분야 버튼을 누르면 그 분야만 보여요)</summary>${html}</details>`):`<p class="muted" style="margin:0">'${esc(dbF)}'에 맞는 바로가기가 없어요.</p>`;
+  $("#dbCatHead").textContent=dbFld?`${FNAME[dbFld]} — 다른 사이트 바로가기 ${CAT.filter(c=>c[0]===dbFld).length}곳`:`다른 사이트 바로가기 ${CAT.length}곳`;const sh=$("#dbSegHead");if(sh)sh.textContent=dbFld?`${FNAME[dbFld]} — 사이트 안에서 바로 조회 ${inSite}개`:"사이트 안에서 바로 조회";
+  $("#dbCatNote").textContent=dbFld?(inSite?`위 조회칸에 넣은 말로 🔍 표시된 사이트의 검색 결과가 바로 열려요.`:`이 분야는 사이트 안에서 바로 조회되는 DB가 아직 없어요. 위 칸에 찾을 말을 넣고 🔍 표시된 곳을 누르면 그 사이트 검색 결과가 열려요.`):"위 조회칸에 넣은 말로 🔍 표시된 사이트의 검색 결과가 바로 열려요.";
+}
 let dbCur=(k=>DB[k]?k:"pubchem")(ls.get("dbcur","pubchem")),dbOut=null,dbF="",dbHist=(ls.get("dbhist",[])||[]).filter(h=>h&&DB[h.db]).slice(0,8);
 const DBLINKS={
  protac:q=>{const [t,e3]=String(q).split("|").map(s=>s.trim());return `- [PROTAC-DB에서 '${t}' 분해제](https://cadd.zju.edu.cn/protacdb/search/target=${encodeURIComponent(t||"")}&dataset=protac${e3?"&e3="+encodeURIComponent(e3):""}) · [PROTACpedia](https://protacpedia.weizmann.ac.il/)\n- [PubMed '${t}' PROTAC 논문](https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent((t||"")+" AND (PROTAC OR degrader)")})`;},
@@ -5683,10 +5862,10 @@ ${o.md.replace(SPECRE,"").replace(IMGRE,"").slice(0,12000)}`,{modelTier:"quick",
 const dbFull=o=>o.md.replace(SPECRE,"").replace(IMGRE,"")+(o.ai?"\n\n---\n\n## AI 해석 (DB 값이 아니라 해석이에요)\n\n"+o.ai:"");
 function renderLookup(){
   if(dbOut&&dbOut.db&&!dbOut.aiBusy){DBO[dbOut.db]=dbOut;keepDb();}
-  const hit=k=>!dbF||((DB[k].label||"")+" "+DB[k].name+" "+DB[k].g+" "+(DB[k].ph||"")).toLowerCase().includes(dbF);
+  const hit=k=>(!dbFld||fieldsOf(k).includes(dbFld))&&(!dbF||((DB[k].label||"")+" "+DB[k].name+" "+DB[k].g+" "+(DB[k].ph||"")+" "+fieldsOf(k).map(f=>FNAME[f]).join(" ")).toLowerCase().includes(dbF));renderField();
   const fi=$("#dbFilter");if(fi&&fi.value!==dbF)fi.value=dbF;
   $("#dbHist").innerHTML=dbHist.length?`<span class="muted" style="font-size:.85em">최근</span>`+dbHist.map((h,i)=>`<button type="button" class="chip sm" data-dbh="${i}" title="${esc(DB[h.db].label||DB[h.db].name)}">${esc(DB[h.db].name)}: ${esc(String(h.q).slice(0,24))}</button>`).join("")+`<button type="button" class="chip sm ghost" data-dbh="x">지우기</button>`:"";
-  $("#dbSeg").innerHTML=DBGROUPS.filter(g=>Object.keys(DB).some(k=>DB[k].g===g&&hit(k))).map(g=>`<div class="dbgrp"><span>${g}</span>${Object.keys(DB).filter(k=>DB[k].g===g&&hit(k)).sort((a,b)=>(a==="portals")-(b==="portals")).map(k=>`<button type="button" class="chip" data-db="${k}" aria-pressed="${k===dbCur}">${DB[k].label||DB[k].name}</button>`).join("")}</div>`).join("")||`<p class="muted" style="margin:0">'${esc(dbF)}'에 맞는 데이터베이스가 없어요.</p>`;
+  $("#dbSeg").innerHTML=DBGROUPS.filter(g=>Object.keys(DB).some(k=>DB[k].g===g&&hit(k))).map(g=>`<div class="dbgrp"><span>${g}</span>${Object.keys(DB).filter(k=>DB[k].g===g&&hit(k)).sort((a,b)=>(a==="portals")-(b==="portals")).map(k=>`<button type="button" class="chip" data-db="${k}" aria-pressed="${k===dbCur}">${DB[k].label||DB[k].name}</button>`).join("")}</div>`).join("")||`<p class="muted" style="margin:0">${dbFld&&!dbF?`'${esc(FNAME[dbFld])}' 분야는 사이트 안에서 바로 조회되는 DB가 아직 없어요. 아래 '분야별 바로가기'를 쓰세요.`:`'${esc(dbF)}'에 맞는 데이터베이스가 없어요.`}</p>`;
   $("#dbQ").placeholder=DB[dbCur].ph;$("#dbFrom").textContent=DB[dbCur].from;$("#dbBlocked").hidden=!HUB.embedded||!!DB[dbCur].local;$("#dbAskBlocked").hidden=!HUB.embedded;
   $("#dbOut").innerHTML=dbOut?`<div class="pad"><h3 class="cap">DB 원본 기록</h3><div class="md">${HUB.md(dbOut.md)}</div>
       ${dbOut.ai||dbOut.aiBusy?`<div class="aibox"><h3 class="cap">${dbOut.db==="ask"?"AI 답":"AI 해석"} <span class="muted" style="text-transform:none;letter-spacing:0;font-weight:400">— DB 값이 아니라 위 기록을 풀이한 것이에요</span></h3><div class="md" id="dbAi">${dbOut.ai?HUB.md(dbOut.ai):`<p class="muted"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>해석을 쓰는 중…</p>`}</div></div>`:dbOut.aiErr?`<div class="note-bar warn">해석을 만들지 못했어요: ${esc(dbOut.aiErr)}</div>`:""}
@@ -5754,6 +5933,9 @@ function init(){
   $("#dbHist").addEventListener("click",e=>{const b=e.target.closest("[data-dbh]");if(!b)return;if(b.dataset.dbh==="x"){dbHist=[];ls.set("dbhist",dbHist);renderLookup();return;}const h=dbHist[+b.dataset.dbh];if(h)HUB.lookup.open(h.db,h.q,true);});
   $("#dbAskForm").addEventListener("submit",e=>{e.preventDefault();const q=$("#dbAskQ").value.trim();if(q)askDb(q);});
   $("#dbAskEx").addEventListener("click",e=>{const b=e.target.closest("[data-ex]");if(!b)return;$("#dbAskQ").value=b.dataset.ex;askDb(b.dataset.ex);});
+  $("#dbField").addEventListener("click",e=>{const b=e.target.closest("button[data-dbfld]");if(!b)return;dbFld=b.dataset.dbfld;ls.set("dbfld",dbFld);renderLookup();});
+  $("#dbQ").addEventListener("input",()=>{clearTimeout(RCATT);RCATT=setTimeout(renderField,250);});
+  $("#dbCatList").addEventListener("toggle",e=>{if(e.target.tagName==="DETAILS")RCAT=e.target.open;},true);
   $("#dbSeg").addEventListener("click",e=>{const b=e.target.closest("button[data-db]");if(!b)return;dbCur=b.dataset.db;ls.set("dbcur",dbCur);dbOut=DBO[dbCur]||null;renderLookup();const i=$("#dbQ");if(i)i.focus();});
   $("#dbForm").addEventListener("submit",async e=>{e.preventDefault();const q=$("#dbQ").value.trim();if(!q)return;
     $("#dbOut").innerHTML=`<div class="pad"><p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>${DB[dbCur].name}에서 찾는 중…</p></div>`;
@@ -6948,7 +7130,7 @@ const {$,esc,uid,ls}=HUB.u;
 const CATS=["시약·화합물","항체","키트","세포·균주","동물","효소·단백질","배지·혈청","소모품","기기·장비","기타"];
 const CATEN={"시약·화합물":"Chemicals and reagents","항체":"Antibodies","키트":"Commercial assays and kits","세포·균주":"Cell lines and strains","동물":"Animals","효소·단백질":"Enzymes and recombinant proteins","배지·혈청":"Media and sera","소모품":"Consumables","기기·장비":"Instruments","기타":"Other"};
 const FIELDS=[["name","물품명"],["vendor","제조사·공급사"],["catalog","카탈로그 번호"],["lot","Lot"],["cas","CAS"],["spec","규격·용량"],["purity","순도·등급"],["storage","보관"],["qty","수량"],["price","금액"],["date","구입일"],["expiry","유효기한"]];
-const M=Object.assign({q:"",cat:"*",precise:true,lang:"en",tab:"materials",toOrder:false,proj:""},ls.get("mat",{}));if(!["proj","grant","materials","cells","orders","notes","plan"].includes(M.tab))M.tab="materials";
+const M=Object.assign({q:"",cat:"*",precise:true,lang:"en",tab:"materials",toOrder:false,proj:""},ls.get("mat",{}));if(!["proj","grant","materials","cells","animals","orders","notes","plan"].includes(M.tab))M.tab="materials";
 let jobs=[],review=[],busy=false,sel=new Set(),open="",out=null,pbusy="";
 const col=()=>HUB.col("materials");
 const save=()=>ls.set("mat",{cat:M.cat,precise:M.precise,lang:M.lang,tab:M.tab,toOrder:M.toOrder,proj:M.proj});
@@ -7118,24 +7300,35 @@ ${desc}`,{modelTier:"default",onText:x=>{const el=$("#mProtLive");if(el)el.inner
 /* ---------- cell stock ledger and order log (items, animals): one small record keeper used for both ---------- */
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 const REC={
- cells:{label:"세포 stock",add:"세포 stock 추가",empty:"아직 기록한 세포 stock이 없어요. 동결한 바이알을 기록해 두면 남은 수와 위치를 바로 찾을 수 있어요.",ph:"세포주·위치·메모로 찾기",file:"cell_stock.xlsx",
-  fields:[["line","세포주",""],["passage","계대 (P)",""],["vials","남은 바이알 수","number"],["frozen","동결일","date"],["loc","보관 위치 (탱크·랙·박스·칸)",""],["medium","배양 배지",""],["freeze","동결 배지",""],["myco","마이코플라스마 검사 (날짜·결과)",""],["source","출처 (구입처·분양처)",""],["by","동결한 사람",""],["project","프로젝트","proj"],["memo","메모","area"]],
+ cells:{label:"세포 관리 기록부",add:"세포 기록 추가",empty:"아직 기록한 세포가 없어요. 동결한 바이알을 기록해 두면 남은 수와 위치를 바로 찾을 수 있어요.",ph:"세포주·위치·메모로 찾기",file:"cell_stock.xlsx",
+  fields:[["line","세포주",""],["passage","계대 (P)",""],["vials","남은 바이알 수","number"],["frozen","동결일","date"],["loc","보관 위치 (탱크·랙·박스·칸)",""],["medium","배양 배지",""],["freeze","동결 배지",""],["myco","마이코플라스마 검사 (날짜·결과)",""],["plimit","계대 한도 (비우면 P20)","number"],["source","출처 (구입처·분양처)",""],["by","동결한 사람",""],["project","프로젝트","proj"],["memo","메모","area"]],
   title:r=>r.line||"(세포주 이름 없음)",sub:r=>[r.passage&&"P"+String(r.passage).replace(/^p/i,""),r.frozen&&"동결 "+r.frozen,r.loc,r.by].filter(Boolean).join(" · "),
-  tags:r=>{const n=+r.vials||0;return `<span class="tag ${n<=2?"err":""}">바이알 ${n}개${n===0?" · 없음":n<=2?" · 얼마 안 남음":""}</span>`;},
+  tags:r=>{const n=+r.vials||0;return `<span class="tag ${n<=2?"err":""}">바이알 ${n}개${n===0?" · 없음":n<=2?" · 얼마 안 남음":""}</span>${cellWarn(r).map(([c,t])=>`<span class="tag ${c}">${esc(t)}</span>`).join("")}`;},
   quick:r=>`<button class="btn sm" type="button" data-rq="use" data-id="${r.id}" ${(+r.vials||0)>0?"":"disabled"}>1개 꺼냄</button><button class="btn sm ghost" type="button" data-rq="add" data-id="${r.id}">1개 추가</button>`,
   chips:l=>[...new Set(l.map(r=>r.line).filter(Boolean))].slice(0,14).map(v=>[v,v,l.filter(r=>r.line===v).length]),match:(r,v)=>r.line===v,
-  sum:l=>`세포주 ${new Set(l.map(r=>r.line).filter(Boolean)).size}종 · 기록 ${l.length}건 · 바이알 합계 ${l.reduce((n,r)=>n+(+r.vials||0),0)}개${l.filter(r=>(+r.vials||0)<=2).length?` · 2개 이하 ${l.filter(r=>(+r.vials||0)<=2).length}건`:""}`,
-  extra:r=>attHtml("cells",r),
+  sum:l=>`세포주 ${new Set(l.map(r=>r.line).filter(Boolean)).size}종 · 기록 ${l.length}건 · 바이알 합계 ${l.reduce((n,r)=>n+(+r.vials||0),0)}개${l.filter(r=>cellWarn(r).some(w=>w[0]==="err")).length?` · 계대 한도·마이코 검사 확인 필요 ${l.filter(r=>cellWarn(r).some(w=>w[0]==="err")).length}건`:""}${l.filter(r=>(+r.vials||0)<=2).length?` · 2개 이하 ${l.filter(r=>(+r.vials||0)<=2).length}건`:""}`,
+  extra:r=>attHtml("cells",r)+labProt("cells",r),
   defaults:()=>({frozen:today(),vials:"1"})},
+ animals:{label:"동물 관리 기록부",add:"동물 기록 추가",main:"strain",mainName:"계통",empty:"아직 기록한 동물이 없어요. 입고한 동물을 계통·케이지별로 기록해 두면 남은 마리 수와 위치, 승인번호를 바로 찾을 수 있어요.",ph:"계통·케이지·실험군·메모로 찾기",file:"animal_log.xlsx",
+  fields:[["strain","계통 (예: C57BL/6J)",""],["species","종",["마우스","랫드","기니피그","토끼","제브라피시","기타"]],["sex","성별",["수컷","암컷","혼합"]],["count","현재 마리 수","number"],["total","입고 마릿수 (총, 승인 마릿수 계산용)","number"],["received","입고일","date"],["age","입고 주령·생년월일",""],["weight","체중 (입고·최근)",""],["loc","사육 위치 (동물실·랙·케이지)",""],["group","실험군·처치",""],["source","공급처",""],["iacuc","동물실험 승인번호 (IACUC)",""],["health","건강 관찰 (날짜·내용)",""],["by","담당자",""],["project","프로젝트","proj"],["memo","메모","area"]],
+  title:r=>r.strain||"(계통 없음)",sub:r=>[r.species,r.sex,r.age&&(r.age+(/^\d+$/.test(r.age)?"주령":"")),r.received&&"입고 "+r.received,r.loc,r.group,r.by].filter(Boolean).join(" · "),
+  tags:r=>{const n=+r.count||0;return `<span class="tag ${n===0?"err":""}">${n}마리${n===0?" · 없음":""}</span>${r.iacuc?"":`<span class="tag err">승인번호 없음</span>`}${wDrop(r)>=15?`<span class="tag err">체중 −${wDrop(r).toFixed(0)}%</span>`:""}`;},
+  quick:r=>`<button class="btn sm" type="button" data-rq="ause" data-id="${r.id}" ${(+r.count||0)>0?"":"disabled"}>1마리 제외</button><button class="btn sm ghost" type="button" data-rq="aadd" data-id="${r.id}">1마리 추가</button>`,
+  chips:l=>[...new Set(l.map(r=>r.strain).filter(Boolean))].slice(0,14).map(v=>[v,v,l.filter(r=>r.strain===v).length]),match:(r,v)=>r.strain===v,
+  sum:l=>`계통 ${new Set(l.map(r=>r.strain).filter(Boolean)).size}종 · 기록 ${l.length}건 · 현재 ${l.reduce((n,r)=>n+(+r.count||0),0)}마리${l.filter(r=>!r.iacuc).length?` · 승인번호 없는 기록 ${l.filter(r=>!r.iacuc).length}건`:""}`,
+  extra:r=>weightPanel(r)+attHtml("animals",r)+labProt("animals",r),
+  top:()=>approvalPanel(),
+  defaults:()=>({received:today(),count:"1",species:"마우스"})},
  orders:{label:"발주 기록",add:"발주 기록 추가",empty:"아직 발주 기록이 없어요. 물품, 동물, 세포 주문을 요청부터 입고까지 적어 둘 수 있어요.",ph:"품목·업체·요청자·과제로 찾기",file:"orders.xlsx",
   fields:[["kind","종류",["물품","동물","세포","기타"]],["item","품목 (동물은 계통)",""],["vendor","업체",""],["catalog","카탈로그·견적 번호",""],["qty","수량",""],["amount","금액",""],["status","상태",["요청","발주","입고","취소"]],["ordered","발주일","date"],["due","입고 예정일","date"],["received","입고일","date"],["requester","요청자",""],["project","프로젝트","proj"],["account","과제·계정 (연구비)",""],["sex","성별 (동물)",""],["age","주령 (동물)",""],["iacuc","동물실험 승인번호 (동물)",""],["memo","메모","area"]],
   title:r=>r.item||"(품목 없음)",sub:r=>[r.vendor,r.qty&&"수량 "+r.qty,r.kind==="동물"&&[r.sex,r.age&&r.age+(/주|w/i.test(r.age)?"":"주령")].filter(Boolean).join(" "),r.amount,r.ordered&&"발주 "+r.ordered,r.received?"입고 "+r.received:r.due&&"예정 "+r.due,r.requester].filter(Boolean).join(" · "),
   tags:r=>{const late=r.status==="발주"&&r.due&&r.due<today();return `<span class="tag">${esc(r.kind||"물품")}</span><span class="tag st-${({요청:"req",발주:"ord",입고:"in",취소:"no"})[r.status]||"req"}">${esc(r.status||"요청")}</span>${late?`<span class="tag err">예정일 지남</span>`:""}`;},
-  quick:r=>(r.status==="요청"||!r.status?`<button class="btn sm" type="button" data-rq="ord" data-id="${r.id}">발주함</button>`:r.status==="발주"?`<button class="btn sm" type="button" data-rq="recv" data-id="${r.id}">입고 처리</button>`:r.status==="입고"&&r.kind!=="세포"?`<button class="btn sm ghost" type="button" data-rq="tomat" data-id="${r.id}">재료 목록에 추가</button>`:r.status==="입고"?`<button class="btn sm ghost" type="button" data-rq="tocell" data-id="${r.id}">세포 stock에 추가</button>`:""),
+  quick:r=>(r.status==="요청"||!r.status?`<button class="btn sm" type="button" data-rq="ord" data-id="${r.id}">발주함</button>`:r.status==="발주"?`<button class="btn sm" type="button" data-rq="recv" data-id="${r.id}">입고 처리</button>`:r.status==="입고"&&r.synced?`<button class="btn sm ghost" type="button" data-rq="golink" data-id="${r.id}">${OTNAME[r.synced.col]||"목록"}에서 보기</button>`:r.status==="입고"?`<button class="btn sm ghost" type="button" data-rq="syncone" data-id="${r.id}">${OTNAME[OTGT(r)]}에 추가</button>`:""),
   chips:l=>[["s:진행","진행 중",l.filter(r=>r.status!=="입고"&&r.status!=="취소").length],...["요청","발주","입고","취소"].map(v=>["s:"+v,v,l.filter(r=>(r.status||"요청")===v).length]),...["동물","세포"].map(v=>["k:"+v,v,l.filter(r=>r.kind===v).length])].filter(x=>x[2]),
   match:(r,v)=>v==="s:진행"?(r.status!=="입고"&&r.status!=="취소"):v[0]==="s"?(r.status||"요청")===v.slice(2):r.kind===v.slice(2),
   sum:l=>{const act=l.filter(r=>r.status!=="입고"&&r.status!=="취소").length,late=l.filter(r=>r.status==="발주"&&r.due&&r.due<today()).length;return `전체 ${l.length}건 · 진행 중 ${act}건${late?` · 입고 예정일이 지난 ${late}건`:""}`;},
   extra:r=>attHtml("orders",r),
+  top:()=>budgetPanel(),
   defaults:()=>({kind:"물품",status:"요청",ordered:today()})},
  notes:{label:"실험노트",add:"새 실험노트",main:"title",mainName:"제목",empty:"아직 쓴 실험노트가 없어요. 합성, 세포, 동물 실험을 나눠서 날짜별로 적어 둘 수 있어요.",ph:"제목·프로젝트·내용으로 찾기",file:"lab_notes.xlsx",
   fields:[["kind","분류",["합성","세포","동물","분석·기타"]],["title","제목",""],["date","실험일","date"],["project","프로젝트","proj"],["who","실험자",""],["tagsx","태그 (쉼표로 구분)",""],
@@ -7143,7 +7336,7 @@ const REC={
    ["cell","세포주·계대","","세포"],["seed","seeding 밀도·플레이트","","세포"],["treat","처리 (물질·농도·시간)","","세포"],["assay","측정·분석법","","세포"],
    ["strain","계통·성별·주령","","동물"],["n","마릿수·군 구성","","동물"],["model","모델·유도 방법","","동물"],["dose","투여 (물질·용량·경로·일정)","","동물"],["iacuc","동물실험 승인번호","","동물"],
    ["method","분석법·장비","","분석·기타"],["sample","시료","","분석·기타"],
-   ["mats","사용한 재료·시약 (아래 '재료 목록에서 넣기'로 고를 수 있어요)","area"],["aim","목적","big"],["proc","절차 (실제로 한 대로)","big"],["result","결과·관찰","big"],["next","다음에 할 일·메모","area"]],
+   ["mats","사용한 재료·시약 (아래 '물품 목록에서 넣기'로 고를 수 있어요)","area"],["aim","목적","big"],["proc","절차 (실제로 한 대로)","big"],["result","결과·관찰","big"],["next","다음에 할 일·메모","area"]],
   title:r=>r.title||"(제목 없음)",sub:r=>[r.date,r.project,r.kind==="합성"?[r.target,r.yield&&"수율 "+r.yield].filter(Boolean).join(" · "):r.kind==="세포"?[r.cell,r.treat].filter(Boolean).join(" · "):r.kind==="동물"?[r.strain,r.n&&"n "+r.n,r.model].filter(Boolean).join(" · "):r.method,r.who].filter(Boolean).join(" · "),
   tags:r=>`<span class="tag nk-${({합성:"syn",세포:"cell",동물:"ani"})[r.kind]||"etc"}">${esc(r.kind||"분석·기타")}</span>`,
   quick:r=>`<button class="btn sm ghost" type="button" data-rq="dup" data-id="${r.id}" title="같은 조건으로 오늘 날짜의 새 노트를 만들어요">복사해서 새 노트</button>`,
@@ -7151,8 +7344,8 @@ const REC={
   match:(r,v)=>v[0]==="k"?(r.kind||"분석·기타")===v.slice(2):r.project===v.slice(2),
   sort:(a,b)=>String(b.date||"").localeCompare(String(a.date||""))||(b.addedAt||0)-(a.addedAt||0),
   sum:l=>`전체 ${l.length}건 · `+["합성","세포","동물","분석·기타"].map(v=>[v,l.filter(r=>(r.kind||"분석·기타")===v).length]).filter(x=>x[1]).map(x=>x[0]+" "+x[1]).join(" · "),
-  extra:r=>`${attHtml("notes",r)}${paperLinks(r)}
-    <div class="row" style="gap:6px;flex-wrap:wrap">${col().list.length?`<select class="btn sm" data-nmat="${r.id}" aria-label="재료 목록에서 넣기" style="max-width:240px"><option value="">재료 목록에서 넣기…</option>${col().list.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(x=>`<option value="${x.id}">${esc(x.name)}${x.catalog?" · "+esc(x.catalog):""}</option>`).join("")}</select>`:""}${r.date?`<button class="btn sm" type="button" data-r="nday" data-id="${r.id}">일정에서 이 날 보기</button>`:""}<button class="btn sm" type="button" data-r="ntpl" data-id="${r.id}" title="제목, 결과, 사진을 뺀 나머지를 서식으로 저장해요">서식으로 저장</button><button class="btn sm" type="button" data-r="ndocx" data-id="${r.id}" title="한글에서도 바로 열려요 (한글: 파일 → 불러오기)">Word·한글 (.docx)</button><button class="btn sm" type="button" data-r="nhwpx" data-id="${r.id}" title="시험판: 한글에서 열리는지 확인 중이에요">한글 (.hwpx 시험)</button><button class="btn sm" type="button" data-r="npdf" data-id="${r.id}">PDF</button><button class="btn sm" type="button" data-r="nmd" data-id="${r.id}">Markdown</button><button class="btn sm" type="button" data-r="ncopy" data-id="${r.id}">복사</button><button class="btn sm" type="button" data-r="nmeth" data-id="${r.id}" style="border-color:var(--accent);color:var(--accent)" ${RS.busy===r.id?"disabled":""}>${RS.busy===r.id?"쓰는 중…":"Methods 문장으로 다듬어 원고에 넣기"}</button></div>`,
+  extra:r=>`${usePanel(r)}${attHtml("notes",r)}${paperLinks(r)}
+    <div class="row" style="gap:6px;flex-wrap:wrap">${col().list.length?`<select class="btn sm" data-nmat="${r.id}" aria-label="물품 목록에서 넣기" style="max-width:240px"><option value="">물품 목록에서 넣기…</option>${col().list.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(x=>`<option value="${x.id}">${esc(x.name)}${x.catalog?" · "+esc(x.catalog):""}</option>`).join("")}</select>`:""}${r.date?`<button class="btn sm" type="button" data-r="nday" data-id="${r.id}">일정에서 이 날 보기</button>`:""}<button class="btn sm" type="button" data-r="ntpl" data-id="${r.id}" title="제목, 결과, 사진을 뺀 나머지를 서식으로 저장해요">서식으로 저장</button><button class="btn sm" type="button" data-r="ndocx" data-id="${r.id}" title="한글에서도 바로 열려요 (한글: 파일 → 불러오기)">Word·한글 (.docx)</button><button class="btn sm" type="button" data-r="nhwpx" data-id="${r.id}" title="시험판: 한글에서 열리는지 확인 중이에요">한글 (.hwpx 시험)</button><button class="btn sm" type="button" data-r="npdf" data-id="${r.id}">PDF</button><button class="btn sm" type="button" data-r="nmd" data-id="${r.id}">Markdown</button><button class="btn sm" type="button" data-r="ncopy" data-id="${r.id}">복사</button><button class="btn sm" type="button" data-r="nmeth" data-id="${r.id}" style="border-color:var(--accent);color:var(--accent)" ${RS.busy===r.id?"disabled":""}>${RS.busy===r.id?"쓰는 중…":"Methods 문장으로 다듬어 원고에 넣기"}</button></div>`,
   defaults:()=>({kind:RS.chip.startsWith("k:")?RS.chip.slice(2):"합성",date:today(),project:""})}
 };
 /* papers from the library this note relied on; the paper's page lists the notes back */
@@ -7233,7 +7426,7 @@ function attHtml(colName,r){const ph=r.photos||[],fl=r.files||[];
     <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 붙이기<input type="file" data-attin="1" multiple hidden accept="${ATT_ACCEPT}"></label><span class="muted">${ATT_HINT}</span></div></div>`;}
 /* pending files in an add form (the record has no id yet) */
 function pendHtml(key,list){return `<div class="attbox attpend" data-attpend="${key}">${list.length?`<div class="attlist">${list.map((f,i)=>`<div class="attf"><span class="attx">${esc(isRaster(f)?"사진":fext(f.name))}</span><span class="attn">${esc(f.name)}</span><small class="muted">${fsize(f.size)}</small><button class="btn sm ghost danger" type="button" data-attpx="${i}">빼기</button></div>`).join("")}</div>`:""}
-  <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 함께 붙이기<input type="file" data-attpin="1" multiple hidden accept="${ATT_ACCEPT}"></label><span class="muted">${list.length?`저장하면 ${list.length}개가 함께 붙어요 · `:""}마크다운(.md)·텍스트 파일은 내용을 읽어 위 칸을 채우고 원본도 붙여요</span></div></div>`;}
+  <div class="attbar"><label class="btn sm attadd">＋ 파일·사진 함께 붙이기<input type="file" data-attpin="1" multiple hidden accept="${ATT_ACCEPT}"></label><label class="btn sm attadd" title="사진·스캔 PDF를 AI가 읽어 비어 있는 칸을 채우고 원본도 붙여요">${visBusy?"사진 읽는 중…":"📷 사진·명세서로 칸 채우기"}<input type="file" data-visfill="${key}" hidden accept="image/*,.pdf,application/pdf"></label><span class="muted">${list.length?`저장하면 ${list.length}개가 함께 붙어요 · `:""}마크다운(.md)·텍스트 파일은 내용을 읽어 위 칸을 채우고 원본도 붙여요</span></div></div>`;}
 const pendList=key=>key==="plan"?(PS.pend||(PS.pend=[])):(RS.pend||(RS.pend=[]));
 document.addEventListener("click",async e=>{if(HUB.view!=="mat")return;
   const px=e.target.closest("[data-attpx]");if(px){const box=px.closest("[data-attpend]");pendList(box.dataset.attpend).splice(+px.dataset.attpx,1);draw();return;}
@@ -7253,7 +7446,7 @@ const attTarget=el=>{if(HUB.view!=="mat")return null;const box=el&&el.closest&&e
 const pendTake=async(key,fs)=>{const tx=fs.filter(isTextF),ot=fs.filter(f=>!isTextF(f));for(const f of tx)await mdFillDraft(key,f);if(ot.length){pendList(key).push(...ot);draw();}};
 const attTake=(box,fs)=>{if(box.dataset.attpend)pendTake(box.dataset.attpend,fs);else attFiles(box.dataset.attcol,box.dataset.attid,fs);};
 document.addEventListener("dragover",e=>{if(attTarget(e.target)||(HUB.view==="mat"&&(REC[M.tab]||M.tab==="plan")))e.preventDefault();});
-document.addEventListener("drop",e=>{const box=attTarget(e.target);if(!box){if(HUB.view!=="mat"||!(REC[M.tab]||M.tab==="plan"))return;const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])].filter(isTextF);if(!fs.length)return;e.preventDefault();mdNew(M.tab==="plan"?"plan":M.tab,fs);return;}const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])];if(!fs.length)return;e.preventDefault();attTake(box,fs);});
+document.addEventListener("drop",e=>{const box=attTarget(e.target);if(!box){if(HUB.view!=="mat"||!(REC[M.tab]||M.tab==="plan"))return;const all=[...((e.dataTransfer&&e.dataTransfer.files)||[])],fs=all.filter(isTextF),vs=all.filter(f=>!isTextF(f)&&isVisF(f));if(!fs.length&&!vs.length)return;e.preventDefault();if(fs.length)mdNew(M.tab==="plan"?"plan":M.tab,fs);if(vs.length)visNew(M.tab==="plan"?"plan":M.tab,vs);return;}const fs=[...((e.dataTransfer&&e.dataTransfer.files)||[])];if(!fs.length)return;e.preventDefault();attTake(box,fs);});
 document.addEventListener("paste",e=>{if(e.defaultPrevented||HUB.view!=="mat")return;const fs=[...((e.clipboardData&&e.clipboardData.files)||[])];if(!fs.length)return;
   let box=attTarget(document.activeElement);if(!box){const host=document.querySelector("#v-mat .mitem.on,#v-mat [data-pedit],#rNew,#pNew");box=host&&host.querySelector("[data-attcol],[data-attpend]");}
   if(!box)return;e.preventDefault();attTake(box,fs);});
@@ -7281,8 +7474,8 @@ function mdVal(f,v){v=String(v==null?"":v).trim();if(!v)return null;const t=f[2]
     if(hit)return hit;if(f[0]==="kind"){if(/synth|합성|chem/i.test(v))return "합성";if(/cell|세포|in ?vitro/i.test(v))return "세포";if(/animal|mouse|rat|동물|in ?vivo|마우스/i.test(v))return "동물";if(t.includes("분석·기타"))return "분석·기타";}return null;}
   if(t==="date")return mdDate(v)||null;if(t==="time"){const m=v.match(/(\d{1,2}):(\d{2})/);return m?m[1].padStart(2,"0")+":"+m[2]:null;}if(t==="number"){const m=v.match(/\d+/);return m?m[0]:null;}
   return v;}
-const MD_FALL={notes:"next",cells:"memo",orders:"memo",plan:"memo"};
-const MD_MAIN={notes:"title",cells:"line",orders:"item",plan:"title"};
+const MD_FALL={notes:"next",cells:"memo",animals:"memo",orders:"memo",plan:"memo"};
+const MD_MAIN={notes:"title",cells:"line",animals:"strain",orders:"item",plan:"title"};
 /* returns {data, n}: data holds only the fields the file spoke to */
 function mdParse(tab,text,draft){const out={},extra=[];let fields=mdFields(tab,draft);const put=(f,v,append)=>{const x=mdVal(f,v);if(x==null)return false;out[f[0]]=append&&out[f[0]]?out[f[0]]+"\n\n"+x:x;if(f[0]==="kind"&&tab==="notes")fields=mdFields(tab,{...draft,...out});return true;};
   let src=String(text||"").replace(/\r/g,"").replace(/^﻿/,"");
@@ -7327,6 +7520,212 @@ async function mdNew(tab,files){files=[...files].filter(isTextF);if(!files.lengt
       const cf=REC[tab],d={...cf.defaults(),project:M.proj||""};Object.assign(d,(await mdRead(tab,t,d)).data);const main=MD_MAIN[tab];if(!String(d[main]||"").trim())d[main]=f.name.replace(/\.\w+$/,"");
       const doc={addedAt:Date.now()};cf.fields.forEach(x=>doc[x[0]]=String(d[x[0]]==null?"":d[x[0]]).trim());const id=uid();await HUB.col(tab).set(id,doc);await attFiles(tab,id,[f],true);made++;}catch(e){}}
   setTimeout(draw,80);HUB.toast(`파일 ${files.length}개로 기록 ${made}건을 만들었어요. 각 기록에 원본 파일도 붙였어요.`,6000);}
+/* ---------- lab helpers: dates, money, alerts (cells · animals · materials · notes · orders) ---------- */
+const pday=v=>{const s=String(v||"");const a=mdDate(s);if(a)return a;const m=s.match(/(\d{4})[.\-\/년\s]+(\d{1,2})(?![\d])/);return m?`${m[1]}-${m[2].padStart(2,"0")}-28`:"";};
+const dayGap=d=>{if(!d)return null;return Math.round((new Date(d+"T00:00:00")-new Date(today()+"T00:00:00"))/864e5);};
+const won=v=>{const s=String(v||"").replace(/,/g,"");const m=s.match(/(\d+(?:\.\d+)?)\s*(억|천만|백만|만|천)?\s*원?/);if(!m)return 0;const k={억:1e8,천만:1e7,백만:1e6,만:1e4,천:1e3}[m[2]]||1;return Math.round(parseFloat(m[1])*k);};
+const wonf=n=>n>=1e4?(Math.round(n/1e3)/10).toLocaleString("ko-KR")+"만원":n.toLocaleString("ko-KR")+"원";
+/* 1. cells: passage limit and mycoplasma age */
+const cellWarn=r=>{const out=[],P=parseInt(String(r.passage||"").replace(/\D/g,""),10),L=parseInt(r.plimit,10)||20;
+  if(P&&P>=L)out.push(["err",`P${P} · 한도 P${L} 넘음`]);else if(P&&P>=L-2)out.push(["",`P${P} · 한도 가까움`]);
+  const md=pday(r.myco),g=dayGap(md);if(!String(r.myco||"").trim())out.push(["",`마이코 기록 없음`]);else if(g!=null&&g< -90)out.push(["err",`마이코 검사 ${-g}일 지남`]);
+  return out;};
+/* 2. animals: weights over time */
+const wList=r=>(Array.isArray(r.weights)?r.weights:[]).filter(w=>w&&w.d&&isFinite(+w.w)).sort((a,b)=>a.d.localeCompare(b.d));
+const wDrop=r=>{const l=wList(r);if(l.length<2||!+l[0].w)return 0;return (1-(+l[l.length-1].w)/(+l[0].w))*100;};
+function wChart(l){if(l.length<2)return "";const W=340,H=110,P=26,xs=l.map(w=>new Date(w.d+"T00:00:00").getTime()),ys=l.map(w=>+w.w),x0=Math.min(...xs),x1=Math.max(...xs)||x0+1,base=ys[0],lo=Math.min(...ys,base*0.78),hi=Math.max(...ys);
+  const X=t=>P+(x1===x0?0:(t-x0)/(x1-x0))*(W-P-8),Y=v=>8+(hi===lo?0.5:(hi-v)/(hi-lo))*(H-P-8),pts=l.map((w,i)=>`${X(xs[i]).toFixed(1)},${Y(ys[i]).toFixed(1)}`).join(" ");
+  return `<svg class="wchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="체중 변화 그래프"><line x1="${P}" x2="${W-8}" y1="${Y(base*0.85).toFixed(1)}" y2="${Y(base*0.85).toFixed(1)}" class="wl15"/><line x1="${P}" x2="${W-8}" y1="${Y(base*0.8).toFixed(1)}" y2="${Y(base*0.8).toFixed(1)}" class="wl20"/><text x="${W-10}" y="${(Y(base*0.85)-3).toFixed(1)}" text-anchor="end" class="wt">−15%</text><text x="${W-10}" y="${(Y(base*0.8)-3).toFixed(1)}" text-anchor="end" class="wt">−20%</text><polyline points="${pts}" class="wp"/>${l.map((w,i)=>`<circle cx="${X(xs[i]).toFixed(1)}" cy="${Y(ys[i]).toFixed(1)}" r="3" class="wd"><title>${esc(w.d)} · ${esc(w.w)} g</title></circle>`).join("")}<text x="2" y="${(Y(hi)+4).toFixed(1)}" class="wt">${hi}</text><text x="2" y="${(Y(lo)+4).toFixed(1)}" class="wt">${Math.round(lo*10)/10}</text><text x="${P}" y="${H-4}" class="wt">${esc(l[0].d.slice(5))}</text><text x="${W-8}" y="${H-4}" text-anchor="end" class="wt">${esc(l[l.length-1].d.slice(5))}</text></svg>`;}
+function weightPanel(r){const l=wList(r),dr=wDrop(r);
+  return `<div class="cprot"><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><b style="font-size:14px">체중 기록</b><span class="muted" style="font-size:12.5px">평균 체중(g)을 날짜별로 적으면 첫 기록 대비 변화를 보여 줘요. 점선은 −15%·−20% 선이에요.</span></div>
+    <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center"><input type="date" data-wd="${r.id}" value="${today()}" style="width:150px"><input type="number" step="0.1" min="0" data-ww="${r.id}" placeholder="체중 g" style="width:110px"><input data-wn="${r.id}" placeholder="메모 (선택) · 예: 투여 3일째, 개체 #3" style="flex:1;min-width:150px"><button class="btn sm primary" type="button" data-wadd="${r.id}">기록</button></div>
+    ${l.length?`${dr>=15?`<div class="note-bar warn" style="margin-top:8px">첫 기록보다 ${dr.toFixed(1)}% 줄었어요. ${dr>=20?"인도적 종료 기준(흔히 20%)에 닿았어요. 승인 프로토콜에 따라 수의사와 상의하세요.":"인도적 종료 기준에 가까워요. 관찰 횟수를 늘리세요."}</div>`:""}${wChart(l)}
+      <div class="wlist">${l.slice().reverse().slice(0,12).map(w=>`<span class="chip sm">${esc(w.d)} · <b>${esc(w.w)} g</b>${+l[0].w&&w!==l[0]?` <small class="muted">(${(((+w.w)/(+l[0].w)-1)*100).toFixed(1)}%)</small>`:""}${w.n?` · ${esc(w.n)}`:""}<button type="button" class="linkbtn" data-wdel="${r.id}" data-at="${esc(w.d)}|${esc(w.w)}" aria-label="이 기록 지우기">×</button></span>`).join("")}</div>`:""}</div>`;}
+/* 3. animals: approved head counts per IACUC number */
+const apcol=()=>HUB.col("approvals");
+const animalTotal=a=>+a.total||+a.count||0;
+function approvalPanel(){const an=HUB.col("animals").list,ap=apcol().list.slice().sort((a,b)=>String(a.no).localeCompare(String(b.no)));
+  const used=no=>an.filter(a=>dn(a.iacuc)&&dn(a.iacuc)===dn(no)).reduce((s,a)=>s+animalTotal(a),0);
+  const unreg=[...new Set(an.map(a=>String(a.iacuc||"").trim()).filter(Boolean))].filter(n=>!ap.some(p=>dn(p.no)===dn(n)));
+  const rows=ap.map(p=>{const u=used(p.no),t=+p.total||0,left=t-u,ratio=t?u/t:0,g=dayGap(pday(p.until));return `<tr><td><b>${esc(p.no)}</b>${p.memo?`<br><small class="muted">${esc(p.memo)}</small>`:""}</td><td>${t||"—"}</td><td>${u}</td><td class="${left<0?"err":ratio>=0.9?"warnc":""}">${t?left:"—"}${t?`<div class="abar"><i style="width:${Math.min(100,ratio*100).toFixed(0)}%" class="${left<0?"over":ratio>=0.9?"near":""}"></i></div>`:""}</td><td>${esc(p.until||"—")}${g!=null&&g<0?` <span class="tag err">기간 지남</span>`:g!=null&&g<=30?` <span class="tag">${g}일 남음</span>`:""}</td><td><button class="btn sm ghost danger" type="button" data-apdel="${p.id}">지우기</button></td></tr>`;}).join("");
+  const warn=ap.filter(p=>+p.total&&used(p.no)>=(+p.total)*0.9).length;
+  return `<details class="labpanel" ${warn||unreg.length?"open":""}><summary><b>승인 마릿수 관리</b> <span class="muted">${ap.length?`승인 ${ap.length}건${warn?` · 90% 넘게 쓴 승인 ${warn}건`:""}`:"동물실험 승인번호별로 승인받은 마릿수를 넣으면 쓴 마릿수와 남은 수를 계산해요"}</span></summary>
+    ${ap.length?`<div class="mdt"><table><thead><tr><th>승인번호</th><th>승인 마릿수</th><th>쓴 마릿수</th><th>남은 수</th><th>승인 기간 끝</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><p class="muted" style="font-size:12px;margin:4px 0 0">쓴 마릿수 = 그 승인번호가 적힌 기록의 '입고 마릿수 (총)' 합 (비어 있으면 현재 마리 수)</p>`:""}
+    ${unreg.length?`<p style="margin:8px 0 4px;font-size:13px">기록에는 있지만 등록 안 된 승인번호: ${unreg.map(n=>`<button class="chip sm" type="button" data-apfill="${esc(n)}">${esc(n)} 등록</button>`).join(" ")}</p>`:""}
+    <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center"><input id="apNo" placeholder="승인번호 예: KU-IACUC-2026-01" style="flex:1;min-width:170px"><input id="apTot" type="number" min="0" placeholder="승인 마릿수" style="width:120px"><input id="apUntil" type="date" title="승인 기간 끝" style="width:150px"><input id="apMemo" placeholder="메모 (선택)" style="flex:1;min-width:120px"><button class="btn sm primary" type="button" data-apadd="1">추가</button></div></details>`;}
+/* 4. materials: expiry and low stock */
+const matAlert=m=>{const g=dayGap(pday(m.expiry));return {exp:g!=null&&g<0,soon:g!=null&&g>=0&&g<=30,g,low:!!m.low};};
+const matTags=m=>{const a=matAlert(m);return `${a.exp?`<span class="tag err">유효기한 지남</span>`:a.soon?`<span class="tag">유효기한 ${a.g}일 남음</span>`:""}${a.low?`<span class="tag err">재고 부족</span>`:""}`;};
+function matAlertBar(list){const ex=list.filter(m=>matAlert(m).exp),so=list.filter(m=>matAlert(m).soon),lo=list.filter(m=>m.low);if(!ex.length&&!so.length&&!lo.length)return "";
+  const nm=l=>l.slice(0,6).map(m=>`<button class="linkbtn" type="button" data-mopen="${m.id}">${esc(m.name||"(이름 없음)")}</button>`).join(", ")+(l.length>6?` 외 ${l.length-6}개`:"");
+  return `<div class="note-bar warn" style="margin:10px 0;display:block;line-height:1.7">${ex.length?`<div><b>유효기한 지남 ${ex.length}</b> · ${nm(ex)}</div>`:""}${so.length?`<div><b>30일 안에 만료 ${so.length}</b> · ${nm(so)}</div>`:""}${lo.length?`<div><b>재고 부족 ${lo.length}</b> · ${nm(lo)} <button class="btn sm" type="button" data-mlowall="1">부족한 물품 모두 발주 요청 만들기</button></div>`:""}</div>`;}
+async function matOrder(m){const ex=HUB.col("orders").list.find(o=>o.status!=="입고"&&o.status!=="취소"&&dn(o.item)===dn(m.name)&&(!dn(m.catalog)||dn(o.catalog)===dn(m.catalog)));if(ex)return false;
+  await HUB.col("orders").set(uid(),{kind:m.category==="동물"?"동물":"물품",item:m.name||"",vendor:m.vendor||"",catalog:m.catalog||"",qty:"",amount:m.price||"",status:"요청",ordered:today(),due:"",received:"",requester:"",project:m.project||"",account:"",sex:"",age:"",iacuc:"",memo:"물품 목록에서 만든 요청"+(m.spec?" · 규격 "+m.spec:""),addedAt:Date.now()});return true;}
+/* 5. notes: what a note used (cell vials, animals, items) */
+function usePanel(r){const uses=Array.isArray(r.uses)?r.uses:[],ce=HUB.col("cells").list.filter(c=>(+c.vials||0)>0),an=HUB.col("animals").list.filter(a=>(+a.count||0)>0),ma=col().list;
+  const opt=(c,l,lab)=>l.map(x=>`<option value="${c}:${x.id}">${esc(lab(x))}</option>`).join("");
+  return `<div class="cprot"><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><b style="font-size:14px">이 실험에서 쓴 것</b><span class="muted" style="font-size:12.5px">세포 바이알·동물을 고르면 기록부의 수량이 그만큼 줄고, 서로 연결돼요. 물품은 연결만 해요.</span></div>
+    ${uses.length?`<div class="wlist" style="margin-top:8px">${uses.map((u,i)=>`<span class="chip sm">${esc(u.label)}${u.n?` · <b>${u.n}${u.c==="cells"?"개":u.c==="animals"?"마리":""}</b>`:""}<button type="button" class="linkbtn" data-usego="${i}" data-id="${r.id}">열기</button><button type="button" class="linkbtn" data-useundo="${i}" data-id="${r.id}" title="수량을 되돌리고 연결을 지워요">되돌리기</button></span>`).join("")}</div>`:""}
+    <div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center"><select data-usesel="${r.id}" style="flex:1;min-width:200px"><option value="">고르기…</option>${ce.length?`<optgroup label="세포 관리 기록부">${opt("cells",ce,c=>`${c.line}${c.passage?" P"+String(c.passage).replace(/^p/i,""):""} · 바이알 ${c.vials}개${c.loc?" · "+c.loc:""}`)}</optgroup>`:""}${an.length?`<optgroup label="동물 관리 기록부">${opt("animals",an,a=>`${a.strain} ${a.sex||""} · ${a.count}마리${a.loc?" · "+a.loc:""}`)}</optgroup>`:""}${ma.length?`<optgroup label="물품 목록 (연결만)">${opt("materials",ma.slice(0,300),m=>`${m.name}${m.catalog?" · "+m.catalog:""}`)}</optgroup>`:""}</select><input type="number" min="1" value="1" data-usen="${r.id}" style="width:80px" aria-label="수량"><button class="btn sm primary" type="button" data-useadd="${r.id}">기록</button></div></div>`;}
+/* 6. orders: money by account and by project against the grant's 연구재료비 */
+const UNIT={원:1,천원:1e3,만원:1e4,백만원:1e6};
+function budgetPanel(){const od=HUB.col("orders").list.filter(o=>o.status!=="취소"&&inProj(o)),sum=l=>l.reduce((s,o)=>s+won(o.amount),0);if(!od.length)return "";
+  const by=k=>{const m=new Map();od.forEach(o=>{const v=String(o[k]||"").trim()||"(비어 있음)";(m.get(v)||m.set(v,[]).get(v)).push(o);});return [...m.entries()].sort((a,b)=>sum(b[1])-sum(a[1]));};
+  const noAmt=od.filter(o=>!won(o.amount)).length;
+  const mat=p=>{let t=0,has=false;gcol().list.filter(g=>(g.project||"")===p&&g.budget&&g.budget.rows).forEach(g=>{const b=g.budget,c=bCalc(b),u=UNIT[String(b.unit||"천원").replace(/\s/g,"")]||1e3;b.rows.forEach((r,i)=>{if(/연구재료비/.test(r.name)){t+=c.rt[i]*u;has=true;}});});return has?t:null;};
+  const acc=by("account").map(([k,l])=>`<tr><td>${esc(k)}</td><td>${l.length}</td><td>${wonf(sum(l.filter(o=>o.status==="입고")))}</td><td>${wonf(sum(l.filter(o=>o.status!=="입고")))}</td><td><b>${wonf(sum(l))}</b></td></tr>`).join("");
+  const prj=by("project").map(([k,l])=>{const s=sum(l),b=k==="(비어 있음)"?null:mat(k);return `<tr><td>${esc(k)}</td><td>${l.length}</td><td><b>${wonf(s)}</b></td><td>${b==null?`<span class="muted">과제 문서에 연구비 표 없음</span>`:`${wonf(b)} 중 ${(s/b*100).toFixed(1)}%${s>b?` <span class="tag err">넘음</span>`:s>b*0.9?` <span class="tag">90% 넘음</span>`:""}<div class="abar"><i style="width:${Math.min(100,s/b*100).toFixed(0)}%" class="${s>b?"over":s>b*0.9?"near":""}"></i></div>`}</td></tr>`;}).join("");
+  return `<details class="labpanel"><summary><b>연구비 집계</b> <span class="muted">취소 빼고 ${od.length}건 · 합계 ${wonf(sum(od))}${noAmt?` · 금액 없는 ${noAmt}건`:""}</span></summary>
+    <h4 class="psec">과제·계정별</h4><div class="mdt"><table><thead><tr><th>과제·계정</th><th>건수</th><th>입고</th><th>요청·발주 중</th><th>합계</th></tr></thead><tbody>${acc}</tbody></table></div>
+    <h4 class="psec">프로젝트별 · 과제 계획의 연구재료비와 비교</h4><div class="mdt"><table><thead><tr><th>프로젝트</th><th>건수</th><th>합계</th><th>연구재료비 대비</th></tr></thead><tbody>${prj}</tbody></table></div>
+    <p class="muted" style="font-size:12px;margin:6px 0 0">금액 칸의 숫자를 읽어 합해요 (예: 120,000원 · 12만원). 연구재료비는 '과제 계획·평가'에서 같은 프로젝트로 지정한 문서의 연구비 표(단위 반영)에서 가져와요.</p></details>`;}
+document.addEventListener("click",async e=>{if(HUB.view!=="mat")return;const t=e.target;
+  let b=t.closest("[data-wadd]");if(b){const id=b.dataset.wadd,r=HUB.col("animals").list.find(x=>x.id===id);if(!r)return;const d=(document.querySelector(`[data-wd="${id}"]`)||{}).value||today(),w=parseFloat((document.querySelector(`[data-ww="${id}"]`)||{}).value),n=((document.querySelector(`[data-wn="${id}"]`)||{}).value||"").trim();
+    if(!isFinite(w)||w<=0){HUB.toast("체중(g)을 숫자로 넣어 주세요");return;}await HUB.col("animals").update(id,{weights:[...wList(r),{d,w:String(Math.round(w*10)/10),n}],weight:`${Math.round(w*10)/10} g (${d})`});setTimeout(draw,60);return;}
+  b=t.closest("[data-wdel]");if(b){const id=b.dataset.wdel,r=HUB.col("animals").list.find(x=>x.id===id);if(!r)return;const [d,w]=b.dataset.at.split("|");let gone=false;await HUB.col("animals").update(id,{weights:wList(r).filter(x=>{if(!gone&&x.d===d&&String(x.w)===w){gone=true;return false;}return true;})});setTimeout(draw,60);return;}
+  b=t.closest("[data-apadd]");if(b){const no=($("#apNo").value||"").trim(),tot=parseInt($("#apTot").value,10);if(!no){HUB.toast("승인번호를 적어 주세요");return;}if(apcol().list.some(p=>dn(p.no)===dn(no))){HUB.toast("이미 등록한 승인번호예요");return;}
+    await apcol().set(uid(),{no,total:isFinite(tot)?String(tot):"",until:$("#apUntil").value||"",memo:($("#apMemo").value||"").trim(),addedAt:Date.now()});setTimeout(draw,60);return;}
+  b=t.closest("[data-apfill]");if(b){const i=$("#apNo");if(i){i.value=b.dataset.apfill;const n=$("#apTot");if(n)n.focus();}return;}
+  b=t.closest("[data-apdel]");if(b){if(b.dataset.arm!=="1"){b.dataset.arm="1";b.textContent="한 번 더 누르면 지워요";setTimeout(()=>{if(b.isConnected){b.dataset.arm="";b.textContent="지우기";}},3000);return;}await apcol().remove(b.dataset.apdel);setTimeout(draw,60);return;}
+  b=t.closest("[data-mlow]");if(b){const m=col().list.find(x=>x.id===b.dataset.mlow);if(m){await col().update(m.id,{low:!m.low});setTimeout(draw,60);}return;}
+  b=t.closest("[data-morder]");if(b){const m=col().list.find(x=>x.id===b.dataset.morder);if(m){HUB.toast(await matOrder(m)?"발주 기록에 '요청'으로 만들었어요":"이 물품은 이미 진행 중인 발주가 있어요",4500);}return;}
+  b=t.closest("[data-mlowall]");if(b){let n=0;for(const m of col().list.filter(x=>x.low))if(await matOrder(m))n++;HUB.toast(n?`발주 요청 ${n}건을 만들었어요`:"모두 이미 진행 중인 발주가 있어요",4500);return;}
+  b=t.closest("[data-useadd]");if(b){const id=b.dataset.useadd,nt=HUB.col("notes").list.find(x=>x.id===id),v=(document.querySelector(`[data-usesel="${id}"]`)||{}).value||"",n=Math.max(1,parseInt((document.querySelector(`[data-usen="${id}"]`)||{}).value,10)||1);
+    if(!nt||!v){HUB.toast("쓴 세포·동물·물품을 골라 주세요");return;}const [c,rid]=v.split(":"),x=HUB.col(c).list.find(y=>y.id===rid);if(!x)return;
+    const title=nt.title||"실험노트",lg=w=>[{at:today(),what:w},...(x.log||[])].slice(0,30);let u;
+    if(c==="cells"){const have=+x.vials||0;if(n>have){HUB.toast(`바이알이 ${have}개뿐이에요`);return;}await HUB.col("cells").update(rid,{vials:String(have-n),log:lg(`${n}개 사용 · 노트 '${title}'`)});u={c,id:rid,n,label:`${x.line}${x.passage?" P"+String(x.passage).replace(/^p/i,""):""}`};}
+    else if(c==="animals"){const have=+x.count||0;if(n>have){HUB.toast(`${have}마리뿐이에요`);return;}await HUB.col("animals").update(rid,{count:String(have-n),log:lg(`${n}마리 사용 · 노트 '${title}'`)});u={c,id:rid,n,label:`${x.strain}${x.sex?" "+x.sex:""}`};}
+    else u={c,id:rid,n:0,label:x.name||"물품"};
+    await HUB.col("notes").update(id,{uses:[...(nt.uses||[]),u]});HUB.toast(c==="materials"?"물품을 연결했어요":"기록부 수량을 줄이고 연결했어요");setTimeout(draw,60);return;}
+  b=t.closest("[data-useundo]");if(b){const nt=HUB.col("notes").list.find(x=>x.id===b.dataset.id);if(!nt)return;const i=+b.dataset.useundo,u=(nt.uses||[])[i];if(!u)return;const x=HUB.col(u.c).list.find(y=>y.id===u.id);
+    if(x&&u.n){if(u.c==="cells")await HUB.col("cells").update(x.id,{vials:String((+x.vials||0)+u.n),log:[{at:today(),what:`${u.n}개 되돌림 (노트 '${nt.title||""}')`},...(x.log||[])].slice(0,30)});if(u.c==="animals")await HUB.col("animals").update(x.id,{count:String((+x.count||0)+u.n),log:[{at:today(),what:`${u.n}마리 되돌림 (노트 '${nt.title||""}')`},...(x.log||[])].slice(0,30)});}
+    await HUB.col("notes").update(nt.id,{uses:(nt.uses||[]).filter((_,j)=>j!==i)});setTimeout(draw,60);return;}
+  b=t.closest("[data-usego]");if(b){const nt=HUB.col("notes").list.find(x=>x.id===b.dataset.id),u=nt&&(nt.uses||[])[+b.dataset.usego];if(!u)return;M.tab=u.c;save();if(u.c==="materials")open=u.id;else{RS.open=u.id;RS.q="";RS.chip="*";}draw();return;}
+});
+/* ---------- received orders → the matching list (물품 목록 · 세포 관리 기록부 · 동물 관리 기록부), once per order ---------- */
+const OTGT=r=>r.kind==="세포"?"cells":r.kind==="동물"?"animals":"materials";
+const OTNAME={materials:"물품 목록",cells:"세포 관리 기록부",animals:"동물 관리 기록부"};
+const orderDoc=(t,r)=>t==="cells"?{line:r.item||"",passage:"",vials:r.qty&&/^\d+$/.test(r.qty)?r.qty:"1",frozen:"",loc:"",medium:"",freeze:"",myco:"",source:r.vendor||"",by:r.requester||"",project:r.project||"",memo:"발주 기록에서 추가 ("+(r.received||today())+" 입고)",fromOrder:r.id,addedAt:Date.now()}
+  :t==="animals"?{strain:r.item||"",species:/rat|랫/i.test(r.item||"")?"랫드":"마우스",sex:/암|female|♀/i.test(r.sex||"")?"암컷":/수|male|♂/i.test(r.sex||"")?"수컷":"",count:r.qty&&/^\d+$/.test(r.qty)?r.qty:"",total:r.qty&&/^\d+$/.test(r.qty)?r.qty:"",received:r.received||today(),age:r.age||"",weight:"",loc:"",group:"",source:r.vendor||"",iacuc:r.iacuc||"",health:"",by:r.requester||"",project:r.project||"",memo:"발주 기록에서 추가",fromOrder:r.id,addedAt:Date.now()}
+  :{name:r.item||"",vendor:r.vendor||"",catalog:r.catalog||"",lot:"",cas:"",spec:"",purity:"",storage:"",qty:r.qty||"",price:r.amount||"",date:r.received||r.ordered||"",expiry:"",category:"기타",asset:"",source:"발주 기록",project:r.project||"",memo:"",protocol:"",fromOrder:r.id,addedAt:Date.now()};
+const orderHas=(t,r)=>HUB.col(t).list.find(x=>x.fromOrder===r.id||(t==="cells"?dn(x.line)===dn(r.item):t==="animals"?dn(x.strain)===dn(r.item)&&(x.received||"")===(r.received||""):dn(x.name)===dn(r.item)&&(!dn(r.catalog)||!dn(x.catalog)||dn(x.catalog)===dn(r.catalog))));
+let osyncBusy=false,osyncT=0;
+const osyncReady=()=>["orders","materials","cells","animals"].every(c=>HUB.col(c).loaded!==false)&&(HUB.storage!=="cloud"||HUB.cloudFull);
+async function syncOrders(quiet){if(osyncBusy||!osyncReady())return 0;osyncBusy=true;const made={materials:0,cells:0,animals:0};
+  try{for(const r of HUB.col("orders").list.filter(o=>o.status==="입고"&&!o.synced&&dn(o.item))){const t=OTGT(r),ex=orderHas(t,r),lg=[{at:today(),what:ex?OTNAME[t]+"에 이미 있음 (연결)":OTNAME[t]+"에 자동 추가"},...(r.log||[])].slice(0,30);
+      let id=ex&&ex.id;if(!ex){id=uid();await HUB.col(t).set(id,orderDoc(t,r));made[t]++;}
+      await HUB.col("orders").update(r.id,{synced:{col:t,id,at:Date.now()},log:lg});}}
+  catch(e){}finally{osyncBusy=false;}
+  const n=made.materials+made.cells+made.animals;
+  if(n&&!quiet)HUB.toast("입고된 발주 품목을 옮겼어요: "+Object.keys(made).filter(k=>made[k]).map(k=>`${OTNAME[k]} ${made[k]}건`).join(", "),6000);
+  if(n)setTimeout(draw,80);return n;}
+const syncSoon=()=>{clearTimeout(osyncT);osyncT=setTimeout(()=>syncOrders(false),700);};
+/* ---------- cell and animal logs: a standard protocol for the line or strain ---------- */
+let cpBusy="";
+const LP={
+ cells:{name:r=>r.line,need:"세포주 이름",sub:"해동 · 배양 · 계대 · 동결 · 마이코플라스마 검사",ph:"어디에 쓸지 (선택) · 예: 시스플라틴 독성 실험, 3D 배양",title:"세포 프로토콜 · ",role:"세포 배양실의 경험 많은 선임 연구원",
+  desc:r=>`세포: ${r.line} | 계대: ${r.passage||"-"} | 기록된 배양 배지: ${r.medium||"-"} | 기록된 동결 배지: ${r.freeze||"-"} | 출처: ${r.source||"-"} | 마이코플라스마 기록: ${r.myco||"-"}`,
+  rules:`- 이 세포주가 무엇인지(종, 조직, 형태) 확실하지 않으면 지어내지 말고 맨 위에 Cellosaurus·분양처(ATCC·KCLB 등) 정보로 확인하라고 적으세요.
+- 배지·혈청 농도, 분주 비율, 계대 주기는 그 세포주에 널리 쓰이는 범위로 적고 '분양처 권장 조건 확인'이라고 표시하세요. 기록된 배지가 있으면 그것을 기준으로 쓰세요.`,
+  parts:`## 세포 정보 (종·조직·형태·생물안전등급, 확인할 출처)
+## 준비물 (배지 조성, 혈청·항생제, 해리 시약, 소모품·장비)
+## 해동 (Thawing) (번호 목록, 온도·시간·원심 조건)
+## 배양과 관찰 (밀도, 배지 교환 주기, 정상 형태)
+## 계대 (Passaging) (컨플루언시 기준, 해리 시간, 분주 비율, 세포 수 세기)
+## 동결 (Freezing) (세포 수/바이알, 동결 배지, 서서히 얼리기, 보관 위치 기록)
+## 마이코플라스마·품질 관리 (검사 주기, STR 인증, 계대 수 한계)
+## 자주 생기는 문제와 해결 (표: 증상 | 원인 | 해결)
+## 논문 Methods 문장 (영어, 과거 수동태. 세포 출처·배지·조건, 실제 값은 [대괄호 빈칸])
+## 쓰기 전에 확인할 것 (분양처 데이터시트, 기관 생물안전 규정)`,
+  foot:"분양처 데이터시트와 기관의 생물안전 규정"},
+ animals:{name:r=>r.strain,need:"계통",sub:"입고·순화 · 사육 환경 · 관찰·체중 · 투여·채혈 · 인도적 종료 기준",ph:"어디에 쓸지 (선택) · 예: 시스플라틴 유발 AKI 모델, 꼬리정맥 나노입자 투여",title:"동물 프로토콜 · ",role:"실험동물실의 경험 많은 선임 연구원",
+  desc:r=>`계통: ${r.strain} | 종: ${r.species||"-"} | 성별: ${r.sex||"-"} | 입고 주령·생년월일: ${r.age||"-"} | 체중: ${r.weight||"-"} | 실험군·처치: ${r.group||"-"} | 공급처: ${r.source||"-"} | 승인번호: ${r.iacuc||"없음"}`,
+  rules:`- 이 계통의 특성(유전 배경, 알려진 표현형, 주의할 점)이 확실하지 않으면 지어내지 말고 맨 위에 공급처(JAX·Charles River·오리엔트바이오 등) 데이터시트와 MGI로 확인하라고 적으세요.
+- 투여량·채혈량·마취 조건은 널리 쓰이는 범위로 적고 '기관 동물실험윤리위원회(IACUC) 승인 프로토콜과 수의사 지침 확인'이라고 표시하세요. 승인 프로토콜이 이 문서보다 우선한다고 밝히세요.
+- 3R(대체·감소·개선)과 통증 최소화를 반영하세요.`,
+  parts:`## 동물 정보 (종·계통·유전 배경, 알려진 표현형, 확인할 출처)
+## 입고와 순화 (검수, 순화 기간, 격리, 개체 식별 방법)
+## 사육 환경 (온도·습도·명암 주기, 케이지당 마릿수, 사료·물, 깔짚 교체, 환경 풍부화)
+## 관찰과 체중 측정 (주기, 기록 항목, 건강 점수표)
+## 투여·채혈·검체 채취 (경로별 일반 부피 범위, 바늘 규격, 보정 방법, 마취·진통)
+## 인도적 종료 기준 (Humane endpoint) (체중 감소·행동 변화 기준, 수의사 보고, 승인된 방법으로 처리)
+## 기록과 승인 (IACUC 승인번호·마릿수 관리, 사용 기록부, 사체 처리)
+## 자주 생기는 문제와 해결 (표: 증상 | 원인 | 해결)
+## 논문 Methods 문장 (영어, 과거 수동태. 동물 출처·주령·사육 조건·승인번호, ARRIVE 지침 항목, 실제 값은 [대괄호 빈칸])
+## 쓰기 전에 확인할 것 (IACUC 승인 프로토콜, 기관 동물실 SOP, 수의사 지침)`,
+  foot:"기관 동물실험윤리위원회(IACUC) 승인 프로토콜과 동물실 SOP, 수의사 지침"}};
+function labProt(c,r){const L=LP[c],busy=cpBusy===r.id;
+  return `<div class="cprot"><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><b style="font-size:14px">표준 프로토콜</b><span class="muted" style="font-size:12.5px">${L.sub}</span></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:8px"><input data-cuse="${r.id}" placeholder="${L.ph}" value="${esc(r.protocolUse||"")}" style="flex:1;min-width:200px"><button class="btn sm ${r.protocol?"":"primary"}" type="button" data-cp="gen" data-c="${c}" data-id="${r.id}" ${cpBusy?"disabled":""}>${busy?"쓰는 중…":r.protocol?"다시 쓰기":"표준 프로토콜 보기"}</button></div>
+    ${busy?`<div class="mprot md" id="cProtLive"><p class="muted">프로토콜을 쓰는 중이에요…</p></div>`:r.protocol?`<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px">${[["docx","Word·한글 (.docx)"],["pdf","PDF"],["copy","복사"],["rep","보고서에 저장"],["meth","Methods 문장을 원고에 넣기"]].map(([k,n])=>`<button class="btn sm" type="button" data-cp="${k}" data-c="${c}" data-id="${r.id}">${n}</button>`).join("")}</div><div class="mprot md">${HUB.md(r.protocol)}</div>`:""}</div>`;}
+async function labProtGen(c,id){const L=LP[c],r=HUB.col(c).list.find(x=>x.id===id);if(!L||!r||cpBusy)return;const inp=document.querySelector(`[data-cuse="${id}"]`),use=inp?inp.value.trim():(r.protocolUse||"");
+  if(!String(L.name(r)||"").trim()){HUB.toast(L.need+"을(를) 먼저 적어 주세요");return;}
+  cpBusy=id;draw();
+  try{const md=await HUB.ai.text(`당신은 ${L.role}입니다. 연구자의 연구 주제: "${HUB.lib.context}". 한국어로 쓰고 전문 용어는 처음에 영어를 병기하세요. 마크다운.
+아래 기록에 대한 ${use?`'${use}' 용도를 고려한 `:""}표준 프로토콜을 쓰세요.
+${L.desc(r)}
+규칙:
+${L.rules}
+구성:
+${L.parts}`,{modelTier:"default",onText:x=>{const el=$("#cProtLive");if(el)el.innerHTML=HUB.md(x);}});
+    const text=String(md).trim()+`\n\n※ AI가 일반적인 표준 방법을 바탕으로 쓴 초안이에요. 실험 전에 ${L.foot}으로 확인하세요.`;
+    await HUB.col(c).update(id,{protocol:text,protocolUse:use,protocolAt:Date.now()});}
+  catch(e){HUB.toast(e&&e.code==="cancelled"?"취소했어요":HUB.aiErr(e),6000);}
+  cpBusy="";setTimeout(draw,60);}
+document.addEventListener("click",async e=>{if(HUB.view!=="mat")return;const b=e.target.closest("[data-cp]");if(!b)return;const id=b.dataset.id,k=b.dataset.cp,c=LP[b.dataset.c]?b.dataset.c:"cells";
+  if(k==="gen"){labProtGen(c,id);return;}const r=HUB.col(c).list.find(x=>x.id===id);if(!r||!r.protocol)return;const title=LP[c].title+(LP[c].name(r)||"");
+  if(k==="copy")HUB.copy(r.protocol);else if(k==="docx"||k==="pdf")HUB.exportDoc(k,r.protocol,fname(title));
+  else if(k==="rep"){await HUB.col("reports").set(uid(),{title,tool:"protocol",md:r.protocol,addedAt:Date.now()});HUB.toast("보고서에 저장했어요");}
+  else if(k==="meth"){const mm=r.protocol.match(/##\s*논문 Methods 문장[^\n]*\n+([\s\S]*?)(?=\n##\s|\n※|$)/);const t=mm?mm[1].trim():"";if(!t){HUB.toast("프로토콜에서 Methods 문장을 찾지 못했어요");return;}await toMethods(t,c+":"+r.id);}});
+/* ---------- photos and statements (images, scanned PDFs) → records: the AI reads the picture into the tab's fields ---------- */
+const isVisF=f=>/^image\//.test(f.type||"")||/\.(jpe?g|png|webp|gif|bmp|heic|heif|pdf)$/i.test(f.name||"");
+const VISHOW={animals:"동물 입고 명세서·케이지 카드·사육 기록지 사진입니다. 계통·성별·입고일·케이지가 다른 묶음마다 기록 하나로 나누세요.",orders:"거래명세서·견적서·주문 화면·물품 라벨 사진입니다. 물품(줄)마다 발주 기록 하나로 나누세요. 배송비·부가세·합계 줄은 물품이 아닙니다.",cells:"세포 동결 바이알 라벨, 동결 상자 표, 세포 분양 명세서·성적서(CoA) 사진입니다. 세포주·동결일·계대가 다른 stock마다 기록 하나로 나누세요.",notes:"손으로 쓰거나 인쇄한 실험노트·프로토콜·실험 결과 사진입니다. 기록 하나로 정리하고, 손글씨는 그대로 옮기세요.",plan:"실험 일정표·달력·계획 메모 사진입니다. 일정마다 기록 하나로 나누세요."};
+async function visBlobs(f){if(/\.pdf$/i.test(f.name||"")||f.type==="application/pdf"){let tx="";try{tx=String(((await HUB.lib.readFile(f))||{}).text||"").trim();}catch(e){}
+    if(tx.replace(/\s+/g,"").length>150)return {text:tx};let pg=[];try{pg=await pdfPages(f);}catch(e){}return {blobs:pg.slice(0,6)};}
+  return {blobs:[await toJpeg(f,2200)]};}
+async function visRead(tab,f,draft){const all=tab==="notes"?REC.notes.fields:mdFields(tab,draft),src=await visBlobs(f);
+  if(src.text){const r=await mdRead(tab,src.text,draft);return r.n?[r.data]:[];}
+  if(!src.blobs||!src.blobs.length)throw new Error(`'${f.name}'을(를) 그림으로 바꾸지 못했어요`);
+  if(!(await HUB.ai.canSee()))throw Object.assign(new Error("사진을 읽으려면 그림을 볼 수 있는 AI가 필요해요. 설정에서 Claude·Gemini·API 키 중 하나를 연결해 주세요."),{code:"nosee"});
+  const t=await ask(`${VISHOW[tab]||""}
+사진에 보이는 내용을 실험 기록 양식의 칸에 나눠 넣으세요. 보이는 글자만 옮기고 지어내지 마세요. 없는 칸은 빼세요. 날짜는 YYYY-MM-DD. 읽기 어려운 글자는 [?]로 표시하세요.
+칸 (키: 이름${tab==="notes"?", 분류(kind)가 정해지면 그 분류의 칸을 쓰세요":""}):
+${all.map(x=>`${x[0]}: ${x[1]}${Array.isArray(x[2])?" (다음 중 하나: "+x[2].join(", ")+")":""}`).join("\n")}
+JSON 객체 하나로만 답하세요: {"records":[{"키":"값", ...}]}${tab==="notes"?" (records에는 하나만)":""}`,src.blobs,"default");
+  let j;try{j=HUB.parseJson(t);}catch(e){j=null;}const recs=Array.isArray(j)?j:(j&&Array.isArray(j.records)?j.records:j&&typeof j==="object"?[j]:[]);
+  return recs.map(o=>{const out={};Object.keys(o||{}).forEach(k=>{const x=all.find(y=>y[0]===k)||(tab==="notes"?nfields({...draft,kind:o.kind}).find(y=>y[0]===k):null);if(x){const v=mdVal(x,o[k]);if(v!=null&&String(v).trim())out[k]=v;}});return out;}).filter(o=>Object.keys(o).length).slice(0,tab==="notes"?1:40);}
+let visBusy=false;
+async function visNew(tab,files){files=[...files].filter(isVisF);if(!files.length){HUB.toast("사진(JPG·PNG 등)이나 PDF를 골라 주세요");return;}
+  if(visBusy){HUB.toast("앞의 사진을 읽는 중이에요. 끝나면 다시 올려 주세요");return;}visBusy=true;draw();
+  const isPlan=tab==="plan",cf=isPlan?null:REC[tab],base=()=>isPlan?{kind:"세포",date:PS.day,project:M.proj||""}:{...cf.defaults(),project:M.proj||""};
+  try{const got=[];for(let i=0;i<files.length;i++){HUB.toast(`사진·명세서를 읽는 중… (${i+1}/${files.length}) 다른 작업을 해도 돼요`,4000);
+      try{(await visRead(tab,files[i],base())).forEach(d=>got.push({d,f:files[i]}));}catch(e){if(e&&e.code==="nosee"){HUB.toast(e.message,7000);return;}HUB.toast(`'${files[i].name}': ${HUB.aiErr(e)}`,5000);}}
+    if(!got.length){HUB.toast("사진에서 양식에 넣을 내용을 찾지 못했어요. 원본만 붙이려면 '추가'를 열고 파일을 끌어 놓으세요",6000);return;}
+    if(got.length===1){const {d,f}=got[0];
+      if(isPlan){PS.adding=true;PS.edit="";PS.draft=Object.assign(base(),d);PS.pend=[f];if(PS.draft.date){PS.day=PS.draft.date;PS.ym=PS.day.slice(0,7);}}
+      else{RS.adding=true;RS.edit="";RS.draft=Object.assign(base(),d);RS.pend=[f];}
+      draw();const el=document.querySelector("#rNew");if(el)el.scrollIntoView({block:"start",behavior:"smooth"});
+      HUB.toast(`'${f.name}'에서 ${Object.keys(d).length}칸을 읽어 채웠어요. AI가 읽은 값이니 확인하고 저장하세요. 원본도 함께 붙어요.`,7000);return;}
+    let made=0;const used=new Set();
+    for(const {d,f} of got){try{const x=Object.assign(base(),d),id=uid();
+        if(isPlan){if(!x.title)x.title=f.name.replace(/\.\w+$/,"");await pcol().set(id,{title:String(x.title).trim(),kind:x.kind||"분석·기타",date:x.date||PS.day,end:x.end||"",time:x.time||"",project:(x.project||"").trim(),memo:(x.memo||"").trim(),done:false,noteId:"",photos:[],files:[],addedAt:Date.now()});await attFiles("plans",id,[f],true);}
+        else{const main=MD_MAIN[tab];if(!String(x[main]||"").trim())x[main]=f.name.replace(/\.\w+$/,"");const doc={addedAt:Date.now(),fromPhoto:true};cf.fields.forEach(y=>doc[y[0]]=String(x[y[0]]==null?"":x[y[0]]).trim());await HUB.col(tab).set(id,doc);await attFiles(tab,id,[f],true);}
+        made++;used.add(f);}catch(e){}}
+    setTimeout(draw,80);HUB.toast(`사진·명세서 ${used.size}개에서 기록 ${made}건을 만들었어요. AI가 읽은 값이니 한 번씩 확인하세요. 각 기록에 원본도 붙였어요.`,8000);}
+  finally{visBusy=false;setTimeout(draw,60);}}
+/* an add form already open: fill its empty fields from a photo */
+async function visFill(key,files){const f=[...files].find(isVisF);if(!f)return;const isPlan=key==="plan";
+  if(visBusy){HUB.toast("앞의 사진을 읽는 중이에요");return;}visBusy=true;
+  try{HUB.toast("사진을 읽는 중…",4000);const draft=isPlan?(PS.draft||{}):(RS.draft||{}),r=(await visRead(isPlan?"plan":M.tab,f,draft))[0];
+    if(!r){HUB.toast("사진에서 양식에 넣을 내용을 찾지 못했어요",5000);return;}
+    const def=isPlan?{kind:"세포",date:PS.day,project:M.proj||""}:{...REC[M.tab].defaults(),project:M.proj||""},add=mdKeep(draft,r,def);
+    if(isPlan){PS.draft=Object.assign(draft,add);(PS.pend||(PS.pend=[])).push(f);}else{RS.draft=Object.assign(draft,add);(RS.pend||(RS.pend=[])).push(f);}
+    draw();HUB.toast(`사진에서 빈 칸 ${Object.keys(add).length}개를 채웠어요. 확인하고 저장하세요.`,6000);}
+  catch(e){HUB.toast(e&&e.code==="nosee"?e.message:HUB.aiErr(e),6000);}
+  finally{visBusy=false;}}
+document.addEventListener("change",e=>{const t=e.target;if(!t||!t.files||!t.files.length||!t.dataset)return;
+  if(t.dataset.visnew){const fs=[...t.files];t.value="";visNew(t.dataset.visnew==="plan"?"plan":M.tab,fs);}
+  else if(t.dataset.visfill){const fs=[...t.files];t.value="";visFill(t.dataset.visfill,fs);}});
 /* an add form already open: fill it from the file */
 /* fill only what is still empty or a default, so what the user already typed stays */
 const mdKeep=(draft,data,def)=>{const o={};Object.keys(data).forEach(k=>{const v=String(draft[k]==null?"":draft[k]).trim();if(!v||v===String(def[k]==null?"":def[k]))o[k]=data[k];});return o;};
@@ -7346,6 +7745,7 @@ const dn=v=>String(v==null?"":v).toLowerCase().replace(/[\s·.,\-_/()]+/g,"");
 const DUPKEY={
   materials:m=>dn(m.name)?(dn(m.catalog)||dn(m.lot)?["m",dn(m.name),dn(m.catalog),dn(m.lot)].join("|"):["m",dn(m.name),dn(m.vendor),dn(m.spec)].join("|")):null,
   cells:r=>dn(r.line)?["c",dn(r.line),dn(r.passage),r.frozen||"",dn(r.loc)].join("|"):null,
+  animals:r=>dn(r.strain)?["a",dn(r.strain),dn(r.sex),r.received||"",dn(r.loc),dn(r.group)].join("|"):null,
   orders:r=>dn(r.item)?["o",dn(r.item),dn(r.vendor),dn(r.catalog),r.ordered||""].join("|"):null,
   notes:r=>dn(r.title)?["n",dn(r.title),r.date||"",r.kind||""].join("|"):null,
   plans:r=>dn(r.title)?["p",dn(r.title),r.date||"",r.time||""].join("|"):null};
@@ -7377,10 +7777,10 @@ const rfield=(f,r,attr)=>{const [k,l,t]=f,v=r[k]==null?"":r[k];
 function recHtml(){const cf=REC[M.tab],all=rcol().list.filter(inProj),list=rview(),NT=M.tab==="notes";
   if(NT)[...RS.nsel].forEach(id=>{if(!rcol().list.some(x=>x.id===id))RS.nsel.delete(id);});const ns=NT?RS.nsel.size:0;
   if(RS.chip!=="*"&&!cf.chips(all).some(c=>c[0]===RS.chip))RS.chip="*";
-  return `<section class="card pad"><div class="mbar"><input id="rQ" class="search" type="search" placeholder="${cf.ph}" value="${esc(RS.q)}" autocomplete="off"><button class="btn primary" type="button" data-r="new">${cf.add}</button><label class="btn" title="마크다운(.md)·텍스트 파일의 내용을 읽어 칸을 채워요. 여러 개를 고르면 파일마다 기록을 하나씩 만들어요. 이 화면에 파일을 끌어 놓아도 돼요." style="cursor:pointer">마크다운 파일로 등록<input type="file" data-mdnew="rec" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><button class="btn" type="button" data-r="exp" ${all.length?"":"disabled"}>엑셀로 내보내기</button>${NT?tplSelect():""}${NT&&all.length&&!ns?`<button class="btn" type="button" data-r="nbdocx" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요. 일부만 담으려면 노트 왼쪽 칸을 체크하세요">노트 모음 Word·한글</button><button class="btn" type="button" data-r="nbpdf" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요">노트 모음 PDF</button>`:""}</div>
+  return `<section class="card pad"><div class="mbar"><input id="rQ" class="search" type="search" placeholder="${cf.ph}" value="${esc(RS.q)}" autocomplete="off"><button class="btn primary" type="button" data-r="new">${cf.add}</button><label class="btn" title="마크다운(.md)·텍스트 파일의 내용을 읽어 칸을 채워요. 여러 개를 고르면 파일마다 기록을 하나씩 만들어요. 이 화면에 파일을 끌어 놓아도 돼요." style="cursor:pointer">마크다운 파일로 등록<input type="file" data-mdnew="rec" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><label class="btn${visBusy?" busy":""}" title="거래명세서·견적서·라벨·손글씨 노트 사진이나 스캔 PDF를 AI가 읽어 칸을 채워요. 한 장에 여러 물품이 있으면 물품마다 기록을 만들어요. 원본도 기록에 붙어요." style="cursor:pointer">${visBusy?"사진 읽는 중…":"사진·명세서로 등록"}<input type="file" data-visnew="rec" multiple hidden accept="image/*,.pdf,application/pdf"></label><button class="btn" type="button" data-r="exp" ${all.length?"":"disabled"}>엑셀로 내보내기</button>${NT?tplSelect():""}${NT&&all.length&&!ns?`<button class="btn" type="button" data-r="nbdocx" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요. 일부만 담으려면 노트 왼쪽 칸을 체크하세요">노트 모음 Word·한글</button><button class="btn" type="button" data-r="nbpdf" title="지금 보이는 노트 전체를 날짜순으로 한 파일에 담아요">노트 모음 PDF</button>`:""}</div>
     ${NT?tplMan():""}
     ${NT&&all.length&&!ns?`<p class="muted" style="margin:8px 0 0;font-size:12.5px">일부만 모으려면 노트 왼쪽 칸을 체크하세요. 체크하지 않으면 지금 보이는 노트 전체를 모아요.</p>`:""}
-    ${dupBar(M.tab)}
+    ${dupBar(M.tab)}${cf.top?cf.top():""}
     ${all.length?`<p class="muted" style="margin:10px 0 0;font-size:13.5px">${cf.sum(all)}</p><div class="chips" style="margin:10px 0">${[["*","전체",all.length],...cf.chips(all)].map(([v,n,c])=>`<button class="chip" type="button" data-rchip="${esc(v)}" aria-pressed="${RS.chip===v}">${esc(n)}<span class="n">${c}</span></button>`).join("")}</div>`:""}
     ${RS.adding?`<div class="mrev" id="rNew"><b>${cf.add}</b><div class="mgrid">${rf(RS.draft).map(f=>rfield(f,RS.draft,"data-rn")).join("")}</div>${pendHtml("rec",RS.pend)}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-r="savenew">저장</button><button class="btn ghost" type="button" data-r="cancelnew">취소</button></div></div>`:""}
     ${list.length?`<div class="mlist" style="margin-top:10px">${list.map(r=>{const on=RS.open===r.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-ropen="${r.id}">${NT?`<input type="checkbox" data-nsel="${r.id}" ${RS.nsel.has(r.id)?"checked":""} aria-label="${esc(cf.title(r))} 고르기">`:""}<div class="mn"><b>${pjDot(r.project)}${esc(cf.title(r))}</b><span>${esc([cf.sub(r),M.tab!=="notes"&&r.project].filter(Boolean).join(" · "))}</span></div>${cf.tags(r)}${attTag(r)}<span class="row" style="gap:6px;flex:none">${cf.quick(r)}</span></div>
@@ -7390,20 +7790,25 @@ function recHtml(){const cf=REC[M.tab],all=rcol().list.filter(inProj),list=rview
 async function recClick(e,V){
   const ch=e.target.closest("[data-rchip]");if(ch){RS.chip=ch.dataset.rchip;draw();return true;}
   const q=e.target.closest("[data-rq]");if(q){const r=rcol().list.find(x=>x.id===q.dataset.id);if(!r)return true;const k=q.dataset.rq,log=(w)=>[{at:today(),what:w},...(r.log||[])].slice(0,30);
-    if(k==="use")await rcol().update(r.id,{vials:String(Math.max(0,(+r.vials||0)-1)),log:log("1개 꺼냄")});
+    if(k==="use")await rcol().update(r.id,{vials:String(Math.max(0,(+r.vials||0)-1)),log:log("1개 꺼냄"+(r.passage?` (P${String(r.passage).replace(/^p/i,"")} 바이알 해동 → 배양은 P${(parseInt(String(r.passage).replace(/\D/g,""),10)||0)+1}부터)`:""))});
     else if(k==="add")await rcol().update(r.id,{vials:String((+r.vials||0)+1),log:log("1개 추가")});
+    else if(k==="ause")await rcol().update(r.id,{count:String(Math.max(0,(+r.count||0)-1)),log:log("1마리 제외")});
+    else if(k==="aadd")await rcol().update(r.id,{count:String((+r.count||0)+1),log:log("1마리 추가")});
+    else if(k==="toanim"){await HUB.col("animals").set(uid(),{strain:r.item||"",species:/rat|랫/i.test(r.item||"")?"랫드":"마우스",sex:/암|female|♀/i.test(r.sex||"")?"암컷":/수|male|♂/i.test(r.sex||"")?"수컷":"",count:r.qty&&/^\d+$/.test(r.qty)?r.qty:"",received:r.received||today(),age:r.age||"",weight:"",loc:"",group:"",source:r.vendor||"",iacuc:r.iacuc||"",health:"",by:r.requester||"",project:r.project||"",memo:"발주 기록에서 추가",addedAt:Date.now()});HUB.toast("동물 관리 기록부에 추가했어요");}
     else if(k==="ord")await rcol().update(r.id,{status:"발주",ordered:r.ordered||today(),log:log("발주")});
-    else if(k==="recv")await rcol().update(r.id,{status:"입고",received:today(),log:log("입고")});
+    else if(k==="syncone"){const n=await syncOrders(false);if(!n)HUB.toast(osyncReady()?"이미 목록과 연결돼 있어요":"저장소를 불러오는 중이에요. 잠시 뒤 다시 눌러 주세요");return true;}
+    else if(k==="golink"){const L=r.synced||{};if(L.col&&L.id){M.tab=L.col;save();RS.open=L.id;RS.q="";RS.chip="*";if(L.col==="materials"){try{open=L.id;}catch(e){}}draw();}return true;}
+    else if(k==="recv"){await rcol().update(r.id,{status:"입고",received:today(),log:log("입고")});syncSoon();}
     else if(k==="dup"){const d={...r,id:undefined,date:today(),result:"",next:"",photos:[],files:[],log:[],title:(r.title||"")+" (반복)",addedAt:Date.now()};delete d.id;const id=uid();await rcol().set(id,d);RS.open=id;HUB.toast("오늘 날짜로 복사했어요. 결과 칸은 비워 뒀어요");}
     else if(k==="tomat"){const id=uid();await HUB.col("materials").set(id,{name:r.item||"",vendor:r.vendor||"",catalog:r.kind==="동물"?"":r.catalog||"",lot:"",cas:"",spec:r.kind==="동물"?[r.sex,r.age&&r.age+(/주|w/i.test(r.age)?"":"주령")].filter(Boolean).join(", "):"",purity:"",storage:"",qty:r.qty||"",price:r.amount||"",date:r.received||r.ordered||"",expiry:"",category:r.kind==="동물"?"동물":"기타",asset:"",source:"발주 기록",project:r.project||"",memo:r.iacuc?"동물실험 승인번호 "+r.iacuc:"",protocol:"",addedAt:Date.now()});await rcol().update(r.id,{log:log("재료 목록에 추가")});HUB.toast("재료 목록에 추가했어요");}
-    else if(k==="tocell"){await HUB.col("cells").set(uid(),{line:r.item||"",passage:"",vials:r.qty&&/^\d+$/.test(r.qty)?r.qty:"1",frozen:"",loc:"",medium:"",freeze:"",myco:"",source:r.vendor||"",by:"",project:r.project||"",memo:"발주 기록에서 추가 ("+(r.received||today())+" 입고)",addedAt:Date.now()});await rcol().update(r.id,{log:log("세포 stock에 추가")});HUB.toast("세포 stock에 추가했어요");}
+    else if(k==="tocell"){await HUB.col("cells").set(uid(),{line:r.item||"",passage:"",vials:r.qty&&/^\d+$/.test(r.qty)?r.qty:"1",frozen:"",loc:"",medium:"",freeze:"",myco:"",source:r.vendor||"",by:"",project:r.project||"",memo:"발주 기록에서 추가 ("+(r.received||today())+" 입고)",addedAt:Date.now()});await rcol().update(r.id,{log:log("세포 관리 기록부에 추가")});HUB.toast("세포 관리 기록부에 추가했어요");}
     setTimeout(draw,60);return true;}
   const b=e.target.closest("[data-r]");if(b){const k=b.dataset.r,cf=REC[M.tab];
     if(k==="new"){RS.pend=[];RS.adding=true;RS.draft={...cf.defaults(),project:M.proj||""};draw();const i=V.querySelector("#rNew input");if(i)i.focus();}
     else if(k==="pjall"){if(HUB.proj&&HUB.proj.set)HUB.proj.set("");else{M.proj="";save();}draw();}
     else if(k==="cancelnew"){RS.adding=false;RS.pend=[];draw();}
     else if(k==="savenew"){const d=RS.draft,main=cf.main||cf.fields[M.tab==="cells"?0:1][0];if(!String(d[main]||"").trim()){HUB.toast((cf.mainName||(M.tab==="cells"?"세포주 이름":"품목"))+"을 적어 주세요");return true;}
-      const doc={addedAt:Date.now()};cf.fields.forEach(f=>doc[f[0]]=String(d[f[0]]==null?"":d[f[0]]).trim());const nid=uid(),tab=M.tab,pend=RS.pend.splice(0);await rcol().set(nid,doc);RS.adding=false;setTimeout(draw,60);if(pend.length){HUB.toast("저장했어요. 붙인 파일을 올리는 중…",3000);attFiles(tab,nid,pend,true);}else HUB.toast("저장했어요");}
+      const doc={addedAt:Date.now()};cf.fields.forEach(f=>doc[f[0]]=String(d[f[0]]==null?"":d[f[0]]).trim());if(M.tab==="animals"&&!doc.total)doc.total=doc.count;const nid=uid(),tab=M.tab,pend=RS.pend.splice(0);await rcol().set(nid,doc);RS.adding=false;setTimeout(draw,60);if(pend.length){HUB.toast("저장했어요. 붙인 파일을 올리는 중…",3000);attFiles(tab,nid,pend,true);}else HUB.toast("저장했어요");}
     else if(k==="exp"){try{HUB.save(cf.file,HUB.xlsx([{name:cf.label,rows:[cf.fields.map(f=>f[1]),...rview().map(r=>cf.fields.map(f=>r[f[0]]==null?"":r[f[0]]))]}]));}catch(err){HUB.toast(err.message||"엑셀로 내보내지 못했어요");}}
     else if(k==="del"){if(arm(b,"한 번 더 누르면 삭제","삭제")){await rcol().remove(b.dataset.id);RS.open="";setTimeout(draw,60);}}
     else if(k==="delphoto"){if(arm(b,"한 번 더","빼기")){const r=rcol().list.find(x=>x.id===b.dataset.id);if(r){await rcol().update(r.id,{photos:(r.photos||[]).filter(p=>p!==b.dataset.p)});try{await HUB.assets.delete(b.dataset.p);}catch(err){}setTimeout(draw,60);}}}
@@ -7435,13 +7840,14 @@ const onDay=(p,day)=>p.date&&p.date<=day&&(p.end&&p.end>=p.date?p.end:p.date)>=d
 const dayData=day=>({plans:pcol().list.filter(p=>inProj(p)&&onDay(p,day)).sort((a,b)=>String(a.time||"99").localeCompare(String(b.time||"99"))),
   notes:HUB.col("notes").list.filter(n=>inProj(n)&&n.date===day),
   orders:HUB.col("orders").list.filter(o=>inProj(o)&&o.status!=="취소"&&(o.received===day||(o.status!=="입고"&&o.due===day)||o.ordered===day)),
-  cells:HUB.col("cells").list.filter(c=>inProj(c)&&c.frozen===day)});
+  cells:HUB.col("cells").list.filter(c=>inProj(c)&&c.frozen===day),
+  animals:HUB.col("animals").list.filter(a=>inProj(a)&&a.received===day&&!a.fromOrder)});
 const WD=["일","월","화","수","목","금","토"];
 const dlabel=s=>{const d=new Date(s+"T00:00:00");return (d.getMonth()+1)+"월 "+d.getDate()+"일 ("+WD[d.getDay()]+")";};
 function planForm(p,attr){return `<div class="mgrid"><label>할 일<input ${attr}="title" value="${esc(p.title||"")}" placeholder="예: HK-2 seeding, 화합물 3 정제"></label><label>분류<select ${attr}="kind">${KINDS.map(k=>`<option ${p.kind===k?"selected":""}>${k}</option>`).join("")}</select></label><label>날짜<input type="date" ${attr}="date" value="${esc(p.date||"")}"></label><label>끝나는 날 (여러 날이면)<input type="date" ${attr}="end" value="${esc(p.end||"")}"></label><label>시간<input type="time" ${attr}="time" value="${esc(p.time||"")}"></label>${pjSelect(attr,"project",p.project||"")}${attr==="data-pln"?`<label>반복 간격 (일, 비우면 한 번)<input type="number" min="1" max="60" ${attr}="rep" value="${esc(p.rep||"")}" placeholder="예: 2 → 이틀마다"></label><label>반복 횟수<input type="number" min="1" max="60" ${attr}="cnt" value="${esc(p.cnt||"")}" placeholder="예: 5"></label>`:""}<label style="grid-column:1/-1">메모 (준비물·조건)<textarea ${attr}="memo" rows="2">${esc(p.memo||"")}</textarea></label></div>`;}
 function planHtml(){const [Y,Mo]=PS.ym.split("-").map(Number),first=new Date(Y,Mo-1,1),start=first.getDay(),dim=new Date(Y,Mo,0).getDate(),td=today();
   const cells=[];for(let i=0;i<start;i++)cells.push("");for(let d=1;d<=dim;d++)cells.push(dstr(Y,Mo,d));while(cells.length%7)cells.push("");
-  const cal=cells.map((day,i)=>{if(!day)return `<div class="pcell off"></div>`;const x=dayData(day),n=x.notes.length,o=x.orders.length+x.cells.length;
+  const cal=cells.map((day,i)=>{if(!day)return `<div class="pcell off"></div>`;const x=dayData(day),n=x.notes.length,o=x.orders.length+x.cells.length+x.animals.length;
     return `<button type="button" class="pcell ${day===td?"ptoday":""} ${day===PS.day?"psel":""} ${i%7===0?"psun":i%7===6?"psat":""}" data-pday="${day}" aria-label="${dlabel(day)}"><span class="pd">${+day.slice(8)}</span>${x.plans.slice(0,3).map(p=>`<span class="pchip ${p.project?"pjchip":kcls(p.kind)} ${p.done?"done":""}" title="${esc([p.time,p.title,p.project].filter(Boolean).join(" · "))}" ${p.project?`style="--pc:${pjColor(p.project)}"`:""}>${esc(p.title||"")}</span>`).join("")}${x.plans.length>3?`<span class="pmore">+${x.plans.length-3}</span>`:""}${n||o?`<span class="pdots">${n?`<i class="pn" title="실험노트">노트 ${n}</i>`:""}${o?`<i class="po" title="발주·세포">기록 ${o}</i>`:""}</span>`:""}<span class="pcount">${x.plans.length?`<i class="c1">${x.plans.length}</i>`:""}${n?`<i class="c2">${n}</i>`:""}</span></button>`;}).join("");
   const x=dayData(PS.day);
   const up=pcol().list.filter(p=>inProj(p)&&!p.done&&p.date&&(p.end||p.date)>=td&&p.date<=addDays(td,14)).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||""))).slice(0,8);
@@ -7451,12 +7857,12 @@ function planHtml(){const [Y,Mo]=PS.ym.split("-").map(Number),first=new Date(Y,M
     :`<div class="prow ${p.done?"done":""}"><label class="ck"><input type="checkbox" data-pdone="${p.id}" ${p.done?"checked":""} aria-label="끝냄"><span></span></label><div class="pt"><b>${pjDot(p.project)}${p.time?esc(p.time)+" · ":""}${esc(p.title||"(제목 없음)")}</b><span>${esc([p.end&&p.end>p.date?p.date.slice(5)+" ~ "+p.end.slice(5):"",p.project,p.memo].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(p.kind)}">${esc(p.kind||"분석·기타")}</span>${attN(p)?`<button type="button" class="tag attpill" data-p="edit" data-id="${p.id}" title="붙인 파일 보기">첨부 ${attN(p)}</button>`:""}<span class="row" style="gap:6px;flex:none">${note?`<button class="btn sm" type="button" data-p="note" data-id="${note.id}">실험노트 보기</button>`:`<button class="btn sm" type="button" data-p="mknote" data-id="${p.id}">실험노트 쓰기</button>`}<button class="btn sm ghost" type="button" data-p="edit" data-id="${p.id}">고치기</button></span></div>`;};
   return `<section class="card pad" id="planBox"><div class="mbar"><div class="row" style="gap:6px;align-items:center"><button class="btn sm" type="button" data-p="prev" aria-label="이전 달">‹</button><b class="pym">${Y}년 ${Mo}월</b><button class="btn sm" type="button" data-p="next" aria-label="다음 달">›</button><button class="btn sm ghost" type="button" data-p="today">오늘</button><button class="btn sm ghost" type="button" data-p="ics" title="구글 캘린더 등에서 가져오기로 넣을 수 있어요">캘린더 파일(.ics)로 내보내기</button></div><span class="muted" style="font-size:13px">날짜를 누르면 그날의 계획과 실험노트가 아래에 나와요</span></div>
     <div class="pcal"><div class="pwd">${WD.map((w,i)=>`<span class="${i===0?"psun":i===6?"psat":""}">${w}</span>`).join("")}</div><div class="pgrid">${cal}</div></div>
-    <div class="pday"><div class="mbar"><h3 style="margin:0">${dlabel(PS.day)}${PS.day===td?" · 오늘":""}</h3><span class="row" style="gap:6px"><button class="btn primary" type="button" data-p="new">일정 추가</button><label class="btn" title="마크다운(.md)·텍스트 파일로 일정을 만들어요. 여러 개면 파일마다 하나씩" style="cursor:pointer">마크다운 파일로 일정<input type="file" data-mdnew="plan" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><button class="btn" type="button" data-p="newnote">이 날 실험노트 쓰기</button></span></div>
+    <div class="pday"><div class="mbar"><h3 style="margin:0">${dlabel(PS.day)}${PS.day===td?" · 오늘":""}</h3><span class="row" style="gap:6px"><button class="btn primary" type="button" data-p="new">일정 추가</button><label class="btn" title="마크다운(.md)·텍스트 파일로 일정을 만들어요. 여러 개면 파일마다 하나씩" style="cursor:pointer">마크다운 파일로 일정<input type="file" data-mdnew="plan" multiple hidden accept=".md,.markdown,.txt,text/markdown,text/plain"></label><label class="btn" title="일정표·달력·메모 사진이나 PDF를 AI가 읽어 일정을 만들어요" style="cursor:pointer">${visBusy?"사진 읽는 중…":"사진으로 일정"}<input type="file" data-visnew="plan" multiple hidden accept="image/*,.pdf,application/pdf"></label><button class="btn" type="button" data-p="newnote">이 날 실험노트 쓰기</button></span></div>
       ${PS.adding?`<div class="mrev" id="pNew"><b>일정 추가</b>${planForm(PS.draft,"data-pln")}${pendHtml("plan",PS.pend||[])}<div class="row" style="gap:6px"><button class="btn primary" type="button" data-p="save">저장</button><button class="btn ghost" type="button" data-p="cancel">취소</button></div></div>`:""}
       ${dupBar("plans")}
       <h4 class="psec">계획 <span class="mono">${x.plans.length}</span></h4>${x.plans.length?x.plans.map(prow).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 잡아 둔 계획이 없어요.</p>`}
       <h4 class="psec">실험노트 <span class="mono">${x.notes.length}</span></h4>${x.notes.length?x.notes.map(n=>`<div class="prow"><div class="pt"><b>${pjDot(n.project)}${esc(n.title||"(제목 없음)")}</b><span>${esc([n.project,REC.notes.sub(n).split(" · ").slice(n.project?2:1).join(" · "),HUB.embedsPlain(n.result||"").replace(/\s+/g," ").slice(0,90)].filter(Boolean).join(" · "))}</span></div><span class="tag ${kcls(n.kind)}">${esc(n.kind||"분석·기타")}</span>${attTag(n)}<button class="btn sm" type="button" data-p="note" data-id="${n.id}">열기</button></div>`).join(""):`<p class="muted" style="margin:0;font-size:13.5px">이 날 쓴 실험노트가 없어요.</p>`}
-      ${x.orders.length||x.cells.length?`<h4 class="psec">발주·세포 기록 <span class="mono">${x.orders.length+x.cells.length}</span></h4>${x.orders.map(o=>`<div class="prow"><div class="pt"><b>${esc(o.item||"")}</b><span>${esc([o.vendor,o.qty&&"수량 "+o.qty].filter(Boolean).join(" · "))}</span></div><span class="tag">${o.received===PS.day?"입고":o.due===PS.day&&o.status!=="입고"?"입고 예정":"발주"}</span></div>`).join("")}${x.cells.map(c=>`<div class="prow"><div class="pt"><b>${esc(c.line||"")}</b><span>${esc([c.passage&&"P"+c.passage,c.loc].filter(Boolean).join(" · "))}</span></div><span class="tag nk-cell">세포 동결</span></div>`).join("")}`:""}
+      ${x.orders.length||x.cells.length||x.animals.length?`<h4 class="psec">발주·세포·동물 기록 <span class="mono">${x.orders.length+x.cells.length+x.animals.length}</span></h4>${x.orders.map(o=>`<div class="prow"><div class="pt"><b>${esc(o.item||"")}</b><span>${esc([o.vendor,o.qty&&"수량 "+o.qty].filter(Boolean).join(" · "))}</span></div><span class="tag">${o.received===PS.day?"입고":o.due===PS.day&&o.status!=="입고"?"입고 예정":"발주"}</span></div>`).join("")}${x.cells.map(c=>`<div class="prow"><div class="pt"><b>${esc(c.line||"")}</b><span>${esc([c.passage&&"P"+c.passage,c.loc].filter(Boolean).join(" · "))}</span></div><span class="tag nk-cell">세포 동결</span></div>`).join("")}${x.animals.map(a=>`<div class="prow"><div class="pt"><b>${esc(a.strain||"")}</b><span>${esc([a.sex,a.count&&a.count+"마리",a.loc].filter(Boolean).join(" · "))}</span></div><span class="tag">동물 입고</span></div>`).join("")}`:""}
     </div>
     ${up.length||late.length?`<div class="pup">${up.length?`<div><h4 class="psec">다가오는 일정 (2주)</h4>${up.map(p=>`<button type="button" class="pupi" data-pday="${p.date<td?td:p.date}"><span class="mono">${p.date.slice(5)}</span><span class="tag ${kcls(p.kind)}">${esc(p.kind||"")}</span>${pjDot(p.project)}${esc(p.title||"")}</button>`).join("")}</div>`:""}${late.length?`<div><h4 class="psec">지났는데 끝내지 않은 일정</h4>${late.map(p=>`<button type="button" class="pupi" data-pday="${p.date}"><span class="mono">${p.date.slice(5)}</span><span class="tag ${kcls(p.kind)}">${esc(p.kind||"")}</span>${esc(p.title||"")}</button>`).join("")}</div>`:""}</div>`:""}
   </section>`;}
@@ -7489,7 +7895,7 @@ document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.dataset)
 /* ---------- projects: a registered name and colour; every record carries the project name, and one filter narrows all sub-tabs ---------- */
 const PAL=["#c0392b","#e74c3c","#e67e22","#f39c12","#d4ac0d","#7d8c1f","#27ae60","#1e8449","#16a085","#0e7c86","#2e86c1","#1f4e9c","#3f51b5","#6c5ce7","#8e44ad","#b03a8e","#d6336c","#ad5a3c","#795548","#5d6d7e","#34495e","#111827","#00a3a3","#ff6f61"];
 const prcol=()=>HUB.col("projects");
-const PCOLS=["materials","cells","orders","notes","plans","grants","drafts","papers","reports"];
+const PCOLS=["materials","cells","animals","orders","notes","plans","grants","drafts","papers","reports"];
 const okColor=c=>/^#[0-9a-f]{6}$/i.test(String(c||""))?c:"#8a94a0";
 const pjFind=n=>prcol().list.find(x=>x.name===n);
 const pjColor=n=>{const p=pjFind(n);return okColor(p&&p.color);};
@@ -7516,16 +7922,16 @@ function linkHtml(){const L=PJ.link;if(!L)return "";const k=LK[L.kind],q=String(
     ${list.length?`<div class="pjll">${list.slice(0,150).map(x=>`<div class="pjli"><label class="ck"><input type="checkbox" data-pjck="${x.id}" ${x.project===L.n?"checked":""}><span></span></label><div class="pt"><b>${esc(k.title(x)).slice(0,200)}</b><span>${esc(k.sub(x))}${x.project&&x.project!==L.n?` · ${pjDot(x.project)}${esc(x.project)}`:""}</span></div><button class="btn sm ghost" type="button" data-pjopen="${x.id}">열기</button></div>`).join("")}${list.length>150?`<p class="muted" style="margin:6px 0 0;font-size:12.5px">앞의 150개만 보여요. 검색으로 좁혀 주세요.</p>`:""}</div>`
       :`<div class="placeholder">${all.length?"찾는 "+k.name+"이 없어요.":"아직 "+k.name+"이 없어요."}</div>`}</div>`;}
 const pjSw=(cur,attr)=>`<div class="pjsw">${PAL.map(c=>`<button type="button" class="pjc ${String(cur).toLowerCase()===c?"on":""}" ${attr}="${c}" style="background:${c}" aria-label="색 ${c}"></button>`).join("")}<label class="pjpick" title="원하는 색을 직접 고르기"><input type="color" ${attr}-any="1" value="${okColor(cur)}"><span>직접 고르기</span></label></div>`;
-const pjStat=n=>{const td=today(),f=c=>HUB.col(c).list.filter(r=>(r.project||"")===n),pl=f("plans"),nt=f("notes").sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))),od=f("orders"),ce=f("cells"),ma=f("materials");
+const pjStat=n=>{const td=today(),f=c=>HUB.col(c).list.filter(r=>(r.project||"")===n),pl=f("plans"),nt=f("notes").sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))),od=f("orders"),ce=f("cells"),an=f("animals"),ma=f("materials");
   const open=pl.filter(p=>!p.done),next=open.filter(p=>(p.end||p.date)>=td).sort((a,b)=>a.date.localeCompare(b.date))[0],late=open.filter(p=>(p.end||p.date)<td).length;
-  return {open:open.length,next,late,notes:nt.length,last:nt[0],wait:od.filter(o=>o.status!=="입고"&&o.status!=="취소").length,orders:od.length,lines:new Set(ce.map(c=>c.line).filter(Boolean)).size,vials:ce.reduce((s,c)=>s+(+c.vials||0),0),mats:ma.length,docs:f("grants").length,evald:f("grants").filter(g=>g.eval).length,drafts:f("drafts").length,papers:f("papers").length,reps:f("reports").length};};
+  return {open:open.length,next,late,notes:nt.length,last:nt[0],wait:od.filter(o=>o.status!=="입고"&&o.status!=="취소").length,orders:od.length,lines:new Set(ce.map(c=>c.line).filter(Boolean)).size,vials:ce.reduce((s,c)=>s+(+c.vials||0),0),strains:new Set(an.map(a=>a.strain).filter(Boolean)).size,heads:an.reduce((s,a)=>s+(+a.count||0),0),mats:ma.length,docs:f("grants").length,evald:f("grants").filter(g=>g.eval).length,drafts:f("drafts").length,papers:f("papers").length,reps:f("reports").length};};
 function projHtml(){const ns=pjNames();
-  return `<section class="card pad"><div><h2 style="margin:0 0 6px">프로젝트</h2><p class="muted" style="margin:0;font-size:14px;line-height:1.6">프로젝트마다 이름과 색을 정해 두면 재료, 세포, 발주, 실험노트, 일정에서 목록으로 골라 넣고, 탭 위쪽의 프로젝트 줄에서 하나만 걸러 볼 수 있어요.</p></div>
+  return `<section class="card pad"><div><h2 style="margin:0 0 6px">프로젝트</h2><p class="muted" style="margin:0;font-size:14px;line-height:1.6">프로젝트마다 이름과 색을 정해 두면 물품, 발주, 세포·동물 기록부, 실험노트, 일정에서 목록으로 골라 넣고, 탭 위쪽의 프로젝트 줄에서 하나만 걸러 볼 수 있어요.</p></div>
     <div class="mrev" id="pjNew" style="margin-top:12px"><b>프로젝트 추가</b><div class="mgrid"><label>이름<input data-pjn="name" value="${esc(PJ.draft.name)}" placeholder="예: 과제 A, 논문 리비전 실험" maxlength="40"></label><label style="grid-column:span 2">한 줄 설명 (선택)<input data-pjn="memo" value="${esc(PJ.draft.memo)}"></label></div><div><span class="muted" style="font-size:12px">색</span>${pjSw(PJ.draft.color,"data-pjc")}</div><div class="row"><button class="btn primary" type="button" data-pj="add"><i class="pjdot" style="background:${okColor(PJ.draft.color)}"></i>이 색으로 추가</button></div></div>
     ${ns.length?`<div class="pjcards">${ns.map(n=>{const p=pjFind(n),s=pjStat(n),col_=pjColor(n);
       if(p&&PJ.edit===p.id)return `<div class="pjcard mrev" data-pjedit="${p.id}" style="--pc:${col_}"><div class="mgrid"><label>이름 (바꾸면 기록에도 반영돼요)<input data-pje="name" value="${esc(p.name)}" maxlength="40"></label><label style="grid-column:span 2">한 줄 설명<input data-pje="memo" value="${esc(p.memo||"")}"></label></div><div><span class="muted" style="font-size:12px">색</span>${pjSw(p.color,"data-pjec")}</div><div class="row" style="gap:6px"><button class="btn sm primary" type="button" data-pj="editdone">닫기</button><button class="btn sm" type="button" data-pj="toggle" data-id="${p.id}">${p.done?"다시 진행 중으로":"끝난 프로젝트로 표시"}</button><button class="btn sm ghost danger" type="button" data-pj="del" data-id="${p.id}">등록 지우기</button></div><p class="muted" style="margin:0;font-size:12.5px">등록을 지워도 기록은 그대로 남고, 이름만 '등록 안 됨'으로 보여요.</p></div>`;
       return `<div class="pjcard ${p&&p.done?"done":""}" style="--pc:${col_}"><div class="pjh"><b>${esc(n)}</b>${p?(p.done?`<span class="tag">끝남</span>`:""):`<span class="tag">등록 안 됨</span>`}</div>${p&&p.memo?`<p class="muted" style="margin:0;font-size:13px">${esc(p.memo)}</p>`:""}
-        <div class="pjstats"><button type="button" data-pjgo="plan" data-n="${esc(n)}"><b>${s.open}</b><span>남은 일정${s.late?` · 밀림 ${s.late}`:""}</span><em>${s.next?"다음 "+esc(s.next.date.slice(5)):"예정 없음"}</em></button><button type="button" data-pjgo="notes" data-n="${esc(n)}"><b>${s.notes}</b><span>실험노트</span><em>${s.last?"최근 "+esc((s.last.date||"").slice(5)):"아직 없음"}</em></button><button type="button" data-pjgo="orders" data-n="${esc(n)}"><b>${s.wait}</b><span>기다리는 발주</span><em>전체 ${s.orders}건</em></button><button type="button" data-pjgo="cells" data-n="${esc(n)}"><b>${s.lines}</b><span>세포주</span><em>바이알 ${s.vials}개</em></button><button type="button" data-pjgo="materials" data-n="${esc(n)}"><b>${s.mats}</b><span>재료</span><em>&nbsp;</em></button><button type="button" data-pjgo="grant" data-n="${esc(n)}"><b>${s.docs}</b><span>과제 문서</span><em>${s.docs?"평가 "+s.evald+"건":"아직 없음"}</em></button></div>
+        <div class="pjstats"><button type="button" data-pjgo="plan" data-n="${esc(n)}"><b>${s.open}</b><span>남은 일정${s.late?` · 밀림 ${s.late}`:""}</span><em>${s.next?"다음 "+esc(s.next.date.slice(5)):"예정 없음"}</em></button><button type="button" data-pjgo="notes" data-n="${esc(n)}"><b>${s.notes}</b><span>실험노트</span><em>${s.last?"최근 "+esc((s.last.date||"").slice(5)):"아직 없음"}</em></button><button type="button" data-pjgo="orders" data-n="${esc(n)}"><b>${s.wait}</b><span>기다리는 발주</span><em>전체 ${s.orders}건</em></button><button type="button" data-pjgo="cells" data-n="${esc(n)}"><b>${s.lines}</b><span>세포주</span><em>바이알 ${s.vials}개</em></button><button type="button" data-pjgo="animals" data-n="${esc(n)}"><b>${s.strains}</b><span>동물 계통</span><em>${s.heads}마리</em></button><button type="button" data-pjgo="materials" data-n="${esc(n)}"><b>${s.mats}</b><span>물품</span><em>&nbsp;</em></button><button type="button" data-pjgo="grant" data-n="${esc(n)}"><b>${s.docs}</b><span>과제 문서</span><em>${s.docs?"평가 "+s.evald+"건":"아직 없음"}</em></button></div>
         ${s.next||s.last?`<div class="pjrecent">${s.next?`<p><span>다음 일정</span>${esc(s.next.date.slice(5)+(s.next.time?" "+s.next.time:"")+" · "+(s.next.title||""))}</p>`:""}${s.last?`<p><span>최근 실험노트</span>${esc((s.last.date||"").slice(5)+" · "+(s.last.title||""))}</p>`:""}</div>`:""}
         <div class="pjlinks"><span class="muted">연결</span><button class="chip" type="button" data-pjlink="drafts" data-n="${esc(n)}">원고<span class="n">${s.drafts}</span></button><button class="chip" type="button" data-pjlink="papers" data-n="${esc(n)}">논문<span class="n">${s.papers}</span></button><button class="chip" type="button" data-pjlink="reports" data-n="${esc(n)}">보고서<span class="n">${s.reps}</span></button></div>
         <div class="row" style="gap:6px">${p?`<button class="btn sm ghost" type="button" data-pj="edit" data-id="${p.id}">이름·색 고치기</button>`:`<button class="btn sm" type="button" data-pj="reg" data-n="${esc(n)}">등록하고 색 정하기</button>`}</div></div>`;}).join("")}</div>${linkHtml()}`
@@ -7617,8 +8023,17 @@ ${body.slice(0,42000)}`,{modelTier:"default",onText:x=>{const el=$("#gpEvalLive"
 const gSplit=text=>{const lines=String(text).split(/\n/),secs=[];let cur=null;const H=/^\s*(?:제\s*\d+\s*[장절]|\d{1,2}\s*[.)]|[IVX]{1,4}\s*[.)]|[가-하]\s*[.)])\s*(\S.{1,58})$/;
   for(const l of lines){const m=l.length<70&&l.match(H);if(m&&/^\s*(?:제\s*\d+\s*[장절]|\d{1,2}\s*[.)]|[IVX]{1,4}\s*[.)])/.test(l)){cur={name:m[1].trim(),guide:"",text:""};secs.push(cur);}else{if(!cur){cur={name:"앞부분",guide:"",text:""};secs.push(cur);}cur.text+=l+"\n";}}
   const good=secs.filter(s=>gLen(s.text)>40);return good.length>=3&&good.length<=30?good.map(s=>({...s,text:s.text.trim()})):[{name:"본문",guide:"",text:String(text).trim()}];};
+/* photos and scanned PDFs of a plan, notice or statement: the AI transcribes the pages into text first */
+async function gOcr(f,isImg){if(!(await HUB.ai.canSee()))throw new Error("사진·스캔 문서를 읽으려면 그림을 볼 수 있는 AI가 필요해요. 설정에서 Claude·Gemini·API 키 중 하나를 연결해 주세요.");
+  const pages=isImg?[await toJpeg(f,2400)]:(await pdfPages(f)).slice(0,8);if(!pages.length)return "";let out=[];
+  for(let i=0;i<pages.length;i++){HUB.toast(`사진·스캔 문서의 글자를 읽는 중… (${i+1}/${pages.length})`,5000);
+    out.push(await ask("이 이미지는 연구계획서·과제 공고·평가표·견적서 같은 문서의 한 쪽입니다. 보이는 글자를 빠짐없이 그대로 옮겨 적으세요. 제목은 '## 제목', 표는 마크다운 표로, 읽기 어려운 글자는 [?]로 표시하세요. 설명 없이 옮긴 글만 쓰세요.",[pages[i]],"default"));}
+  return out.join("\n\n");}
 async function gImport(f,many){if(!f)return;if(/\.hwp$/i.test(f.name)){HUB.toast("옛 한글(.hwp) 파일은 읽지 못해요. 한글에서 HWPX나 PDF로 저장해서 올려 주세요.",6000);return;}
-  try{HUB.toast("파일을 읽는 중…");const r=/\.(txt|md)$/i.test(f.name)?{text:await f.text()}:await HUB.lib.readFile(f);const text=String(r.text||"").trim();if(gLen(text)<100)throw new Error("글자를 읽지 못했어요. 스캔한 PDF라면 글자 인식이 된 파일로 올려 주세요.");
+  try{HUB.toast("파일을 읽는 중…");const isImg=/^image\//.test(f.type||"")||/\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i.test(f.name);
+    const r=isImg?{text:""}:/\.(txt|md)$/i.test(f.name)?{text:await f.text()}:await HUB.lib.readFile(f);let text=String(r.text||"").trim();
+    if(gLen(text)<100&&(isImg||/\.pdf$/i.test(f.name)))text=await gOcr(f,isImg);
+    if(gLen(text)<100)throw new Error("글자를 읽지 못했어요. 사진이 흐리면 더 밝고 반듯하게 찍어 올려 주세요.");
     const id=uid();await gcol().set(id,{type:"file",title:f.name.replace(/\.\w+$/,"").slice(0,80),project:M.proj||"",agency:"",period:"",notice:"",sections:gSplit(text.slice(0,120000)),crit:GT.plan.crit.slice(),eval:"",addedAt:Date.now(),updatedAt:Date.now()});if(many){GP.sel.add(id);return true;}GP.open=id;GP.out=null;setTimeout(draw,80);HUB.toast("문서를 불러왔어요. 평가 기준을 확인하고 '평가하기'를 누르세요.",5000);}
   catch(e){HUB.toast((e&&e.message)||"파일을 읽지 못했어요",6000);}}
 /* ---------- tables that belong to a document: budget (cost items × years) and schedule (tasks × months or quarters) ---------- */
@@ -7710,7 +8125,7 @@ ${pack}`,{modelTier:"default"});
 function grantHtml(){const d=gdoc();
   if(!d){[...GP.sel].forEach(id=>{if(!gcol().list.some(x=>x.id===id))GP.sel.delete(id);});const sel=gcol().list.filter(x=>GP.sel.has(x.id));const list=gcol().list.filter(inProj).sort((a,b)=>(b.updatedAt||b.addedAt||0)-(a.updatedAt||a.addedAt||0));
     return `<section class="card pad"><div><h2 style="margin:0 0 6px">과제 계획·평가</h2><p class="muted" style="margin:0;font-size:14px;line-height:1.6">연구계획서와 연차·최종보고서를 항목별로 쓰고, 평가 기준에 맞춰 평가위원의 눈으로 미리 점검해요. 이미 쓴 문서는 파일로 올려 평가만 받을 수도 있어요.</p></div>
-      <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn primary" type="button" data-gp="new" data-t="plan">연구계획서 쓰기</button><button class="btn" type="button" data-gp="new" data-t="annual">연차보고서 쓰기</button><button class="btn" type="button" data-gp="new" data-t="final">최종보고서 쓰기</button><label class="btn" style="cursor:pointer">파일 올리기 (여러 개 가능 · PDF·Word·한글 HWPX·txt)<input type="file" id="gpFile" accept=".pdf,.docx,.txt,.md,.hwp,.hwpx" multiple hidden></label></div>
+      <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn primary" type="button" data-gp="new" data-t="plan">연구계획서 쓰기</button><button class="btn" type="button" data-gp="new" data-t="annual">연차보고서 쓰기</button><button class="btn" type="button" data-gp="new" data-t="final">최종보고서 쓰기</button><label class="btn" style="cursor:pointer">파일 올리기 (여러 개 가능 · PDF·Word·한글 HWPX·txt·사진·스캔본)<input type="file" id="gpFile" accept=".pdf,.docx,.txt,.md,.hwp,.hwpx,image/*" multiple hidden></label></div>
       ${GP.rc?`<div class="mrev" style="margin-top:12px"><b>새 문서로 재구성하는 중… ${GP.rc.done}/${GP.rc.total} 항목</b><p class="muted" style="margin:0;font-size:13.5px">${esc(GP.rc.now||"")}</p><div class="row"><button class="btn sm" type="button" data-gp="rcstop" ${GP.rc.stop?"disabled":""}>${GP.rc.stop?"멈추는 중…":"멈추기"}</button></div></div>`
         :sel.length?`<div class="mrev" style="margin-top:12px"><b>고른 문서 ${sel.length}개로 새 문서 만들기</b><p class="muted" style="margin:0;font-size:13.5px">원래 문서는 그대로 두고 새 문서를 하나 만들어요. 만든 뒤에는 다른 문서처럼 고치고 평가할 수 있어요.</p><div class="row" style="gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" type="button" data-gp="merge" ${sel.length>1?"":"disabled"} title="같은 이름의 항목끼리 이어 붙여요. AI를 쓰지 않아요">단순히 합치기</button><span class="muted" style="font-size:13px">또는</span><select id="gpRt" aria-label="재구성할 문서 종류">${["plan","annual","final"].map(k=>`<option value="${k}" ${GP.rt===k?"selected":""}>${GT[k].name} 양식</option>`).join("")}</select><button class="btn primary" type="button" data-gp="recon">이 양식으로 새롭게 재구성</button><button class="btn ghost sm" type="button" data-gp="selnone">고르기 취소</button></div></div>`
         :list.length>1?`<p class="muted" style="margin:12px 0 0;font-size:13px">문서를 여러 개 골라(왼쪽 체크) 하나로 합치거나 새 양식으로 재구성할 수 있어요.</p>`:""}
@@ -7796,10 +8211,10 @@ document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.dataset)
 const goSub=(tab,day)=>{M.tab=tab;if(M.proj){M.proj="";setTimeout(pjNotify,0);}GP.open="";GP.out=null;if(day){PS.day=day;PS.ym=day.slice(0,7);}RS.q="";RS.chip="*";RS.open="";RS.adding=false;PS.adding=false;save();HUB.go("mat");draw();};
 function drawHomeLab(){const el=$("#homeLab");if(!el)return;const td=today(),pl=pcol().list,od=HUB.col("orders").list,ce=HUB.col("cells").list,gr=gcol().list;
   const tp=pl.filter(p=>onDay(p,td)&&!p.done).length,late=pl.filter(p=>!p.done&&p.date&&(p.end||p.date)<td).length,nn=HUB.col("notes").list.length,
-    wait=od.filter(o=>o.status!=="입고"&&o.status!=="취소").length,low=ce.filter(c=>(+c.vials||0)<=2).length,nm=col().list.length,ev=gr.filter(g=>g.eval).length;
+    wait=od.filter(o=>o.status!=="입고"&&o.status!=="취소").length,low=ce.filter(c=>(+c.vials||0)<=2).length,nm=col().list.length,ev=gr.filter(g=>g.eval).length,mx=col().list.filter(m=>{const a=matAlert(m);return a.exp||a.soon;}).length,ml=col().list.filter(m=>m.low).length,wl=HUB.col("animals").list.filter(a=>wDrop(a)>=15).length;
   el.innerHTML=`<h3 class="cap hlabcap">실험실</h3><div class="steps hlab">
     <button class="step" type="button" data-hsub="plan"><span class="mono">실험 일정·노트</span><b>일정과 실험노트</b><span>달력에 실험 계획을 세우고, 그날 한 실험을 합성·세포·동물로 나눠 적어요.</span><em class="mono">${tp||late?[tp&&"오늘 "+tp+"건",late&&"밀린 일정 "+late+"건"].filter(Boolean).join(" · "):nn?"실험노트 "+nn+"건":"아직 일정 없음"}</em></button>
-    <button class="step" type="button" data-hsub="${wait?"orders":low?"cells":"materials"}"><span class="mono">재료·세포·발주</span><b>물품과 세포 stock</b><span>라벨·명세서 사진으로 재료를 등록하고, 세포 바이알과 발주를 요청부터 입고까지 챙겨요.</span><em class="mono">${wait||low?[wait&&"기다리는 발주 "+wait+"건",low&&"바이알 부족 "+low+"건"].filter(Boolean).join(" · "):nm?"재료 "+nm+"개":"아직 등록 전"}</em></button>
+    <button class="step" type="button" data-hsub="${wl?"animals":wait?"orders":low?"cells":"materials"}"><span class="mono">재료·세포·동물·발주</span><b>물품과 세포·동물 기록</b><span>라벨·명세서 사진으로 물품을 등록하고, 세포 바이알·동물과 발주를 요청부터 입고까지 챙겨요.</span><em class="mono">${wait||low||mx||ml||wl?[wl&&"체중 감소 경고 "+wl+"건",wait&&"기다리는 발주 "+wait+"건",low&&"바이알 부족 "+low+"건",mx&&"유효기한 임박·지남 "+mx+"개",ml&&"재고 부족 "+ml+"개"].filter(Boolean).join(" · "):nm?"물품 "+nm+"개":"아직 등록 전"}</em></button>
     <button class="step" type="button" data-hsub="grant"><span class="mono">과제 계획·평가</span><b>계획서와 보고서</b><span>연구계획서·연차보고서를 항목별로 쓰고, 평가 기준에 맞춰 미리 점검해요.</span><em class="mono">${gr.length?"문서 "+gr.length+"개"+(ev?" · 평가 "+ev+"건":""):"아직 문서 없음"}</em></button></div>`;}
 function drawHomeToday(){try{drawHomeLab();}catch(e){}const el=$("#homeToday");if(!el)return;const td=today();
   const tp=pcol().list.filter(p=>onDay(p,td)).sort((a,b)=>String(a.time||"99").localeCompare(String(b.time||"99")));
@@ -7816,8 +8231,9 @@ function icsMonth(){const pl=pcol().list.filter(p=>p.date&&(p.date.slice(0,7)===
 document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.dataset||!t.dataset.nmat||!t.value)return;const r=HUB.col("notes").list.find(x=>x.id===t.dataset.nmat),m=col().list.find(x=>x.id===t.value);t.value="";if(!r||!m)return;
   const line=m.name+([m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).length?" ("+[m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).join(", ")+")":"");
   const cur=String(r.mats||"");if(cur.split("\n").includes(line)){HUB.toast("이미 넣은 물품이에요");return;}await HUB.col("notes").update(r.id,{mats:(cur.trim()?cur.trim()+"\n":"")+line});setTimeout(draw,80);});
-const TABS=[["proj","프로젝트"],["grant","과제 계획·평가"],["materials","재료 (물품)"],["cells","세포 stock"],["orders","발주 기록 (물품·동물)"],["notes","실험노트 (합성, 세포, 동물 등)"],["plan","실험 일정"]];
-const tabBar=()=>`<div class="seg mtabs">${TABS.map(([k,n])=>`<button type="button" data-mtab="${k}" aria-pressed="${M.tab===k}">${n} <span class="mono">${k==="proj"?(prcol().list.length||""):k==="grant"?(gcol().list.filter(inProj).length||""):k==="plan"?(pcol().list.filter(p=>inProj(p)&&!p.done).length||""):(HUB.col(k).list.filter(inProj).length||"")}</span></button>`).join("")}</div>${M.tab==="proj"?"":pjBar()}`;
+const TABS=[["proj","프로젝트"],["grant","과제 계획·평가"],["materials","재료 및 방법"],["cells","세포 관리 기록부"],["animals","동물 관리 기록부"],["notes","실험노트 (합성, 세포, 동물 등)"],["plan","실험 일정"]];
+const tabBar=()=>`<div class="seg mtabs">${TABS.map(([k,n])=>`<button type="button" data-mtab="${k}" aria-pressed="${M.tab===k||(k==="materials"&&M.tab==="orders")}">${n} <span class="mono">${k==="materials"?((HUB.col("materials").list.filter(inProj).length+HUB.col("orders").list.filter(inProj).length)||""):k==="proj"?(prcol().list.length||""):k==="grant"?(gcol().list.filter(inProj).length||""):k==="plan"?(pcol().list.filter(p=>inProj(p)&&!p.done).length||""):(HUB.col(k).list.filter(inProj).length||"")}</span></button>`).join("")}</div>${M.tab==="proj"?"":pjBar()}${M.tab==="materials"||M.tab==="orders"?subSeg():""}`;
+const subSeg=()=>`<div class="seg msub" role="group" aria-label="재료 및 방법 안의 목록"><button type="button" data-mtab="materials" aria-pressed="${M.tab==="materials"}">물품 목록 <span class="mono">${HUB.col("materials").list.filter(inProj).length||""}</span></button><button type="button" data-mtab="orders" aria-pressed="${M.tab==="orders"}">발주 기록 <span class="mono">${HUB.col("orders").list.filter(inProj).length||""}</span></button></div>`;
 function draw(){const V=$("#v-mat");if(!V||HUB.view!=="mat")return;
   if(M.tab==="grant"){const y=window.scrollY;V.innerHTML=`<div class="page">${tabBar()}${grantHtml()}</div>`;window.scrollTo({top:y});return;}
   if(M.tab==="proj"){V.innerHTML=`<div class="page">${tabBar()}${projHtml()}</div>`;return;}
@@ -7826,7 +8242,7 @@ function draw(){const V=$("#v-mat");if(!V||HUB.view!=="mat")return;
   const all=col().list,list=view(),cnt=c=>all.filter(m=>m.category===c).length;
   const fo=document.activeElement&&document.activeElement.id==="mQ"?document.activeElement.selectionStart:null;
   V.innerHTML=`<div class="page">${tabBar()}
-    <section class="card pad mtop"><div><h2 style="margin:0 0 6px">재료</h2><p class="muted" style="margin:0;font-size:14px;line-height:1.65">시약병 라벨이나 거래명세서를 찍어 올리면 물품명, 제조사, 카탈로그 번호, Lot, CAS를 읽어 저장해요. 저장한 물품으로 논문의 Materials 문장과 표준 프로토콜을 만들 수 있어요.</p></div>
+    <section class="card pad mtop"><div><h2 style="margin:0 0 6px">재료 및 방법 · 물품 목록</h2><p class="muted" style="margin:0;font-size:14px;line-height:1.65">시약병 라벨이나 거래명세서를 찍어 올리면 물품명, 제조사, 카탈로그 번호, Lot, CAS를 읽어 저장해요. 저장한 물품으로 논문의 Materials 문장과 표준 프로토콜을 만들 수 있어요.</p></div>
       <div class="mdrop" id="mDrop"><div class="row" style="gap:8px;flex-wrap:wrap;justify-content:center"><button class="btn primary" type="button" data-m="pick">사진·명세서 올리기</button><button class="btn" type="button" data-m="cam">카메라로 찍기</button><button class="btn" type="button" data-m="manual">직접 입력</button></div>
         <input type="file" id="mFile" hidden multiple accept="image/*,.pdf,.xlsx,.xls,.csv,.docx,.hwpx,.txt"><input type="file" id="mCam" hidden accept="image/*" capture="environment">
         <p>라벨 사진, 거래명세서·견적서 사진이나 PDF·엑셀을 여러 개 한꺼번에 올릴 수 있어요. 끌어다 놓거나 Ctrl+V로 붙여넣어도 돼요.</p>
@@ -7839,9 +8255,10 @@ function draw(){const V=$("#v-mat");if(!V||HUB.view!=="mat")return;
     <section class="card pad"><div class="mbar"><input id="mQ" class="search" type="search" placeholder="물품명·제조사·카탈로그 번호로 찾기" value="${esc(M.q)}" autocomplete="off"><div class="menu-wrap"><button class="btn" type="button" data-m="exp" ${all.length?"":"disabled"}>목록 내보내기 (엑셀)</button></div></div>
       ${dupBar("materials")}
       <div class="chips" style="margin:10px 0">${[["*","전체",all.length],...CATS.filter(c=>cnt(c)).map(c=>[c,c,cnt(c)])].map(([v,n,c])=>`<button class="chip" type="button" data-mcat="${esc(v)}" aria-pressed="${M.cat===v}">${esc(n)}<span class="n">${c}</span></button>`).join("")}</div>
-      ${list.length?`<div class="mlist">${list.map(m=>{const on=open===m.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-mopen="${m.id}"><input type="checkbox" data-msel="${m.id}" ${sel.has(m.id)?"checked":""} aria-label="${esc(m.name)} 고르기">${m.asset?`<img alt="" loading="lazy" src="${esc(HUB.assetUrl(m.asset))}">`:""}<div class="mn"><b>${pjDot(m.project)}${esc(m.name||"(이름 없음)")}</b><span>${esc([m.vendor,m.catalog&&"Cat# "+m.catalog,m.lot&&"Lot "+m.lot,m.spec,m.storage,m.project].filter(Boolean).join(" · "))}</span></div><span class="tag">${esc(m.category)}</span>${m.protocol?`<span class="tag ft">프로토콜</span>`:""}</div>
+      ${matAlertBar(all)}${list.length?`<div class="mlist">${list.map(m=>{const on=open===m.id;return `<div class="mitem ${on?"on":""}"><div class="mhead" data-mopen="${m.id}"><input type="checkbox" data-msel="${m.id}" ${sel.has(m.id)?"checked":""} aria-label="${esc(m.name)} 고르기">${m.asset?`<img alt="" loading="lazy" src="${esc(HUB.assetUrl(m.asset))}">`:""}<div class="mn"><b>${pjDot(m.project)}${esc(m.name||"(이름 없음)")}</b><span>${esc([m.vendor,m.catalog&&"Cat# "+m.catalog,m.lot&&"Lot "+m.lot,m.spec,m.storage,m.project].filter(Boolean).join(" · "))}</span></div><span class="tag">${esc(m.category)}</span>${m.protocol?`<span class="tag ft">프로토콜</span>`:""}${matTags(m)}</div>
         ${on?`<div class="mbody"><div class="mgrid">${FIELDS.map(([k,l])=>`<label>${l}<input data-mf="${k}" value="${esc(m[k]||"")}"></label>`).join("")}<label>분류<select data-mf="category">${CATS.map(c=>`<option ${m.category===c?"selected":""}>${c}</option>`).join("")}</select></label>${pjSelect("data-mf","project",m.project||"")}</div>
           <label class="field" style="margin:0">메모<textarea data-mf="memo" rows="2">${esc(m.memo||"")}</textarea></label>
+          <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm ${m.low?"primary":""}" type="button" data-mlow="${m.id}" aria-pressed="${!!m.low}">${m.low?"재고 부족 표시됨 (끄기)":"재고 부족 표시"}</button><button class="btn sm" type="button" data-morder="${m.id}">이 물품 발주 요청 만들기</button><span class="muted" style="font-size:12px">유효기한 칸에 날짜(예: 2027-03-31)를 적으면 30일 전부터 알려 줘요</span></div>
           ${m.asset?`<details><summary class="muted" style="cursor:pointer;font-size:13.5px">찍은 사진 보기${m.source?" · "+esc(m.source):""}</summary><img class="mphoto" alt="물품 사진" src="${esc(HUB.assetUrl(m.asset))}" style="margin-top:8px"></details>`:""}
           <div class="row" style="gap:8px;flex-wrap:wrap"><input data-muse="${m.id}" placeholder="어디에 쓸지 (선택) · 예: 세포 생존율 측정, 웨스턴 블롯" value="${esc(m.protocolUse||"")}" style="flex:1 1 240px;border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:8px 10px;font:inherit;color:var(--ink)"><button class="btn primary" type="button" data-m="prot1" data-id="${m.id}" ${pbusy?"disabled":""}>${pbusy===m.id?"쓰는 중…":m.protocol?"프로토콜 다시 만들기":"표준 프로토콜 제안"}</button><button class="btn ghost danger" type="button" data-m="del1" data-id="${m.id}">삭제</button></div>
           ${pbusy===m.id?`<div class="mprot md" id="mProtLive"><p class="muted">프로토콜을 쓰는 중이에요…</p></div>`:m.protocol?`<div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn sm" type="button" data-mp="docx" data-id="${m.id}">Word·한글 (.docx)</button><button class="btn sm" type="button" data-mp="pdf" data-id="${m.id}">PDF</button><button class="btn sm" type="button" data-mp="md" data-id="${m.id}">Markdown</button><button class="btn sm" type="button" data-mp="copy" data-id="${m.id}">복사</button><button class="btn sm" type="button" data-mp="rep" data-id="${m.id}">보고서에 저장</button><button class="btn sm" type="button" data-mp="meth" data-id="${m.id}">Methods 문장을 원고에 넣기</button></div><div class="mprot md">${HUB.md(m.protocol)}</div>`:""}</div>`:""}</div>`;}).join("")}</div>`
@@ -7861,7 +8278,7 @@ function init(){const V=$("#v-mat");if(!V)return;
   document.addEventListener("pointerup",()=>{setTimeout(()=>{pd=false;if(pend&&!tm)tm=setTimeout(flush,30);},0);},true);
   document.addEventListener("pointercancel",()=>{pd=false;},true);
   const sub=()=>{if(HUB.view==="home"){try{drawHomeToday();}catch(e){}}if(!tm)tm=setTimeout(flush,60);};
-  col().subscribe(sub);HUB.col("cells").subscribe(sub);HUB.col("orders").subscribe(sub);HUB.col("notes").subscribe(sub);pcol().subscribe(sub);prcol().subscribe(sub);gcol().subscribe(sub);tcol().subscribe(sub);["drafts","papers","reports"].forEach(k=>HUB.col(k).subscribe(()=>{if(HUB.view==="mat"&&M.tab==="proj"&&!(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.pjq))draw();}));
+  col().subscribe(sub);HUB.col("cells").subscribe(sub);HUB.col("animals").subscribe(sub);HUB.col("approvals").subscribe(sub);HUB.col("orders").subscribe(sub);HUB.col("orders").subscribe(syncSoon);HUB.col("materials").subscribe(syncSoon);HUB.col("notes").subscribe(sub);pcol().subscribe(sub);prcol().subscribe(sub);gcol().subscribe(sub);tcol().subscribe(sub);["drafts","papers","reports"].forEach(k=>HUB.col(k).subscribe(()=>{if(HUB.view==="mat"&&M.tab==="proj"&&!(document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.pjq))draw();}));
   V.addEventListener("click",async e=>{
     const tb=e.target.closest("[data-mtab]");if(tb){if(tb.dataset.mtab!=="notes")RS.nsel.clear();M.tab=tb.dataset.mtab;RS.q="";RS.chip="*";RS.open="";RS.adding=false;save();draw();return;}
     const pf=e.target.closest("[data-pjf]");if(pf){M.proj=pf.dataset.pjf;save();draw();pjNotify();return;}
