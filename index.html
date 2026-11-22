@@ -1015,6 +1015,16 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 @media (max-width:760px){.toolgo{margin-left:0;max-width:none;width:100%}}
 .dbfield{flex-wrap:nowrap!important;overflow-x:auto;gap:4px!important;padding-bottom:3px;scrollbar-width:thin}
 .dbfield>*{flex:0 0 auto;white-space:nowrap}.dbfield .chip.sm{padding:4px 8px;font-size:12px}
+.wrpo{margin-top:0}.pogrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pogrid>label:last-child{grid-column:1/-1}
+.pogrid textarea{width:100%;font:inherit;font-size:13.5px}
+.posteps{display:grid;gap:12px;margin-top:14px}.postep{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--paper)}
+.postep h4{margin:0 0 2px;font-size:14.5px}.postep>p.muted{margin:0 0 8px;font-size:12.5px}
+.pofig{border-top:1px dashed var(--line);padding:8px 0}.pofig p{margin:4px 0;font-size:13px}
+.poplan{margin:6px 0;padding-left:18px;font-size:13px;line-height:1.6}.pomd{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:6px 0;background:var(--bg,#fff)}
+.polive{white-space:pre-wrap;font-size:12px;max-height:160px;overflow:auto;margin:6px 0 0;color:var(--muted)}
+@media (max-width:760px){.pogrid{grid-template-columns:1fr}}
+.pogrid>label{display:flex;flex-direction:column;gap:6px}.pogrid .pohd{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:26px;flex-wrap:wrap}
+.pogrid .pohd .linkbtn{font-size:12.5px;font-weight:600}.pogrid textarea{min-height:140px;height:140px;resize:vertical;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -7094,6 +7104,118 @@ async function importFile(f){
   }catch(e){HUB.toast(f.name+": "+((e&&e.message)||"읽지 못했어요"),6000);}}
 
 /* ---------- view ---------- */
+/* ---------- PaperOrchestra-style pipeline (Song et al., Google Cloud AI Research, arXiv:2604.05018):
+   1 outline → 2 figure plan · 3 literature (intro + related work, library papers only) → 4 section writing (one call) → 5 simulated review with accept/revert ---------- */
+const PO_AX=[["novelty","독창성"],["soundness","타당성"],["clarity","명료성"],["significance","중요성"],["literature","선행연구"],["presentation","구성·표현"]];
+let po=null,poBusy="",poLive="";
+const poGet=d=>(po&&po.id===d.id)?po:(po=Object.assign({id:d.id,idea:"",log:"",guide:"",outline:null,lit:"",secs:"",ref:null,papers:[]},JSON.parse(JSON.stringify(d.po||{})),{id:d.id}));
+async function poSave(d){const p=poGet(d),o={...p};delete o.id;d.po=o;mine=Date.now();await col().update(d.id,{po:o,updatedAt:Date.now()});}
+const nums=t=>new Set((String(t||"").match(/\d+(?:\.\d+)?/g)||[]).filter(x=>!(+x<=12&&!/\./.test(x))&&!/^(19|20)\d\d$/.test(x)));
+const newNums=(out,src)=>{const s=nums(src);return [...nums(HUB.embedsPlain?HUB.embedsPlain(out):out)].filter(x=>!s.has(x)&&!s.has(String(+x)));};
+const tokset=t=>new Set((String(t||"").toLowerCase().match(/[a-z][a-z0-9\-]{3,}|[가-힣]{2,}/g)||[]));
+function poPapers(d,p){const bib=HUB.lib.bib,km=bib.keyMap(),c=cited(d),ids=new Set(c.found.map(x=>x.id));const q=tokset(p.idea+" "+(p.outline?JSON.stringify(p.outline.intro_related_work_plan||""):""));
+  const sc=x=>{let n=0;tokset((x.title||"")+" "+(x.abstract||"").slice(0,600)).forEach(w=>{if(q.has(w))n++;});return n+(ids.has(x.id)?100:0)+(d.project&&x.project===d.project?20:0);};
+  return HUB.lib.papers.filter(x=>!x.derived&&km.get(x.id)).map(x=>[sc(x),x]).filter(([s])=>s>1).sort((a,b)=>b[0]-a[0]).slice(0,30).map(([,x])=>({key:km.get(x.id),title:x.title||"",year:x.year||"",journal:x.journal||"",gist:String(x.summary||x.abstract||"").replace(/\s+/g," ").slice(0,500)}));}
+function notesLog(d){const l=HUB.col("notes").list.filter(n=>!d.project||n.project===d.project).sort((a,b)=>String(a.date||"").localeCompare(String(b.date||""))).slice(-25);
+  const skip=new Set(["id","addedAt","updatedAt","photos","files","log","uses","protocol","papers","project","fromPhoto","synced"]);
+  return l.map(n=>`### ${n.title||"(제목 없음)"} (${n.date||""}${n.kind?" · "+n.kind:""})\n`+Object.entries(n).filter(([k,v])=>!skip.has(k)&&k!=="title"&&k!=="date"&&k!=="kind"&&typeof v==="string"&&v.trim()).map(([k,v])=>`- ${k}: ${v.trim()}`).join("\n")).join("\n\n");}
+const poAsk=(prompt,tier)=>HUB.ai.text(prompt,{modelTier:tier||"default",onText:x=>{poLive=x;const el=$("#poLive");if(el)el.textContent=x.slice(-1200);}});
+const parseMs=t=>{const out=[];let cur=null;String(t||"").replace(/\r/g,"").split("\n").forEach(l=>{const m=l.match(/^#{1,2}\s+(.+?)\s*$/);if(m&&!/^#{3}/.test(l)){cur={name:m[1].replace(/^\d+[.)]?\s*/,"").trim(),text:[]};out.push(cur);}else if(cur)cur.text.push(l);});return out.map(s=>({name:s.name,text:s.text.join("\n").trim()})).filter(s=>s.text);};
+const msText=secs=>secs.map(s=>`## ${s.name}\n\n${s.text}`).join("\n\n");
+const RULES=`Writing rules (PaperOrchestra): use ONLY facts and numbers present in the idea and experimental log; never invent results, statistics or sample sizes — write a bracketed placeholder like [n = ?] when something is missing. Cite ONLY with the given keys, written as [@<key>] (e.g. [@smith2024word]); never invent references. Keep claims proportional to the evidence.`;
+async function poRun(step){const d=draft();if(!d||poBusy)return;await saveNow();const p=poGet(d);
+  const need=(c,m)=>{if(!c){HUB.toast(m,5000);throw 0;}};
+  try{need(String(p.idea).trim().length>20||String(p.log).trim().length>40,"아이디어나 실험 기록을 먼저 넣어 주세요");
+    poBusy=step;poLive="";draw();const head=`Target journal: ${d.journal||"(not set)"}\nSubmission guidelines: ${p.guide||"(none given)"}\n\n# Idea\n${p.idea||"(none)"}\n\n# Experimental log\n${String(p.log||"(none)").slice(0,40000)}`;
+    if(step==="outline"){const t=await poAsk(`You are the Outline Agent of PaperOrchestra. From the research materials below, plan a journal manuscript. Answer with ONE JSON object only:
+{"title":"working title","storyline":"2-3 sentences: problem → approach → key evidence → implication",
+ "plotting_plan":[{"id":"Fig1","type":"chart|diagram|image","title":"","objective":"what it must show","data":"CSV copied from the log if it is a chart (header row first), else empty","caption_draft":""}],
+ "intro_related_work_plan":{"intro_strategy":"how the introduction moves from broad context to the gap and the contribution","related_work":[{"theme":"","what_to_contrast":"","search_queries":["", ""]}]},
+ "section_plan":[{"section":"Methods|Results|Discussion|…","subsections":[{"title":"","points":["specific content drawn from the log"],"figures":["Fig1"],"tables":["what the table lists"]}]}],
+ "gaps":["missing information the authors must supply (controls, n, statistics, …)"]}
+Use only what the materials support. Korean or English text is fine; keep section names in English.\n\n${head}`);
+      let j;try{j=HUB.parseJson(t);}catch(e){j=null;}need(j&&typeof j==="object","개요를 읽지 못했어요. 다시 눌러 주세요");p.outline=j;p.lit="";p.secs="";p.ref=null;}
+    else if(step==="lit"){need(p.outline,"먼저 1단계 개요를 만들어 주세요");const P=poPapers(d,p);p.papers=P.map(x=>x.key);need(P.length>=3,"관련된 라이브러리 논문이 3편 이상 있어야 해요. 문헌 검색에서 논문을 담아 주세요 (개요의 검색어를 써 보세요)");
+      const t=await poAsk(`You are the Literature Review Agent of PaperOrchestra. Write the Introduction and the Related Work section in academic English.
+${RULES}
+- Integrate at least 90% of the papers listed below (each cited at least once where it genuinely fits); group them by theme and contrast them with this work rather than listing them.
+- Introduction: follow the intro strategy; end with a short paragraph stating the contributions.
+- Output Markdown with exactly two headings: "## Introduction" and "## Related Work".
+Intro / related-work plan: ${JSON.stringify(p.outline.intro_related_work_plan||{})}
+Storyline: ${p.outline.storyline||""}
+Papers (key | year | journal | title | gist):
+${P.map(x=>`[@${x.key}] | ${x.year} | ${x.journal} | ${x.title} | ${x.gist}`).join("\n")}\n\n${head.slice(0,12000)}`);
+      p.lit=String(t).trim();p.secs="";p.ref=null;}
+    else if(step==="secs"){need(p.outline,"먼저 1단계 개요를 만들어 주세요");const t=await poAsk(`You are the Section Writing Agent of PaperOrchestra. In ONE pass, write the remaining manuscript so the whole paper stays coherent.
+${RULES}
+- Follow the section plan exactly. Build tables from the experimental log as Markdown tables (values copied exactly). Refer to figures as (Fig. 1) per the plotting plan.
+- Output Markdown with these headings in order: "## Abstract" (≤250 words), "## Methods", "## Results", "## Discussion", "## Conclusion", "## Figure legends" (one paragraph per planned figure).
+- The Introduction and Related Work below are already written; do not repeat them, but stay consistent with them.
+Section plan: ${JSON.stringify(p.outline.section_plan||[])}
+Plotting plan: ${JSON.stringify((p.outline.plotting_plan||[]).map(f=>({id:f.id,title:f.title,objective:f.objective,caption_draft:f.caption_draft})))}
+Allowed citation keys: ${(p.papers||[]).map(k=>"@"+k).join(", ")||"(none)"}
+Already written:\n${String(p.lit||"").slice(0,12000)}\n\n${head}`,"default");p.secs=String(t).trim();p.ref=null;}
+    else if(step==="refine"){const base=parseMs((p.lit||"")+"\n\n"+(p.secs||""));need(base.length>=3,"먼저 3·4단계로 초안을 만들어 주세요");
+      const src=p.idea+"\n"+p.log;const review=async ms=>{const t=await poAsk(`You are a strict but fair peer reviewer for ${d.journal||"a peer-reviewed journal"}. Review the manuscript below on its own merits (you have not seen any earlier version). Score each axis 0-100 and give an overall 0-100 (≥80 Accept, 65-79 Minor revision, 50-64 Major revision, <50 Reject).
+Answer with ONE JSON object only: {"scores":{${PO_AX.map(a=>`"${a[0]}":0`).join(",")}},"overall":0,"weaknesses":[{"issue":"","where":"section name","fix":"concrete, doable without new experiments"}]}
+List at most 6 weaknesses, most important first; only list ones the authors can fix by rewriting.\n\nManuscript:\n${HUB.embedsPlain?HUB.embedsPlain(ms).slice(0,60000):ms.slice(0,60000)}`,"default");const j=HUB.parseJson(t);j.overall=+j.overall||0;return j;};
+      let cur=msText(base),it=[{iter:0,score:null,decision:"초안"}];poLive="0회차 심사 중…";draw();let rv=await review(cur);it[0].score=rv.overall;it[0].sc=rv.scores;let best=cur,prev=rv,plateau=0;
+      for(let i=1;i<=3;i++){const ws=(rv.weaknesses||[]).filter(w=>w&&w.issue);if(!ws.length){it.push({iter:i,decision:"고칠 약점 없음 · 멈춤"});break;}
+        poLive=`${i}회차 고치는 중…`;draw();
+        const t=await poAsk(`You are the Content Refinement Agent of PaperOrchestra. Revise the manuscript to address the reviewer's weaknesses below.
+${RULES}
+Safety: do not add new numbers, experiments or citations that are not already present; do not delete supported results to look cleaner; do not mention the review. Keep every [@key] marker valid.
+Output the FULL revised manuscript in Markdown with the same "## " section headings.
+Weaknesses: ${JSON.stringify(ws)}\n\nIdea and experimental log (the only allowed facts):\n${src.slice(0,30000)}\n\nManuscript:\n${cur.slice(0,60000)}`,"default");
+        const cand=msText(parseMs(t));const bad=newNums(cand,src+"\n"+cur);
+        if(parseMs(t).length<3){it.push({iter:i,decision:"수정본을 읽지 못함 · 되돌리고 멈춤"});break;}
+        if(bad.length>2){it.push({iter:i,decision:`없던 숫자 ${bad.slice(0,4).join(", ")} 등장 · 되돌리고 멈춤`});break;}
+        poLive=`${i}회차 다시 심사 중…`;draw();const r2=await review(cand);
+        const net=PO_AX.reduce((n,[k])=>n+((+((r2.scores||{})[k])||0)-(+((prev.scores||{})[k])||0)),0);
+        const acc=r2.overall>prev.overall||(r2.overall===prev.overall&&net>=0);
+        if(!acc){it.push({iter:i,score:r2.overall,sc:r2.scores,decision:"점수 하락 · 되돌리고 멈춤"});break;}
+        plateau=r2.overall-prev.overall<1?plateau+1:0;it.push({iter:i,score:r2.overall,sc:r2.scores,decision:plateau>=2?"채택 · 더 오르지 않아 멈춤":"채택"});
+        cur=cand;best=cand;prev=r2;rv=r2;if(plateau>=2)break;}
+      p.ref={iters:it,final:best,weak:(rv.weaknesses||[]).slice(0,6),at:Date.now()};}
+    await poSave(d);}
+  catch(e){if(e!==0)HUB.toast(e&&e.code==="cancelled"?"취소했어요":(e&&e.message)||"AI 실행에 실패했어요",6000);}
+  poBusy="";poLive="";draw();}
+async function poApply(which){const d=draft();if(!d)return;const p=poGet(d);await saveNow();
+  const src=which==="final"&&p.ref?p.ref.final:which==="lit"?p.lit:which==="secs"?p.secs:(p.lit+"\n\n"+p.secs);const secs=parseMs(src);if(!secs.length){HUB.toast("넣을 글이 없어요");return;}
+  d.snaps=[{at:Date.now(),words:d.sections.reduce((n,x)=>n+words(x.text),0),sections:JSON.parse(JSON.stringify(d.sections))},...(d.snaps||[])].slice(0,8);
+  secs.forEach(s=>{const i=d.sections.findIndex(x=>x.name.toLowerCase()===s.name.toLowerCase());if(i>=0)d.sections[i].text=s.text;else if(/related work/i.test(s.name)&&d.sections.some(x=>x.name==="Introduction")){d.sections.splice(d.sections.findIndex(x=>x.name==="Introduction")+1,0,{name:s.name,text:s.text});}else{const j=d.sections.findIndex(x=>x.name==="Figure legends");if(j>=0&&s.name!=="Figure legends")d.sections.splice(j,0,{name:s.name,text:s.text});else d.sections.push({name:s.name,text:s.text});}});
+  if(p.outline&&p.outline.title){const t=d.sections.find(x=>x.name==="Title");if(t&&!t.text.trim()){t.text=p.outline.title;d.title=p.outline.title;}}
+  dirty=true;await saveNow();await col().update(d.id,{snaps:d.snaps});HUB.toast(`섹션 ${secs.length}개를 원고에 넣었어요. 넣기 전 상태는 '버전'에 저장해 뒀어요.`,6000);draw();}
+function poHtml(d){const p=poGet(d),o=p.outline,B=(s,n,dis)=>`<button class="btn sm ${poBusy===s?"":"primary"}" type="button" data-po="${s}" ${poBusy||dis?"disabled":""}>${poBusy===s?"진행 중…":n}</button>`;
+  const fig=(o&&o.plotting_plan||[]).map((f,i)=>`<div class="pofig"><b>${esc(f.id||"Fig"+(i+1))} · ${esc(f.title||"")}</b> <span class="tag">${esc(f.type||"")}</span><p>${esc(f.objective||"")}</p>${f.caption_draft?`<p class="muted">${esc(f.caption_draft)}</p>`:""}<div class="row" style="gap:6px">${f.type==="chart"&&String(f.data||"").includes(",")?`<button class="btn sm" type="button" data-pofig="${i}">그래프 도구로 보내기</button>`:""}<button class="btn sm ghost" type="button" data-pocopy="${i}">설명 복사 (일러스트레이터용)</button></div></div>`).join("");
+  const sec=(o&&o.section_plan||[]).map(s=>`<li><b>${esc(s.section||"")}</b>${(s.subsections||[]).map(x=>`<br>· ${esc(x.title||"")}${(x.points||[]).length?` <span class="muted">— ${esc((x.points||[]).slice(0,3).join(" / "))}</span>`:""}`).join("")}</li>`).join("");
+  const rw=(o&&o.intro_related_work_plan&&o.intro_related_work_plan.related_work||[]);
+  const chk=(t,integ)=>{const bad=newNums(t,p.idea+"\n"+p.log),c=(String(t).match(/\[@[^\]]+\]/g)||[]).join(" "),used=new Set((c.match(/@([\w:\-./]+)/g)||[]).map(x=>x.slice(1))),pp=p.papers||[],inn=pp.filter(k=>used.has(k)).length,unk=[...used].filter(k=>!pp.includes(k));
+    return `<p class="muted" style="font-size:12.5px;margin:6px 0">${pp.length&&integ?`인용 반영 ${inn}/${pp.length}편 (${Math.round(inn/pp.length*100)}%, 목표 90%)`:""}${unk.length?` · <span style="color:var(--bad,#b3372f)">목록에 없는 키 ${unk.length}개: ${esc(unk.slice(0,4).join(", "))}</span>`:""}${bad.length?` · <span style="color:var(--bad,#b3372f)">실험 기록에 없는 숫자: ${esc(bad.slice(0,8).join(", "))} — 확인하세요</span>`:" · 숫자는 모두 기록에 있어요"}</p>`;};
+  return `<div class="page"><section class="card pad wrpo" id="poBox">
+    <div class="row" style="justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2 style="margin:0">PaperOrchestra 방식으로 원고 쓰기</h2><button class="btn sm ghost" type="button" data-wr="po">닫기</button></div>
+    <p class="muted" style="margin:6px 0 12px;font-size:13px">Google Cloud AI Research의 PaperOrchestra(arXiv:2604.05018)처럼 일을 나눠요: ① 개요 → ② 그림 계획 · ③ 서론·선행연구 → ④ 나머지 섹션 한 번에 → ⑤ 가상 심사로 고치고, 점수가 오를 때만 채택. 숫자와 인용은 넣어 준 실험 기록과 라이브러리 논문에서만 써요.</p>
+    <div class="pogrid"><label class="field" style="margin:0"><span class="pohd">아이디어 (무엇을, 왜, 핵심 주장)</span><textarea id="poIdea" rows="5" placeholder="예: 신장 표적 초분자 나노입자로 약물를 전달해 시스플라틴 유발 AKI를 줄인다. 핵심 주장: …">${esc(p.idea)}</textarea></label>
+      <label class="field" style="margin:0"><span class="pohd">실험 기록 (조건·결과·숫자)<button class="linkbtn" type="button" data-po="notes">실험노트에서 가져오기${d.project?" ("+esc(d.project)+")":""}</button></span><textarea id="poLog" rows="5" placeholder="실험 조건, 군별 결과, 통계 값을 그대로 붙여넣거나 실험노트에서 가져오세요">${esc(p.log)}</textarea></label>
+      <label class="field" style="margin:0">투고 지침 (선택)<input id="poGuide" value="${esc(p.guide)}" placeholder="예: 6,000단어 이내, 그림 6개, 구조화 초록"></label></div>
+    <div class="posteps">
+      <div class="postep"><h4>① 개요</h4><p class="muted">그림·문헌·섹션 계획을 한 번에 세워요 (AI 1회)</p>${B("outline",o?"다시 만들기":"개요 만들기")}
+        ${o?`<p style="margin:8px 0 4px"><b>${esc(o.title||"")}</b></p><p class="muted" style="font-size:13px">${esc(o.storyline||"")}</p><ul class="poplan">${sec}</ul>${(o.gaps||[]).length?`<div class="note-bar warn" style="display:block;font-size:12.5px"><b>채워야 할 정보</b><br>${(o.gaps||[]).map(esc).join("<br>")}</div>`:""}`:""}</div>
+      <div class="postep"><h4>② 그림 계획</h4><p class="muted">계획된 그림을 그래프 도구나 일러스트레이터로 넘겨요</p>${o?(fig||'<p class="muted">계획된 그림이 없어요</p>'):'<p class="muted">①을 먼저 해 주세요</p>'}</div>
+      <div class="postep"><h4>③ 서론·선행연구</h4><p class="muted">라이브러리 논문만 인용해 Introduction·Related Work를 써요 (목표: 90% 이상 반영)</p>${B("lit",p.lit?"다시 쓰기":"쓰기",!o)}
+        ${rw.length?`<p class="muted" style="font-size:12.5px;margin:6px 0">부족하면 문헌 검색에서 찾아 담을 검색어: ${rw.flatMap(r=>r.search_queries||[]).filter(Boolean).slice(0,6).map(q=>`<button class="chip sm" type="button" data-poq="${esc(q)}">${esc(q)}</button>`).join(" ")}</p>`:""}
+        ${p.lit?`${chk(p.lit,1)}<div class="md pomd">${HUB.md(p.lit)}</div><button class="btn sm" type="button" data-poapply="lit">이 두 섹션만 원고에 넣기</button>`:""}</div>
+      <div class="postep"><h4>④ 나머지 섹션</h4><p class="muted">초록·방법·결과·고찰·결론·그림 설명을 한 번에 써서 앞뒤가 맞게 해요 (AI 1회)</p>${B("secs",p.secs?"다시 쓰기":"쓰기",!o)}
+        ${p.secs?`${chk(p.secs)}<div class="md pomd">${HUB.md(p.secs)}</div><button class="btn sm" type="button" data-poapply="secs">이 섹션들만 원고에 넣기</button>`:""}</div>
+      <div class="postep"><h4>⑤ 가상 심사로 다듬기</h4><p class="muted">심사 → 고치기 → 다시 심사를 최대 3번. 점수가 오를 때만 채택하고, 떨어지거나 기록에 없는 숫자가 생기면 되돌리고 멈춰요 (AI 약 5~7회)</p>${B("refine",p.ref?"다시 다듬기":"다듬기",!(p.lit&&p.secs))}
+        ${p.ref?`<p style="margin:8px 0 4px;font-size:13px"><b>점수 흐름</b> ${p.ref.iters.map(x=>`${x.iter}회차${x.score!=null?" "+x.score:""} (${esc(x.decision)})`).join(" → ")}</p>
+          ${p.ref.iters.filter(x=>x.sc).length?`<div class="mdt"><table><thead><tr><th>회차</th>${PO_AX.map(a=>`<th>${a[1]}</th>`).join("")}<th>종합</th></tr></thead><tbody>${p.ref.iters.filter(x=>x.sc).map(x=>`<tr><td>${x.iter}</td>${PO_AX.map(a=>`<td>${esc(String((x.sc||{})[a[0]]??""))}</td>`).join("")}<td><b>${x.score}</b></td></tr>`).join("")}</tbody></table></div>`:""}
+          ${p.ref.weak.length?`<p style="font-size:13px;margin:8px 0 2px"><b>남은 지적</b></p><ul style="font-size:13px;margin:0">${p.ref.weak.map(w=>`<li>${esc(w.issue||"")}${w.where?` <span class="muted">(${esc(w.where)})</span>`:""}${w.fix?` — ${esc(w.fix)}`:""}</li>`).join("")}</ul>`:""}
+          ${chk(p.ref.final,1)}<details><summary>최종본 보기</summary><div class="md pomd">${HUB.md(p.ref.final)}</div></details>`:""}</div>
+    </div>
+    ${poBusy?`<div class="note-bar" style="display:block;margin-top:10px"><b>${esc({outline:"① 개요",lit:"③ 서론·선행연구",secs:"④ 나머지 섹션",refine:"⑤ 다듬기"}[poBusy]||"")} 진행 중…</b><pre id="poLive" class="polive">${esc(String(poLive||"").slice(-1200))}</pre></div>`:""}
+    <div class="row" style="gap:8px;margin-top:12px;flex-wrap:wrap">${p.ref?`<button class="btn primary" type="button" data-poapply="final">다듬은 최종본을 원고에 넣기</button>`:""}${p.lit||p.secs?`<button class="btn" type="button" data-poapply="all">③·④ 초안을 원고에 넣기</button>`:""}<span class="muted" style="font-size:12.5px">넣기 전 원고는 '버전'에 자동 저장돼요. AI 초안이니 숫자·인용·주장은 직접 확인하세요.</span></div>
+  </section></div>`;}
 function draw(){const V=$("#v-write");if(!V)return;const list=col().list.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
   if(!list.some(d=>d.id===W.cur))W.cur=list[0]?list[0].id:"";const d=draft();
   if(!d){V.innerHTML=`<div class="page"><section class="card pad wrempty"><h2>원고 작업 공간</h2><p>원고를 섹션별로 써 두고, 라이브러리 논문을 바로 인용하고, 인용 근거 대조·통계 점검·동료 심사·저널 추천을 이 원고 하나에 이어서 돌릴 수 있어요. 도구마다 원고를 다시 붙여넣지 않아도 돼요.</p><div class="row" style="justify-content:center;gap:8px"><button class="btn primary" type="button" data-wr="new">새 원고 시작</button><button class="btn" type="button" data-wr="import">써 둔 원고 파일 가져오기</button></div><p style="font-size:13px">이미 쓴 원고가 있으면 Word·PDF·한글 파일을 올리세요. Abstract, Introduction 같은 섹션 제목을 찾아 나눠 담고, 바로 점검과 투고 준비 도구를 돌릴 수 있어요.</p><input type="file" id="wrFile" hidden accept=".docx,.pdf,.hwpx,.txt,.md,.pptx"></section></div>`;return;}
@@ -7126,6 +7248,8 @@ function draw(){const V=$("#v-write");if(!V)return;const list=col().list.slice()
       <h3 class="cap">내보내기</h3>
       <label class="field" for="wrStyle" style="margin:0">인용 양식<select id="wrStyle">${Object.entries(bib.STYLES).map(([k,v])=>`<option value="${k}" ${W.style===k?"selected":""}>${esc(v.name)}</option>`).join("")}</select></label>
       <div class="wrbtns"><button class="btn primary" type="button" data-wr="docx">Word로 저장 (인용·참고문헌 포함)</button><button class="btn" type="button" data-wr="preview">완성본 미리보기</button><button class="btn" type="button" data-wr="md">Markdown 저장</button></div>
+      <h3 class="cap">처음부터 쓰기</h3>
+      <div class="wrtl"><button type="button" data-wr="po" aria-pressed="${!!W.po}"><b>PaperOrchestra 방식으로 쓰기</b><span>실험 기록·아이디어 → 개요 → 서론·선행연구 → 섹션 → 가상 심사</span></button></div>
       <h3 class="cap">이 원고로 점검하기</h3>
       <div class="wrtl">${tool("claimcheck","인용 근거 대조","인용한 논문 본문에 그 내용이 있는지")}${tool("citecheck","인용 검증","참고문헌이 실재하는지 (Crossref)")}${tool("reportcheck","통계·보고 점검","Methods·Results·그림 설명의 빠진 항목")}${tool("review","동료 심사 패널","심사위원 관점의 총평과 요구 사항")}</div>
       <h3 class="cap">투고 준비</h3>
@@ -7134,15 +7258,16 @@ function draw(){const V=$("#v-write");if(!V)return;const list=col().list.slice()
       <h3 class="cap">버전</h3>
       <div class="wrbtns"><button class="btn sm" type="button" data-wr="snap">지금 상태 저장해 두기</button></div>
       ${(d.snaps||[]).length?`<div class="wrsnaps">${d.snaps.map((x,i)=>`<div><span>${new Date(x.at).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})} · ${x.words.toLocaleString()}</span><button class="linkbtn" type="button" data-wsnap="${i}">되돌리기</button></div>`).join("")}</div>`:`<p class="muted" style="font-size:12.5px;margin:0">크게 고치기 전에 저장해 두면 되돌릴 수 있어요 (최근 8개).</p>`}
-    </aside></div>`;
+    </aside></div>${W.po?poHtml(d):""}`;
   ls.set("write",{cur:W.cur,sec:W.sec,style:W.style});
 }
 function init(){const V=$("#v-write");if(!V)return;
-  col().subscribe(()=>{if(Date.now()-mine<1500)return;if(HUB.view==="write"&&!dirty&&document.activeElement&&!/^wr(Text|Title|Journal|SecName|Ask|Q)$/.test(document.activeElement.id||""))draw();});
+  col().subscribe(()=>{if(Date.now()-mine<1500)return;if(HUB.view==="write"&&!dirty&&document.activeElement&&!/^(wr(Text|Title|Journal|SecName|Ask|Q)|po(Idea|Log|Guide))$/.test(document.activeElement.id||""))draw();});
   V.addEventListener("input",e=>{const d=draft();if(!d)return;const t=e.target;
     if(t.id==="wrText"){d.sections[W.sec].text=t.value;if(d.sections[W.sec].name==="Title"){d.title=(t.value.split("\n").find(x=>x.trim())||"").trim().slice(0,200)||d.title;const ti=$("#wrTitle");if(ti)ti.value=d.title;}const c=$("#wrCount");if(c)c.textContent=words(t.value)+" "+unit(t.value);touch();}
     else if(t.id==="wrTitle"){d.title=t.value.slice(0,200);const ts=d.sections.find(x=>x.name==="Title");if(ts&&ts.text.trim().split("\n").length<=1){ts.text=d.title;if(d.sections[W.sec]===ts){const ta=$("#wrText");if(ta)ta.value=ts.text;}}touch();}else if(t.id==="wrJournal"){d.journal=t.value.slice(0,120);touch();}
     else if(t.id==="wrSecName"){d.sections[W.sec].name=t.value.slice(0,60)||"섹션";touch();}
+    else if(t.id==="poIdea"||t.id==="poLog"||t.id==="poGuide"){const p=poGet(d);p[{poIdea:"idea",poLog:"log",poGuide:"guide"}[t.id]]=t.value;clearTimeout(poSave.t);poSave.t=setTimeout(()=>poSave(d),900);}
     else if(t.id==="wrQ"){W.q=t.value;clearTimeout(draw.q);draw.q=setTimeout(()=>{const ta=$("#wrText"),sel=ta?[ta.selectionStart,ta.selectionEnd]:null,pos=t.selectionStart;draw();const n=$("#wrQ");if(n){n.focus();n.setSelectionRange(pos,pos);}const t2=$("#wrText");if(t2&&sel)t2.setSelectionRange(sel[0],sel[1]);},250);}});
   V.addEventListener("change",async e=>{const t=e.target;
     if(t.id==="wrFile"){const f=t.files[0];t.value="";if(f)importFile(f);return;}
@@ -7160,6 +7285,11 @@ function init(){const V=$("#v-write");if(!V)return;
       ta.value=nv;d.sections[W.sec].text=nv;touch();ta.focus();ta.setSelectionRange(pos,pos);return;}
     const wa=e.target.closest("[data-wact]");if(wa){const k=wa.dataset.wact;if(k==="custom"){const v=$("#wrAsk").value.trim();if(!v){HUB.toast("무엇을 할지 적어 주세요");return;}runAct("custom",v);}else runAct(k);return;}
     const wo=e.target.closest("[data-wout]");if(wo&&out){const k=wo.dataset.wout;if(k==="copy")HUB.copy(out.text);else if(k==="close"){out=null;draw();}else applyOut(k);return;}
+    const pb=e.target.closest("[data-po]");if(pb&&d){const k=pb.dataset.po;if(k==="notes"){const p=poGet(d),t=notesLog(d);if(!t){HUB.toast(d.project?`'${d.project}' 프로젝트의 실험노트가 없어요`:"실험노트가 없어요");return;}p.log=(p.log.trim()?p.log.trim()+"\n\n":"")+t;await poSave(d);draw();HUB.toast("실험노트를 실험 기록 칸에 넣었어요. 필요 없는 부분은 지워 주세요.",5000);return;}poRun(k);return;}
+    const pa=e.target.closest("[data-poapply]");if(pa){poApply(pa.dataset.poapply);return;}
+    const pq=e.target.closest("[data-poq]");if(pq){HUB.copy(pq.dataset.poq);HUB.toast("검색어를 복사했어요. 문헌 검색에 붙여넣으세요");return;}
+    const pf=e.target.closest("[data-pofig]");if(pf&&d){const f=(poGet(d).outline.plotting_plan||[])[+pf.dataset.pofig];if(f&&HUB.illust&&HUB.illust.setData)HUB.illust.setData(String(f.data||""),"",`'${f.title||f.id}' 데이터를 그래프 도구에 넣었어요`);return;}
+    const pc=e.target.closest("[data-pocopy]");if(pc&&d){const f=(poGet(d).outline.plotting_plan||[])[+pc.dataset.pocopy];if(f)HUB.copy(`${f.title||""}\n목적: ${f.objective||""}\n${f.caption_draft||""}`);return;}
     const sd=e.target.closest("[data-wsend]");if(sd){send(sd.dataset.wsend);return;}
     const sn=e.target.closest("[data-wsnap]");if(sn&&d){const x=(d.snaps||[])[+sn.dataset.wsnap];if(!x)return;if(!sn.classList.contains("armed")){sn.classList.add("armed");sn.textContent="한 번 더 누르면 되돌려요";return;}
       d.sections=JSON.parse(JSON.stringify(x.sections));W.sec=Math.min(W.sec,d.sections.length-1);dirty=true;await saveNow();draw();HUB.toast("그때 상태로 되돌렸어요");return;}
@@ -7169,6 +7299,7 @@ function init(){const V=$("#v-write");if(!V)return;
     else if(k==="addsec"){d.sections.push({name:"새 섹션",text:""});W.sec=d.sections.length-1;dirty=true;await saveNow();draw();const n=$("#wrSecName");if(n){n.focus();n.select();}}
     else if(k==="delsec"){if(String(d.sections[W.sec].text||"").trim()&&!b.classList.contains("armed")){b.classList.add("armed");b.textContent="글이 있어요. 한 번 더";return;}d.sections.splice(W.sec,1);W.sec=Math.max(0,W.sec-1);dirty=true;await saveNow();draw();}
     else if(k==="cite"){W.pick=!W.pick;const ta=$("#wrText"),sel=ta?[ta.selectionStart,ta.selectionEnd]:null;draw();const t2=$("#wrText");if(t2&&sel){t2.focus();t2.setSelectionRange(sel[0],sel[1]);}}
+    else if(k==="po"){W.po=!W.po;draw();if(W.po){const b=$("#poBox");if(b)b.scrollIntoView({behavior:"smooth",block:"start"});}}
     else if(k==="docx")exportDocx();
     else if(k==="preview"){await saveNow();preview();}
     else if(k==="md"){await saveNow();HUB.save((d.title||"원고").replace(/[\\/:*?"<>|]/g," ").slice(0,60)+".md",new Blob(["# "+(d.title||"")+"\n\n"+full(d,true)+"\n"],{type:"text/markdown"}));}

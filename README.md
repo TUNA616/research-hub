@@ -73,6 +73,9 @@
   - 분야를 고르면 **사이트 안에서 바로 조회**되는 DB와 **다른 사이트 바로가기**가 그 분야로 좁혀집니다.
   - 바로가기 중 🔍 표시가 붙은 곳은 조회칸에 넣은 말로 그 사이트의 검색 결과가 바로 열립니다. (예: DrugBank, GTEx, AlphaFold DB, NASA ADS, SIMBAD, RISS, DBpia, Google Patents, Zenodo)
   - '데이터베이스 찾기' 칸으로 DB 이름을 찾습니다.
+- **Curieus 연동:** [Curieus](https://curieus.net/)는 구조 예측, 도킹, 분자동역학(MD), 단백질 디자인, scRNA-seq 분석을 코드 없이 돌리는 분석 플랫폼입니다.
+  - **결과에서 넘기기:** UniProt 결과의 단백질 서열, PDB 결과의 PDB ID, PubChem 결과의 SMILES 옆에 Curieus 링크가 붙습니다. 누르면 값이 클립보드에 복사되고 Curieus 분석 화면이 열립니다.
+  - **Curieus 연결 (시험 기능):** 설정에 Curieus API 키(마이페이지에서 발급)를 넣으면 DB 조회 화면에서 Curieus 도구 목록을 불러와 실행할 수 있습니다. 작업 제출처럼 크레딧이 쓰일 수 있는 도구는 한 번 더 눌러야 실행됩니다. claude.ai 안에서는 외부 연결이 막혀 있으니 내려받은 HTML이나 GitHub 사이트에서 쓰세요.
 - **실패해도 계속 찾을 수 있어요:** 조회가 실패하면 같은 내용을 찾을 수 있는 사이트 바로가기를 보여 줍니다. **연결 점검** 버튼으로 이 브라우저에서 어느 DB가 연결되는지 한 번에 확인합니다.
 
 | 묶음 | DB |
@@ -173,6 +176,24 @@
 - 인용과 참고문헌이 들어간 Word로 저장합니다.
 - 원고 하나로 근거 대조, 통계 점검, 동료 심사, 저널 추천을 이어서 실행합니다.
 
+### PaperOrchestra 방식으로 쓰기
+
+Google Cloud AI Research의 [PaperOrchestra](https://arxiv.org/abs/2604.05018)(Song 외, 2026)가 쓰는 '일을 나눠 맡기는' 원고 쓰기 절차를 브라우저에서 돌아가게 옮겼습니다. 원고 화면 오른쪽의 **'PaperOrchestra 방식으로 쓰기'**를 누르면 열립니다.
+
+| 단계 | 하는 일 |
+|---|---|
+| 넣을 것 | 아이디어(무엇을, 왜, 핵심 주장), 실험 기록(조건·결과·숫자), 투고 지침(선택). 실험 기록은 **실험노트에서 가져오기**로 원고와 같은 프로젝트의 노트를 한 번에 불러올 수 있습니다. |
+| ① 개요 | AI 한 번으로 제목, 이야기 흐름, 그림 계획, 서론·선행연구 계획(검색어 포함), 섹션 계획, **채워야 할 정보**(빠진 대조군·n·통계 등)를 세웁니다. |
+| ② 그림 계획 | 계획된 그래프는 데이터를 **그래프 도구**로 바로 넘기고, 개념도는 설명을 복사해 일러스트레이터에서 그립니다. |
+| ③ 서론·선행연구 | 라이브러리에 담은 논문 가운데 주제와 가까운 것(이미 인용한 논문, 같은 프로젝트 논문 우선, 최대 30편)만 `[@키]`로 인용해 Introduction과 Related Work를 씁니다. 목록 논문의 90% 이상을 반영하는 것이 목표이고, 반영 비율과 목록에 없는 키를 표시합니다. 논문이 부족하면 개요의 검색어로 문헌 검색에서 더 담습니다. |
+| ④ 나머지 섹션 | 초록, 방법, 결과, 고찰, 결론, 그림 설명을 **한 번에** 써서 앞뒤가 맞게 합니다. 표는 실험 기록의 값을 그대로 옮깁니다. |
+| ⑤ 가상 심사로 다듬기 | 심사위원 역할의 AI가 6개 항목(독창성, 타당성, 명료성, 중요성, 선행연구, 구성·표현)과 종합 점수(0~100)를 매기고 고칠 점을 냅니다. 고친 원고를 다시 심사해 **점수가 오를 때만 채택**하고, 점수가 떨어지거나 실험 기록에 없던 숫자가 생기면 되돌리고 멈춥니다(최대 3번). 점수 흐름과 남은 지적을 보여 줍니다. |
+
+- 모든 단계에서 숫자와 결과는 넣어 준 실험 기록에서만, 인용은 라이브러리 논문에서만 쓰도록 지시합니다. 기록에 없는 숫자가 나오면 빨간 글씨로 표시합니다.
+- 결과는 원고마다 저장되고, **원고에 넣기**를 누르면 섹션별로 들어갑니다. 넣기 전 원고는 '버전'에 자동으로 저장됩니다.
+- 원 논문의 그림 자동 생성(matplotlib)과 LaTeX 컴파일은 브라우저에서 할 수 없어, 그래프 도구·일러스트레이터로 넘기고 Word로 내보내는 방식으로 바꿨습니다.
+- AI 호출은 한 번 전체를 돌릴 때 약 8~10회입니다. AI 초안이므로 숫자, 인용, 주장의 세기는 반드시 직접 확인하세요.
+
 ---
 
 ## 5. 그리기 — 일러스트레이터
@@ -248,6 +269,7 @@ AI 기능은 설정에 넣은 **본인 API 키**로 실행됩니다. 키는 본�
 | OpenAI API 키 | 이미지 생성(OpenAI) | platform.openai.com |
 | Unpaywall 이메일 (키 아님) | 원문 오픈액세스 찾기. 비우면 OpenAlex 정보로 찾음 | unpaywall.org/products/api |
 | GtoPdb API 키 | 표적–리간드 약리 (2026년 8월 말부터 키 필요) | guidetopharmacology.org |
+| Curieus API 키 | DB 조회의 Curieus 연결 (시험 기능) | curieus.net 마이페이지 |
 | OpenAlex, Semantic Scholar 키 | 검색이 막히거나 느릴 때만 (선택) | 각 서비스 |
 
 - **Google 모델 이름은 적지 않아도 됩니다.** 비워 두면 쓸 수 있는 모델을 자동으로 고릅니다. 적어 둔 모델이 종료됐거나 이름이 틀리면 다른 모델로 이어서 쓰고 알려 줍니다.
@@ -328,6 +350,7 @@ PDF.js · mammoth.js · JSZip · SheetJS · PptxGenJS
 
 - 리서치 도구와 검색 절차는 scholar-megasearch, paper-curation, academic-research-skills, scientific-agent-skills, science-skills, autoresearch, k-skill, hwpx, searchinfohwpx 스킬의 절차를 브라우저에서 돌아가게 옮겼습니다.
 - 이미지 생성의 계획 → 그리기 → 검토 흐름은 PaperBanana 방식을 따랐습니다.
+- 원고의 'PaperOrchestra 방식으로 쓰기'는 PaperOrchestra 논문(Song, Song, Pfister, Yoon, arXiv:2604.05018, 2026)과 이를 스킬로 옮긴 [ar9av/PaperOrchestra](https://github.com/Ar9av/PaperOrchestra)의 단계 구성과 채택·되돌림 규칙을 참고해 새로 작성했습니다.
 
 이 사이트는 위 서비스나 Zotero, EndNote, ResearchRabbit, BioRender, FigureLabs, Photopea, Clarivate(JCR), PROTAC-DB, KPMP와 제휴 관계가 없습니다.
 
