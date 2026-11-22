@@ -1008,6 +1008,13 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .mbar.nbar .rbtns{display:flex;flex-wrap:nowrap;gap:8px;align-items:center;width:100%;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
 .mbar.nbar .rbtns>.btn,.mbar.nbar .rbtns>label.btn,.mbar.nbar .rbtns>select{flex:0 0 auto;white-space:nowrap;width:auto}
 .mbar.nbar .rbtns>select{max-width:190px;align-self:stretch;height:auto}
+.mtabrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.mtabrow .mtabs{flex:0 1 auto}
+.toolgo{margin-left:auto;flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);text-decoration:none;transition:border-color .15s,background .15s}
+.toolgo:hover,.studylink.toollink:hover{border-color:var(--accent);background:var(--accent-soft)}
+.toolgo>span:first-child{font-size:20px;line-height:1}.toolgo b{display:block;font-size:14px;line-height:1.3;white-space:nowrap}.toolgo small{display:block;color:var(--accent);font-size:12px;margin-top:2px;font-weight:600}
+@media (max-width:760px){.toolgo{margin-left:0;max-width:none;width:100%}}
+.dbfield{flex-wrap:nowrap!important;overflow-x:auto;gap:4px!important;padding-bottom:3px;scrollbar-width:thin}
+.dbfield>*{flex:0 0 auto;white-space:nowrap}.dbfield .chip.sm{padding:4px 8px;font-size:12px}
 </style>
 </head>
 <body>
@@ -1150,13 +1157,14 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
   <div class="card pad">
     <h3 class="cap" style="margin-top:0">DB 고르기 — 분야별</h3>
     <form class="qform" id="dbForm"><label class="sr" for="dbQ">찾을 이름</label><input id="dbQ" type="search" autocomplete="off"><button class="btn primary" type="submit">조회</button></form>
+    <div class="row" style="gap:8px;flex-wrap:wrap;margin:0 0 10px"><label class="sr" for="dbFilter">데이터베이스 찾기</label><input id="dbFilter" class="search" type="search" placeholder="데이터베이스 찾기" style="flex:1;min-width:180px"><button class="btn sm" type="button" id="dbCheck" title="이 브라우저에서 각 DB 서버에 연결되는지 확인해요">연결 점검</button></div>
     <p class="dbhint" id="dbHint"></p>
     <div class="row" id="dbHist" style="gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
     <div id="dbField" class="row dbfield"></div>
     <p class="dbsub" id="dbSegHead">사이트 안에서 바로 조회</p><div id="dbSeg" class="dbseg"></div><div class="row" style="justify-content:flex-end"><span class="tag" id="dbFrom"></span></div>
-    <div class="row" style="gap:8px;flex-wrap:wrap;margin:12px 0 0"><label class="sr" for="dbFilter">데이터베이스 찾기</label><input id="dbFilter" class="search" type="search" placeholder="데이터베이스 찾기" style="flex:1;min-width:180px"><button class="btn sm" type="button" id="dbCheck" title="이 브라우저에서 각 DB 서버에 연결되는지 확인해요">연결 점검</button></div>
     <div class="note-bar warn" id="dbBlocked" hidden>claude.ai 안에서는 외부 DB에 연결할 수 없어요. 내려받은 HTML 파일에서 조회하세요.</div>
     <div id="dbCat" class="dbcat"><div class="dbcath"><b id="dbCatHead">분야별 바로가기 DB</b><span class="muted" id="dbCatNote"></span></div><div id="dbCatList"></div></div>
+    <details class="labpanel" id="cuPanel" style="margin-top:18px"><summary><b>Curieus 연결 (시험 기능)</b> <span class="muted">내 API 키로 Curieus의 구조 예측·도킹·MD 도구를 이 화면에서 불러요</span></summary><div id="cuBody"></div></details>
   </div>
   <div class="card" id="dbOut"></div>
 </div></div>
@@ -1219,7 +1227,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
         <input id="setKw" autocomplete="off" placeholder="비우면 연구 주제에서 자동으로 뽑아요"></label>
       <div class="row" style="margin:-6px 0 14px"><button class="btn sm" type="button" id="setKwAuto">연구 주제에서 자동으로 뽑기</button></div>
       <label class="field" for="setLinks">바로가기 (맨 위에 버튼으로 뜨고 새 탭에서 열려요 · 한 줄에 하나씩 "이름 | 주소")
-        <textarea id="setLinks" style="min-height:64px" placeholder="실험 도구모음 | https://claude.ai/artifact/…"></textarea></label>
+        <textarea id="setLinks" style="min-height:64px" placeholder="실험도구모음 | https://claude.ai/artifact/…"></textarea></label>
       <label class="field" for="cfgTheme">화면 테마
         <select id="cfgTheme"><option value="">기기 설정 따라가기</option><option value="light">라이트</option><option value="dark">다크</option></select></label>
       <label class="field" for="setGroup">정리본 ZIP 폴더 기준
@@ -1240,6 +1248,7 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
       <label class="field" for="cfgS2Key">Semantic Scholar API 키 (선택)<input id="cfgS2Key" autocomplete="off"></label>
       <label class="field" for="cfgUpMail">Unpaywall 이메일 (선택 · DB 조회의 '원문 오픈액세스 찾기'에 써요. 비우면 OpenAlex 정보로 찾아요)<input id="cfgUpMail" type="email" autocomplete="off" placeholder="이 브라우저에만 저장돼요"></label>
       <label class="field" for="cfgGtpKey">GtoPdb API 키 (선택 · DB 조회의 '표적–리간드 약리'에 써요. Guide to PHARMACOLOGY에서 받아요)<input id="cfgGtpKey" type="password" autocomplete="off" placeholder="이 브라우저에만 저장돼요"></label>
+      <label class="field" for="cfgCuKey">Curieus API 키 (선택 · DB 조회의 'Curieus 연결'에 써요. Curieus 마이페이지에서 받아요)<input id="cfgCuKey" type="password" autocomplete="off" placeholder="이 브라우저에만 저장돼요"></label>
       <div class="row"><button class="btn" type="button" id="bkZip">파일까지 백업 (ZIP)</button><button class="btn" type="button" id="bkExport">글만 백업 (JSON, 가벼움)</button><button class="btn" type="button" id="bkImport">백업 가져오기</button><input type="file" id="bkFile" accept=".json,.zip" hidden></div>
       <p class="muted" style="margin:-4px 0 0;font-size:12.5px">ZIP에는 PDF 원문, 그림, 재료·실험노트 사진까지 들어가요. 다른 기기나 다른 브라우저로 옮길 때는 ZIP을 쓰세요. 설정과 API 키는 들어가지 않아요(아래 '설정 옮기기'로 따로 옮겨요).</p><p class="muted" id="bkProg" style="margin:0;font-size:12.5px" hidden></p>
       <hr class="sep">
@@ -1824,6 +1833,10 @@ H.go=function(v,silent){if(!VIEWS.includes(v))v="home";H.view=v;
   if(!silent){try{if(location.hash.slice(1)!==v)location.hash=v;}catch(e){}}ls.set("view",v);
   if(v==="home")H.renderHome();window.scrollTo(0,0);H.navFit(true);
   try{document.dispatchEvent(new CustomEvent("hub:view",{detail:v}));}catch(e){}};
+/* 실험도구모음: one address used by the home banner and the lab tab banner (fill TOOLKIT_URL once the site is up) */
+const TOOLKIT_URL="https://tuna616.github.io/research-hub/lab-tools/";
+H.toolkitUrl=()=>{if(TOOLKIT_URL)return TOOLKIT_URL;const a=[...document.querySelectorAll("#quick a.qlink")].find(x=>/도구/.test(x.textContent));return a?a.href:"";};
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest("[data-toolkit]");if(!a)return;e.preventDefault();const u=H.toolkitUrl();if(u)window.open(u,"_blank","noopener");else H.toast("실험도구모음 사이트 주소가 아직 연결되지 않았어요. 곧 추가돼요.",5000);});
 H.navFit=function(center){const nav=$("#nav"),q=$("#quick");if(!nav)return;const narrow=matchMedia("(max-width:760px)").matches;
   if(q){if(narrow&&q.parentNode!==nav)nav.appendChild(q);else if(!narrow&&q.parentNode===nav)nav.parentNode.insertBefore(q,$("#settingsBtn"));}
   if(narrow&&center){const cur=nav.querySelector('[aria-current="true"]');if(cur){const l=cur.offsetLeft-(nav.clientWidth-cur.offsetWidth)/2;try{nav.scrollTo({left:Math.max(0,l),behavior:"smooth"});}catch(e){nav.scrollLeft=Math.max(0,l);}}}
@@ -1850,7 +1863,8 @@ H.renderHome=function(){
     ["저장",H.storage!=="memory",H.storage==="cloud"?"claude.ai 계정에 저장돼 어느 기기에서 열어도 같아요. 이 사이트를 공유받은 사람과 자료가 섞이지 않고, 각자 자기 것만 보여요.":H.storage==="browser"?"이 브라우저에만 저장돼요. 설정에서 백업 파일을 내보내 두세요.":"이 창에서는 저장이 안 돼요. 닫으면 사라져요."]];
   el.innerHTML=`<div class="page">
     <section class="hero"><div><h2>찾고, 읽고, 분석하고, 쓰고, 그리기</h2><p>논문 검색부터 정리, 리서치, 원고 작성, 그림까지 한 곳에 모았어요. 기준 연구 주제: <b>${esc((H.lib&&H.lib.context)||"")}</b> <button class="btn sm ghost" type="button" id="homeSet">바꾸기</button></p></div>
-      <div class="herobox"><a class="studylink" href="https://tuna616.github.io/study-room/" target="_blank" rel="noopener"><span class="sl-ic" aria-hidden="true">📚</span><span class="sl-tx"><b>전공 공부나 수업 자료를 만들고 싶다면?</b><small>전공 학습실에서 공부 노트·요약·시험 대비 문제를 만들어요</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
+      <div class="herobox"><a class="studylink toollink" href="#" data-toolkit="1"><span class="sl-ic" aria-hidden="true">🧪</span><span class="sl-tx"><b>실험 TOOL이 어디있는지 헷갈린다면?</b><small>실험도구모음 — 농도·희석, BCA, SDS-PAGE, DAR, 투여량 계산</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
+<a class="studylink" href="https://tuna616.github.io/study-room/" target="_blank" rel="noopener"><span class="sl-ic" aria-hidden="true">📚</span><span class="sl-tx"><b>전공 공부나 수업 자료를 만들고 싶다면?</b><small>전공 학습실에서 공부 노트·요약·시험 대비 문제를 만들어요</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
       <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">문헌 검색 GO</button></form></div></section>
     ${H.lib&&H.lib.recentHtml?H.lib.recentHtml():""}
     <div class="steps">
@@ -1994,8 +2008,8 @@ H.applyTheme=()=>{const t=H.cfg.theme;if(t==="dark"||t==="light")document.docume
 H.applyTheme();
 function bindSettings(){
   $("#cfgTheme").addEventListener("change",e=>{H.cfg.theme=e.target.value;ls.set("cfg",H.cfg);H.applyTheme();});
-  $("#settingsBtn").addEventListener("click",()=>{$("#cfgAiKey").value=H.cfg.aiKey;$("#cfgAiModel").value=H.cfg.aiModel;$("#cfgOaKey").value=H.cfg.oaKey;$("#cfgS2Key").value=H.cfg.s2Key;$("#cfgUpMail").value=H.cfg.upMail||"";$("#cfgGtpKey").value=H.cfg.gtpKey||"";$("#cfgGKey").value=H.cfg.gKey||"";$("#cfgOKey").value=H.cfg.oKey||"";$("#cfgTheme").value=H.cfg.theme||"";});
-  $("#setSave").addEventListener("click",()=>{Object.assign(H.cfg,{aiKey:$("#cfgAiKey").value.trim(),aiModel:$("#cfgAiModel").value.trim()||"claude-sonnet-5-5",oaKey:$("#cfgOaKey").value.trim(),s2Key:$("#cfgS2Key").value.trim(),upMail:$("#cfgUpMail").value.trim(),gtpKey:$("#cfgGtpKey").value.trim(),gKey:$("#cfgGKey").value.trim(),oKey:$("#cfgOKey").value.trim(),theme:$("#cfgTheme").value});ls.set("cfg",H.cfg);H.applyTheme();H.renderHome();});
+  $("#settingsBtn").addEventListener("click",()=>{$("#cfgAiKey").value=H.cfg.aiKey;$("#cfgAiModel").value=H.cfg.aiModel;$("#cfgOaKey").value=H.cfg.oaKey;$("#cfgS2Key").value=H.cfg.s2Key;$("#cfgUpMail").value=H.cfg.upMail||"";$("#cfgGtpKey").value=H.cfg.gtpKey||"";$("#cfgGKey").value=H.cfg.gKey||"";$("#cfgOKey").value=H.cfg.oKey||"";$("#cfgCuKey").value=H.cfg.cuKey||"";$("#cfgTheme").value=H.cfg.theme||"";});
+  $("#setSave").addEventListener("click",()=>{Object.assign(H.cfg,{aiKey:$("#cfgAiKey").value.trim(),aiModel:$("#cfgAiModel").value.trim()||"claude-sonnet-5-5",oaKey:$("#cfgOaKey").value.trim(),s2Key:$("#cfgS2Key").value.trim(),upMail:$("#cfgUpMail").value.trim(),gtpKey:$("#cfgGtpKey").value.trim(),gKey:$("#cfgGKey").value.trim(),oKey:$("#cfgOKey").value.trim(),cuKey:$("#cfgCuKey").value.trim(),theme:$("#cfgTheme").value});ls.set("cfg",H.cfg);H.applyTheme();H.renderHome();});
   const BKC=()=>[["papers",cols.papers],["reports",cols.reports],["figs",cols.figs],["drafts",cols.drafts],["materials",cols.materials],["cells",cols.cells],["animals",cols.animals],["approvals",cols.approvals],["orders",cols.orders],["notes",cols.notes],["plans",cols.plans],["projects",cols.projects],["grants",cols.grants],["tpls",cols.tpls],["lfolders",cols.lfolders]];
   const bkData=()=>{const d={app:"research-hub",exportedAt:Date.now()};BKC().forEach(([k,c])=>d[k]=c.list);return d;};
   const bkName=ext=>"연구허브_백업_"+new Date().toISOString().slice(0,10)+"."+ext;
@@ -2080,7 +2094,7 @@ const siteName=()=>S.settings.siteName||(KNOWN?"나의 연구 허브":"나의 �
 const OWNER_LINKS="";
 const linksText=()=>S.settings.links!=null?S.settings.links:(KNOWN?OWNER_LINKS:"");
 const quickLinks=()=>linksText().split(/\n/).map(l=>{const m=l.match(/^\s*(?:(.*?)\s*\|\s*)?(https?:\/\/\S+)\s*$/);return m?{name:(m[1]||"").trim()||m[2].replace(/^https?:\/\//,"").slice(0,24),url:m[2]}:null;}).filter(Boolean).slice(0,8);
-function applyName(){const n=siteName();document.title=n;const h=document.querySelector(".brand h1");if(h)h.textContent=n;const q=document.getElementById("quick");if(q)q.innerHTML=quickLinks().map(l=>`<a class="qlink" href="${esc(l.url)}" target="_blank" rel="noopener" title="새 탭에서 열기">${esc(l.name)} ↗</a>`).join("");}
+function applyName(){const n=siteName();document.title=n;const h=document.querySelector(".brand h1");if(h)h.textContent=n;const q=document.getElementById("quick");if(q)q.innerHTML=quickLinks().map(l=>`<a class="qlink" href="${esc(l.url)}" target="_blank" rel="noopener" title="새 탭에서 열기">${esc(l.name.replace(/실험 도구모음/g,"실험도구모음"))} ↗</a>`).join("");}
 
 if(window.pdfjsLib){ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }
 
@@ -5165,13 +5179,13 @@ const DB={
    const d=await HUB.getJson(`https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(q)}/property/Title,MolecularFormula,MolecularWeight,XLogP,TPSA,HBondDonorCount,HBondAcceptorCount,RotatableBondCount,IUPACName,CanonicalSMILES/JSON`);
    const p=(d.PropertyTable&&d.PropertyTable.Properties||[])[0];if(!p)return"결과가 없어요.";
    const mw=parseFloat(p.MolecularWeight),v=[mw>500&&"분자량 > 500",p.XLogP>5&&"XLogP > 5",p.HBondDonorCount>5&&"수소결합 주개 > 5",p.HBondAcceptorCount>10&&"수소결합 받개 > 10"].filter(Boolean);
-   return `## ${p.Title||q} (CID ${p.CID})\n| 항목 | 값 |\n|---|---|\n${Object.entries(p).filter(([k])=>k!=="CID"&&k!=="Title").map(([k,x])=>`| ${k} | ${String(x).replace(/\|/g,"/")} |`).join("\n")}\n\n**Lipinski 규칙 위반 ${v.length}개**${v.length?": "+v.join(", "):""}\n\n[PubChem에서 열기](https://pubchem.ncbi.nlm.nih.gov/compound/${p.CID})`;}},
+   return `## ${p.Title||q} (CID ${p.CID})\n| 항목 | 값 |\n|---|---|\n${Object.entries(p).filter(([k])=>k!=="CID"&&k!=="Title").map(([k,x])=>`| ${k} | ${String(x).replace(/\|/g,"/")} |`).join("\n")}\n\n**Lipinski 규칙 위반 ${v.length}개**${v.length?": "+v.join(", "):""}\n\n[PubChem에서 열기](https://pubchem.ncbi.nlm.nih.gov/compound/${p.CID})${(p.CanonicalSMILES||p.SMILES||p.ConnectivitySMILES)?" · "+cuLink("smiles",p.CanonicalSMILES||p.SMILES||p.ConnectivitySMILES,"Curieus에서 도킹·분석하기 (SMILES 복사)"):""}`;}},
  uniprot:{name:"UniProt",ph:"단백질·유전자 예: PTPN1 human",from:"science-skills",async run(q){
    const d=await HUB.getJson("https://rest.uniprot.org/uniprotkb/search?size=5&format=json&query="+encodeURIComponent(q));
    const r=d.results||[];if(!r.length)return"결과가 없어요.";
    return r.map(x=>{const nm=x.proteinDescription&&((x.proteinDescription.recommendedName&&x.proteinDescription.recommendedName.fullName.value)||(x.proteinDescription.submissionNames&&x.proteinDescription.submissionNames[0].fullName.value))||x.uniProtkbId;
      const fn=((x.comments||[]).find(c=>c.commentType==="FUNCTION")||{texts:[{value:""}]}).texts[0].value;
-     return `## ${nm} (${x.primaryAccession})\n- 유전자: ${((x.genes||[])[0]&&x.genes[0].geneName&&x.genes[0].geneName.value)||"—"} · 종: ${(x.organism&&x.organism.scientificName)||"—"} · 길이: ${(x.sequence&&x.sequence.length)||"—"} aa · ${x.entryType||""}\n- 기능: ${fn?fn:"기록 없음"}\n- [UniProt](https://www.uniprot.org/uniprotkb/${x.primaryAccession}) · [AlphaFold 구조](https://alphafold.ebi.ac.uk/entry/${x.primaryAccession})`;}).join("\n\n");}},
+     return `## ${nm} (${x.primaryAccession})\n- 유전자: ${((x.genes||[])[0]&&x.genes[0].geneName&&x.genes[0].geneName.value)||"—"} · 종: ${(x.organism&&x.organism.scientificName)||"—"} · 길이: ${(x.sequence&&x.sequence.length)||"—"} aa · ${x.entryType||""}\n- 기능: ${fn?fn:"기록 없음"}\n- [UniProt](https://www.uniprot.org/uniprotkb/${x.primaryAccession}) · [AlphaFold 구조](https://alphafold.ebi.ac.uk/entry/${x.primaryAccession})${x.sequence&&x.sequence.value?" · "+cuLink("seq",x.sequence.value,"Curieus에서 구조 예측·디자인하기 (서열 복사)"):""}`;}).join("\n\n");}},
  trials:{name:"ClinicalTrials.gov",ph:"질환·약물 예: cancer immunotherapy resistance",from:"scientific-agent-skills · clinical",async run(q){
    const d=await HUB.getJson("https://clinicaltrials.gov/api/v2/studies?pageSize=15&query.term="+encodeURIComponent(q));
    const s=d.studies||[];if(!s.length)return"결과가 없어요.";
@@ -5210,7 +5224,7 @@ Object.assign(DB,{
    else{const s=await HUB.getJson("https://search.rcsb.org/rcsbsearch/v2/query?json="+encodeURIComponent(JSON.stringify({query:{type:"terminal",service:"full_text",parameters:{value:q}},return_type:"entry",request_options:{paginate:{start:0,rows:8}}}))).catch(e=>{if(/204|JSON|Unexpected/i.test(String(e&&e.message)))return {};throw e;});ids=((s&&s.result_set)||[]).map(x=>x.identifier);var total=s&&s.total_count;}
    if(!ids.length)return NONE;const rows=[];
    for(const id of ids){try{const e=await HUB.getJson("https://data.rcsb.org/rest/v1/core/entry/"+id);const info=e.rcsb_entry_info||{};
-     rows.push(`| [${id}](https://www.rcsb.org/structure/${id}) | ${cellT(e.struct&&e.struct.title)} | ${cellT((e.exptl||[]).map(x=>x.method).join(", "))} | ${info.resolution_combined&&info.resolution_combined[0]?info.resolution_combined[0]+" Å":"—"} | ${cellT(info.polymer_entity_count_protein)} | ${cellT((info.nonpolymer_bound_components||[]).slice(0,5).join(", "))} | ${cellT(e.rcsb_accession_info&&String(e.rcsb_accession_info.initial_release_date||"").slice(0,10))} |`);}catch(err){}}
+     rows.push(`| [${id}](https://www.rcsb.org/structure/${id}) ${cuLink("pdb",id,"Curieus")} | ${cellT(e.struct&&e.struct.title)} | ${cellT((e.exptl||[]).map(x=>x.method).join(", "))} | ${info.resolution_combined&&info.resolution_combined[0]?info.resolution_combined[0]+" Å":"—"} | ${cellT(info.polymer_entity_count_protein)} | ${cellT((info.nonpolymer_bound_components||[]).slice(0,5).join(", "))} | ${cellT(e.rcsb_accession_info&&String(e.rcsb_accession_info.initial_release_date||"").slice(0,10))} |`);}catch(err){}}
    if(!rows.length)return NONE;
    return `## RCSB PDB · '${q}'${total?` — 전체 ${total.toLocaleString()}건 중 ${rows.length}건`:""}\n| PDB ID | 제목 | 실험법 | 해상도 | 단백질 사슬 종류 | 결합 리간드 | 공개일 |\n|---|---|---|---|---|---|---|\n`+rows.join("\n")+`\n\n해상도는 숫자가 작을수록 정밀해요. 실험 구조가 없는 단백질은 UniProt 조회 결과의 AlphaFold 예측 구조 링크를 보세요.`;}},
  clinvar:{g:"변이·질병",label:"ClinVar 변이",name:"ClinVar",ph:"유전자·변이·질환 예: BRCA1 pathogenic, CFTR F508del",from:"NCBI ClinVar",async run(q){
@@ -5567,6 +5581,54 @@ Object.assign(DB,{
 });
 const ENRICHLINKS=(G,org)=>{const t=G.join("%0A");return `### 다른 도구로도 확인\n- [Enrichr](https://maayanlab.cloud/Enrichr/) · [DAVID](https://david.ncifcrf.gov/) · [g:Profiler 웹](https://biit.cs.ut.ee/gprofiler/gost?organism=${org}&query=${t}) · [Metascape](https://metascape.org/) · [GSEA·MSigDB](https://www.gsea-msigdb.org/gsea/msigdb)\n- 단백질 상호작용은 아래 '같은 목록으로 STRING 상호작용망 보기' 버튼으로 바로 볼 수 있어요.`;};
 const DBGROUPS=["유전자·서열","단백질·구조","변이·질병","경로·기능","기전 분석·발현","암·면역·오믹스 공공데이터","세포주·항체·동물 모델","독성·도핑·마약류","화합물","문헌·임상"];
+/* ---------- Curieus (curieus.net): hand a sequence / PDB ID / SMILES over, and a trial MCP connection with the user's API key ---------- */
+const CU_HOME="https://curieus.net/Analysis";
+const cuEnc=s=>encodeURIComponent(String(s||"")).replace(/\(/g,"%28").replace(/\)/g,"%29").replace(/'/g,"%27").replace(/!/g,"%21").replace(/\*/g,"%2A");
+const cuLink=(kind,val,label)=>val?`[${label}](${CU_HOME}?from=hub#cx=${kind}:${cuEnc(val)})`:"";
+const CU_KIND={seq:"단백질 서열",pdb:"PDB ID",smiles:"SMILES"};
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href*="curieus.net/Analysis?from=hub#cx="]');if(!a)return;e.preventDefault();
+  const m=a.getAttribute("href").match(/#cx=(\w+):(.*)$/);const kind=m&&m[1],val=m?decodeURIComponent(m[2]):"";
+  if(val)HUB.copy(val);window.open(CU_HOME,"_blank","noopener");HUB.toast(`${CU_KIND[kind]||"값"}을 복사했어요. Curieus에서 분석 모델을 고르고 입력칸에 붙여넣으세요 (Ctrl+V).`,7000);});
+const CU={url:"https://curieus.net/api/mcp/",sid:"",n:0,ready:false,tools:[],out:"",busy:false,arm:""};
+const cuKey=()=>HUB.key("cuKey");
+async function cuRpc(method,params,notify){const k=cuKey();if(!k)throw new Error("설정에서 Curieus API 키를 먼저 넣어 주세요 (Curieus 마이페이지에서 발급)");
+  const body={jsonrpc:"2.0",method};if(params)body.params=params;if(!notify)body.id=++CU.n;
+  const h={"Content-Type":"application/json","Accept":"application/json, text/event-stream","X-Curieus-API-Key":k,"MCP-Protocol-Version":"2025-06-18"};if(CU.sid)h["Mcp-Session-Id"]=CU.sid;
+  let r;try{r=await fetch(CU.url,{method:"POST",headers:h,body:JSON.stringify(body)});}
+  catch(e){throw new Error(HUB.embedded?"claude.ai 안에서는 외부 사이트에 연결할 수 없어요. 내려받은 HTML이나 GitHub에 올린 사이트에서 써 주세요.":"Curieus 서버에 연결하지 못했어요. 서버가 브라우저에서 오는 요청(CORS)을 막고 있거나 인터넷이 끊겼을 수 있어요.");}
+  const sid=r.headers.get("Mcp-Session-Id");if(sid)CU.sid=sid;
+  if(notify)return null;
+  if(r.status===401||r.status===403)throw new Error("API 키가 맞지 않거나 권한이 없어요 ("+r.status+")");
+  if(r.status===404&&CU.sid){CU.sid="";CU.ready=false;throw new Error("연결이 끊겼어요. '연결 확인'을 다시 눌러 주세요");}
+  if(!r.ok)throw new Error("Curieus 응답 오류 "+r.status);
+  const ct=r.headers.get("content-type")||"",txt=await r.text();let msg=null;
+  if(/event-stream/.test(ct)){for(const blk of txt.split(/\n\n/)){const d=blk.split("\n").filter(l=>l.startsWith("data:")).map(l=>l.slice(5).trim()).join("");if(!d)continue;try{const j=JSON.parse(d);if(j.id===body.id){msg=j;break;}}catch(e){}}}
+  else{try{msg=JSON.parse(txt);}catch(e){}}
+  if(!msg)throw new Error("Curieus 응답을 읽지 못했어요");if(msg.error)throw new Error(msg.error.message||"Curieus 오류");return msg.result;}
+async function cuInit(){if(CU.ready)return;CU.sid="";await cuRpc("initialize",{protocolVersion:"2025-06-18",capabilities:{},clientInfo:{name:"research-hub",version:"1.0"}});await cuRpc("notifications/initialized",null,true);CU.ready=true;
+  const t=await cuRpc("tools/list",{});CU.tools=(t&&t.tools)||[];}
+const cuText=res=>{if(!res)return "";const parts=(res.content||[]).map(c=>c.type==="text"?c.text:c.type==="resource"&&c.resource?(c.resource.text||c.resource.uri||""):c.type==="image"?"(그림 결과)":"").filter(Boolean);
+  let s=parts.join("\n\n");if(res.structuredContent&&!s)s="```\n"+JSON.stringify(res.structuredContent,null,2)+"\n```";
+  if(/^\s*[\[{]/.test(s)){try{s="```\n"+JSON.stringify(JSON.parse(s),null,2)+"\n```";}catch(e){}}return (res.isError?"**도구가 오류를 알렸어요**\n\n":"")+s;};
+const cuTmpl=t=>{const p=(t&&t.inputSchema&&t.inputSchema.properties)||{},o={};Object.keys(p).forEach(k=>{const x=p[k];o[k]=x.default!==undefined?x.default:x.type==="number"||x.type==="integer"?0:x.type==="boolean"?false:x.type==="array"?[]:x.type==="object"?{}:"";});return JSON.stringify(o,null,2);};
+const cuRisky=n=>/submit|run|start|create|launch|execute|delete|cancel|upload/i.test(n);
+function cuRender(){const box=$("#cuBody");if(!box)return;const has=!!cuKey(),sel=$("#cuTool")?$("#cuTool").value:"";
+  box.innerHTML=`${has?"":`<div class="note-bar warn" style="margin:0 0 8px">설정(오른쪽 위 '설정')에서 <b>Curieus API 키</b>를 넣어 주세요. 키는 Curieus 마이페이지에서 발급받고, 이 브라우저에만 저장돼요.</div>`}
+    ${HUB.embedded?`<div class="note-bar warn" style="margin:0 0 8px">claude.ai 안에서는 외부 사이트에 연결할 수 없어요. 내려받은 HTML이나 GitHub에 올린 사이트에서 써 주세요.</div>`:""}
+    <div class="row" style="gap:6px;flex-wrap:wrap;align-items:center"><button class="btn sm primary" type="button" id="cuConn" ${CU.busy?"disabled":""}>${CU.ready?"다시 연결":"연결 확인"}</button>${CU.ready?`<span class="tag ft">연결됨 · 도구 ${CU.tools.length}개</span>`:""}<a class="btn sm ghost" href="https://curieus.net/Docs/integrations/mcp" target="_blank" rel="noopener">Curieus MCP 안내 ↗</a></div>
+    ${CU.ready&&CU.tools.length?`<div class="row" style="gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center"><label class="sr" for="cuTool">도구</label><select id="cuTool" style="flex:1;min-width:220px">${CU.tools.map(t=>`<option value="${esc(t.name)}" ${t.name===sel?"selected":""}>${esc(t.title||t.name)}${cuRisky(t.name)?" · 작업 제출·변경":""}</option>`).join("")}</select></div>
+      <p class="muted" id="cuDesc" style="font-size:12.5px;margin:6px 0"></p>
+      <label class="field" for="cuArgs" style="margin:0">보낼 값 (JSON) <span class="muted">· 조회칸의 단백질 서열·SMILES·PDB ID를 넣어도 돼요</span><textarea id="cuArgs" rows="6" spellcheck="false" style="font-family:var(--mono,monospace);font-size:12.5px"></textarea></label>
+      <div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap"><button class="btn sm primary" type="button" id="cuRun" ${CU.busy?"disabled":""}>${CU.busy?"실행 중…":"도구 실행"}</button><button class="btn sm ghost" type="button" id="cuTpl">빈 양식 다시 채우기</button></div>`:""}
+    ${CU.out?`<div class="mprot md" id="cuOut" style="margin-top:10px">${HUB.md(CU.out)}</div>`:""}`;
+  const ts=$("#cuTool");if(ts){const f=()=>{const t=CU.tools.find(x=>x.name===ts.value);$("#cuDesc").textContent=(t&&t.description||"").slice(0,600)+(t&&cuRisky(t.name)?" · 이 도구는 작업을 제출하거나 바꿀 수 있어요. 크레딧이 쓰일 수 있으니 실행 전에 한 번 더 확인해요.":"");if(!$("#cuArgs").value.trim()||$("#cuArgs").dataset.t!==ts.value){$("#cuArgs").value=cuTmpl(t);$("#cuArgs").dataset.t=ts.value;}};ts.onchange=()=>{$("#cuArgs").value="";f();};f();}
+  const c=$("#cuConn");if(c)c.onclick=async()=>{CU.busy=true;CU.ready=false;CU.out="";cuRender();try{await cuInit();CU.out=CU.tools.length?`연결됐어요. 쓸 수 있는 도구:\n${CU.tools.map(t=>`- **${t.title||t.name}** (\`${t.name}\`)${t.description?" — "+String(t.description).split("\n")[0].slice(0,140):""}`).join("\n")}`:"연결됐지만 쓸 수 있는 도구가 없어요.";}catch(e){CU.out="**연결 실패:** "+(e.message||e);}CU.busy=false;cuRender();};
+  const tp=$("#cuTpl");if(tp)tp.onclick=()=>{const t=CU.tools.find(x=>x.name===$("#cuTool").value);$("#cuArgs").value=cuTmpl(t);};
+  const rb=$("#cuRun");if(rb)rb.onclick=async()=>{const name=$("#cuTool").value;let args;try{args=JSON.parse($("#cuArgs").value||"{}");}catch(e){HUB.toast("보낼 값이 올바른 JSON이 아니에요");return;}
+    if(cuRisky(name)&&CU.arm!==name){CU.arm=name;rb.textContent="한 번 더 누르면 실행해요 (크레딧이 쓰일 수 있어요)";setTimeout(()=>{if(CU.arm===name){CU.arm="";if(rb.isConnected)rb.textContent="도구 실행";}},5000);return;}
+    CU.arm="";CU.busy=true;const keep=$("#cuArgs").value;cuRender();$("#cuArgs").value=keep;
+    try{const res=await cuRpc("tools/call",{name,arguments:args});CU.out=`### ${name}\n\n`+(cuText(res)||"(빈 결과)");}catch(e){CU.out="**실행 실패:** "+(e.message||e);}
+    CU.busy=false;const k2=keep;cuRender();if($("#cuArgs"))$("#cuArgs").value=k2;};}
 /* ---------- field catalog: in-site DBs mapped to research fields + link-out DBs by field ---------- */
 const FIELDS=[["ai","AI·데이터"],["robot","로봇·기계"],["semi","반도체·양자"],["echem","전기화학·전지"],["energy","수소·에너지"],["env","환경·기후"],["mat","소재·화학"],["bio","의과학·생명"],["pharm","의·약학"],["basic","기초과학 (물리·화학·생명·지구)"],["astro","천문·우주"],["common","공통 (국내 연구정보·특허·데이터 보관소)"]];
 const FNAME=Object.fromEntries(FIELDS);
@@ -5627,6 +5689,7 @@ const CAT=[
  ["env","통계","Our World in Data","기후·환경·보건 통계 그래프","https://ourworldindata.org/","https://ourworldindata.org/search?q={q}"],
  ["mat","구조","CCDC (CSD)","유기·금속유기 결정 구조","https://www.ccdc.cam.ac.uk/structures/"],
  ["mat","구조","COD","공개 결정 구조","https://www.crystallography.net/cod/"],
+ ["mat","계산 물성","Curieus","분자동역학 시뮬레이션·도킹 (생체분자 중심)","https://curieus.net/Analysis"],
  ["mat","계산 물성","Materials Project","무기 소재 계산 물성","https://next-gen.materialsproject.org/"],
  ["mat","계산 물성","AFLOW","소재 계산 데이터","https://aflowlib.org/"],
  ["mat","계산 물성","OQMD","소재 형성 에너지 계산값","https://oqmd.org/"],
@@ -5636,6 +5699,7 @@ const CAT=[
  ["mat","화합물·스펙트럼","NIST Chemistry WebBook","열역학·IR·MS 자료","https://webbook.nist.gov/chemistry/","https://webbook.nist.gov/cgi/cbook.cgi?Name={q}&Units=SI"],
  ["mat","반응 (구독)","Reaxys","반응·물성 (기관 구독)","https://www.reaxys.com/"],
  ["mat","반응 (구독)","SciFinder (CAS)","화합물·반응 (기관 구독)","https://scifinder-n.cas.org/"],
+ ["bio","분석 플랫폼","Curieus","구조 예측·도킹·MD·단백질 디자인·scRNA-seq을 코드 없이 (UniProt·PDB·PubChem 결과에서 바로 넘길 수 있어요)","https://curieus.net/Analysis"],
  ["bio","오믹스","NCBI SRA","시퀀싱 원자료","https://www.ncbi.nlm.nih.gov/sra","https://www.ncbi.nlm.nih.gov/sra/?term={q}"],
  ["bio","오믹스","BioStudies·ArrayExpress","EBI 실험 데이터","https://www.ebi.ac.uk/biostudies/","https://www.ebi.ac.uk/biostudies/search?query={q}"],
  ["bio","오믹스","GTEx","정상 조직별 유전자 발현","https://gtexportal.org/","https://gtexportal.org/home/gene/{q}"],
@@ -5646,6 +5710,7 @@ const CAT=[
  ["bio","모델 생물·뇌","Allen Brain Map","뇌 발현·연결 아틀라스","https://portal.brain-map.org/"],
  ["bio","국내","국가바이오데이터스테이션 (K-BDS)","국내 연구 생명 데이터 등록·공유","https://kbds.re.kr/"],
  ["bio","국내","KOBIC","국가생명연구자원정보센터","https://www.kobic.re.kr/"],
+ ["pharm","분석 플랫폼","Curieus","단백질–리간드 도킹·분자동역학을 코드 없이","https://curieus.net/Analysis"],
  ["pharm","약물 정보","DrugBank","약물 표적·약동학","https://go.drugbank.com/","https://go.drugbank.com/unearth/q?query={q}&searcher=drugs"],
  ["pharm","약물 정보","KEGG DRUG","약물 구조·표적·경로","https://www.kegg.jp/kegg/drug/"],
  ["pharm","약물 정보","CLUE (CMap·LINCS)","약물 처리 후 발현 변화","https://clue.io/"],
@@ -5866,7 +5931,7 @@ ${o.md.replace(SPECRE,"").replace(IMGRE,"").slice(0,12000)}`,{modelTier:"quick",
 const dbFull=o=>o.md.replace(SPECRE,"").replace(IMGRE,"")+(o.ai?"\n\n---\n\n## AI 해석 (DB 값이 아니라 해석이에요)\n\n"+o.ai:"");
 function renderLookup(){
   if(dbOut&&dbOut.db&&!dbOut.aiBusy){DBO[dbOut.db]=dbOut;keepDb();}
-  const hit=k=>(!dbFld||fieldsOf(k).includes(dbFld))&&(!dbF||((DB[k].label||"")+" "+DB[k].name+" "+DB[k].g+" "+(DB[k].ph||"")+" "+fieldsOf(k).map(f=>FNAME[f]).join(" ")).toLowerCase().includes(dbF));renderField();
+  {const cb=$("#cuBody");if(cb&&!cb.innerHTML)cuRender();}const hit=k=>(!dbFld||fieldsOf(k).includes(dbFld))&&(!dbF||((DB[k].label||"")+" "+DB[k].name+" "+DB[k].g+" "+(DB[k].ph||"")+" "+fieldsOf(k).map(f=>FNAME[f]).join(" ")).toLowerCase().includes(dbF));renderField();
   const fi=$("#dbFilter");if(fi&&fi.value!==dbF)fi.value=dbF;
   $("#dbHist").innerHTML=dbHist.length?`<span class="muted" style="font-size:.85em">최근</span>`+dbHist.map((h,i)=>`<button type="button" class="chip sm" data-dbh="${i}" title="${esc(DB[h.db].label||DB[h.db].name)}">${esc(DB[h.db].name)}: ${esc(String(h.q).slice(0,24))}</button>`).join("")+`<button type="button" class="chip sm ghost" data-dbh="x">지우기</button>`:"";
   $("#dbSeg").innerHTML=DBGROUPS.filter(g=>Object.keys(DB).some(k=>DB[k].g===g&&hit(k))).map(g=>`<div class="dbgrp"><span>${g}</span>${Object.keys(DB).filter(k=>DB[k].g===g&&hit(k)).sort((a,b)=>(a==="portals")-(b==="portals")).map(k=>`<button type="button" class="chip" data-db="${k}" aria-pressed="${k===dbCur}">${DB[k].label||DB[k].name}</button>`).join("")}</div>`).join("")||`<p class="muted" style="margin:0">${dbFld&&!dbF?`'${esc(FNAME[dbFld])}' 분야는 사이트 안에서 바로 조회되는 DB가 아직 없어요. 아래 '분야별 바로가기'를 쓰세요.`:`'${esc(dbF)}'에 맞는 데이터베이스가 없어요.`}</p>`;
@@ -5937,6 +6002,7 @@ function init(){
   $("#dbHist").addEventListener("click",e=>{const b=e.target.closest("[data-dbh]");if(!b)return;if(b.dataset.dbh==="x"){dbHist=[];ls.set("dbhist",dbHist);renderLookup();return;}const h=dbHist[+b.dataset.dbh];if(h)HUB.lookup.open(h.db,h.q,true);});
   $("#dbAskForm").addEventListener("submit",e=>{e.preventDefault();const q=$("#dbAskQ").value.trim();if(q)askDb(q);});
   $("#dbAskEx").addEventListener("click",e=>{const b=e.target.closest("[data-ex]");if(!b)return;$("#dbAskQ").value=b.dataset.ex;askDb(b.dataset.ex);});
+  $("#cuPanel").addEventListener("toggle",e=>{if(e.target.open&&!CU.busy){const k=$("#cuArgs")&&$("#cuArgs").value;cuRender();if(k&&$("#cuArgs"))$("#cuArgs").value=k;}});
   $("#dbField").addEventListener("click",e=>{const b=e.target.closest("button[data-dbfld]");if(!b)return;dbFld=b.dataset.dbfld;ls.set("dbfld",dbFld);renderLookup();});
   $("#dbQ").addEventListener("input",()=>{clearTimeout(RCATT);RCATT=setTimeout(renderField,250);});
   $("#dbCatList").addEventListener("toggle",e=>{if(e.target.tagName==="DETAILS")RCAT=e.target.open;},true);
@@ -8236,7 +8302,7 @@ document.addEventListener("change",async e=>{const t=e.target;if(!t||!t.dataset|
   const line=m.name+([m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).length?" ("+[m.vendor,m.catalog&&"cat. no. "+m.catalog,m.lot&&"lot "+m.lot].filter(Boolean).join(", ")+")":"");
   const cur=String(r.mats||"");if(cur.split("\n").includes(line)){HUB.toast("이미 넣은 물품이에요");return;}await HUB.col("notes").update(r.id,{mats:(cur.trim()?cur.trim()+"\n":"")+line});setTimeout(draw,80);});
 const TABS=[["proj","프로젝트"],["grant","과제 계획·평가"],["materials","재료 및 방법"],["cells","세포 관리 기록부"],["animals","동물 관리 기록부"],["notes","실험노트 (합성, 세포, 동물 등)"],["plan","실험 일정"]];
-const tabBar=()=>`<div class="seg mtabs">${TABS.map(([k,n])=>`<button type="button" data-mtab="${k}" aria-pressed="${M.tab===k||(k==="materials"&&M.tab==="orders")}">${n} <span class="mono">${k==="materials"?((HUB.col("materials").list.filter(inProj).length+HUB.col("orders").list.filter(inProj).length)||""):k==="proj"?(prcol().list.length||""):k==="grant"?(gcol().list.filter(inProj).length||""):k==="plan"?(pcol().list.filter(p=>inProj(p)&&!p.done).length||""):(HUB.col(k).list.filter(inProj).length||"")}</span></button>`).join("")}</div>${M.tab==="proj"?"":pjBar()}${M.tab==="materials"||M.tab==="orders"?subSeg():""}`;
+const tabBar=()=>`<div class="mtabrow"><div class="seg mtabs">${TABS.map(([k,n])=>`<button type="button" data-mtab="${k}" aria-pressed="${M.tab===k||(k==="materials"&&M.tab==="orders")}">${n} <span class="mono">${k==="materials"?((HUB.col("materials").list.filter(inProj).length+HUB.col("orders").list.filter(inProj).length)||""):k==="proj"?(prcol().list.length||""):k==="grant"?(gcol().list.filter(inProj).length||""):k==="plan"?(pcol().list.filter(p=>inProj(p)&&!p.done).length||""):(HUB.col(k).list.filter(inProj).length||"")}</span></button>`).join("")}</div><a class="toolgo" href="#" data-toolkit="1" title="실험도구모음 사이트를 새 탭에서 열어요"><span aria-hidden="true">🧪</span><span><b>실험도구모음 바로가기 ↗</b></span></a></div>${M.tab==="proj"?"":pjBar()}${M.tab==="materials"||M.tab==="orders"?subSeg():""}`;
 const subSeg=()=>`<div class="seg msub" role="group" aria-label="재료 및 방법 안의 목록"><button type="button" data-mtab="materials" aria-pressed="${M.tab==="materials"}">물품 목록 <span class="mono">${HUB.col("materials").list.filter(inProj).length||""}</span></button><button type="button" data-mtab="orders" aria-pressed="${M.tab==="orders"}">발주 기록 <span class="mono">${HUB.col("orders").list.filter(inProj).length||""}</span></button></div>`;
 function draw(){const V=$("#v-mat");if(!V||HUB.view!=="mat")return;
   if(M.tab==="grant"){const y=window.scrollY;V.innerHTML=`<div class="page">${tabBar()}${grantHtml()}</div>`;window.scrollTo({top:y});return;}
