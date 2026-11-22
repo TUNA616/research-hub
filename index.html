@@ -1041,6 +1041,12 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .subopt summary{cursor:pointer;font-size:12.5px}.subgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:6px;font-size:12.5px}.subgrid label{display:flex;flex-direction:column;gap:2px}.subgrid label.ck{flex-direction:row;align-items:center;gap:6px}
 .bsbox{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--paper)}.bsqa{margin:6px 0;padding-left:20px;font-size:13px;line-height:1.5}
 .bsap{display:grid;gap:8px;margin-top:6px}.bsapc{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--bg,#fff)}.bsapc p{margin:4px 0;font-size:13px}
+/* form controls in the newer panels: same surface and ink as the rest of the site (readable in light and dark themes) */
+#prBody input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),#cuBody input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.pjroad input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.bsbox input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.wrpo input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.subopt input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.cprot input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.labpanel input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.rbtns input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),.arcands input:not([type=checkbox]):not([type=radio]):not([type=color]):not([type=range]),#prBody select,#cuBody select,.pjroad select,.bsbox select,.wrpo select,.subopt select,.cprot select,.labpanel select,.rbtns select,.arcands select,#prBody textarea,#cuBody textarea,.pjroad textarea,.bsbox textarea,.wrpo textarea,.subopt textarea,.cprot textarea,.labpanel textarea,.rbtns textarea,.arcands textarea{background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:6px;padding:7px 9px;font:inherit;font-size:13.5px;box-sizing:border-box;min-height:34px}
+#prBody select option,#cuBody select option,.pjroad select option,.bsbox select option,.wrpo select option,.subopt select option,.cprot select option,.labpanel select option,.rbtns select option,.arcands select option{background:var(--surface);color:var(--ink)}
+#prBody input::placeholder,#cuBody input::placeholder,.pjroad input::placeholder,.bsbox input::placeholder,.wrpo input::placeholder,.subopt input::placeholder,.cprot input::placeholder,.labpanel input::placeholder,.rbtns input::placeholder,.arcands input::placeholder,#prBody textarea::placeholder,#cuBody textarea::placeholder,.pjroad textarea::placeholder,.bsbox textarea::placeholder,.wrpo textarea::placeholder,.subopt textarea::placeholder,.cprot textarea::placeholder,.labpanel textarea::placeholder,.rbtns textarea::placeholder,.arcands textarea::placeholder{color:var(--faint,var(--muted))}
+#prBody input:focus,#cuBody input:focus,.pjroad input:focus,.bsbox input:focus,.wrpo input:focus,.subopt input:focus,.cprot input:focus,.labpanel input:focus,.rbtns input:focus,.arcands input:focus,#prBody select:focus,#cuBody select:focus,.pjroad select:focus,.bsbox select:focus,.wrpo select:focus,.subopt select:focus,.cprot select:focus,.labpanel select:focus,.rbtns select:focus,.arcands select:focus,#prBody textarea:focus,#cuBody textarea:focus,.pjroad textarea:focus,.bsbox textarea:focus,.wrpo textarea:focus,.subopt textarea:focus,.cprot textarea:focus,.labpanel textarea:focus,.rbtns textarea:focus,.arcands textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 2px var(--accent-soft)}
+#prBody select#prPick{min-width:220px}#prBody .prwhy{padding:5px 8px;min-height:30px}
 </style>
 </head>
 <body>
@@ -1158,7 +1164,6 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 </div>
 
 <div id="v-research" hidden><div class="page mid">
-  <details class="card pad prpanel" id="prPanel"><summary><b>체계적 문헌고찰 (PRISMA 2020)</b> <span class="muted">기준 → 제목·초록 선별(AI 보조) → 원문 적격성 → 흐름도</span></summary><div id="prBody" style="margin-top:12px"></div></details>
   <section class="card"><div class="pad"><div class="steph"><span class="stepn">1</span><div><h2>대상 논문 고르기</h2><p>도구가 읽을 논문이에요. 글만 넣는 도구는 건너뛰어도 돼요.</p></div></div><div id="rCorpus" class="vstack"></div></div></section>
   <section class="card"><div class="pad"><div class="steph"><span class="stepn">2</span><div><h2>도구 고르기</h2><p>하려는 일에 맞는 묶음을 고른 뒤 도구를 누르세요.</p></div></div><div id="rTools" class="vstack"></div></div></section>
   <section class="card" id="rCfg"></section>
@@ -1774,7 +1779,7 @@ ${c.noteFields.map(f=>`- **${f[1]}**${Array.isArray(f[2])?` (다음 중 하나: 
 ## 계획
 1. 최종 목표를 측정 가능한 문장으로 확정한다. 막연하면 질문을 하나씩 던져(보기 2~4개) 좁힌 뒤 접근안 2~3개를 장단점과 함께 제시한다.
 2. 목표에서 거꾸로 3~6개 단계를 나눈다.
-3. 단계마다 '끝났다고 말하려면 반드시 있어야 하는 결과(must-have)' 2~4개를 기록으로 확인할 수 있게 구체적으로 쓴다. 예: '시스플라틴 단독군 대비 BUN 감소, n≥5'.
+3. 단계마다 '끝났다고 말하려면 반드시 있어야 하는 결과(must-have)' 2~4개를 기록으로 확인할 수 있게 구체적으로 쓴다. 예: '질환 단독군 대비 주요 지표 감소, n≥5'.
 4. 단계마다 할 일 2~5개를 적는다.
 
 ## 검증
@@ -4856,7 +4861,7 @@ ${a.in.focus?"중점 관점: "+a.in.focus:""}`)},
  - ※ 시사점 또는 유의점
 □ 종합 의견
 논문 제목은 한국어로 옮기되 물질·기술 이름은 영어를 병기.`)},
- {g:"문헌 종합",from:"academic-research-skills · deep-research",id:"prisma",name:"체계적 선별 (PRISMA)",desc:"포함·제외 기준으로 제목과 초록을 선별하고 PRISMA 흐름 숫자를 만들어요.",corpus:1,inputs:[{id:"inc",label:"포함 기준",ph:"예: 동물 모델에서 치료 효과를 평가한 원저",rows:2,req:1},{id:"exc",label:"제외 기준",ph:"예: 리뷰, in vitro만 수행, 다른 질환만 다룸",rows:2}],run:runPrisma},
+ {g:"문헌 종합",from:"academic-research-skills · deep-research · PRISMA 2020",id:"prisma",name:"체계적 문헌고찰 (PRISMA 2020)",desc:"기준 정하기 → 제목·초록 선별(AI 보조) → 원문 적격성 → PRISMA 흐름도까지 한 곳에서 해요. 대상은 1번에서 고른 논문, 라이브러리 폴더, 프로젝트 중에서 골라요.",panel:1},
  {g:"검증",from:"academic-research-skills · deep-research",id:"factcheck",name:"팩트체크",desc:"내 문장이 고른 논문들로 뒷받침되는지 문장별로 판정해요.",corpus:1,inputs:[{id:"claims",label:"확인할 주장 (한 줄에 하나)",rows:5,req:1}],
   prompt:P("주장을 논문 근거와 대조합니다.",a=>`각 주장에 대해 표를 만드세요. 열: 주장 | 판정 (뒷받침됨 / 부분적 / 뒷받침 안 됨 / 목록에 근거 없음) | 근거 논문 [#번호] | 설명.
 목록에서 근거를 찾지 못하면 반드시 '목록에 근거 없음'으로 두세요. 표 아래에 고쳐 쓰면 좋은 문장을 제안하세요.
@@ -5027,6 +5032,7 @@ function renderTools(){
     <div class="tgrid">${TOOLS.filter(t=>t.g===grp).map(t=>`<button class="tcard" type="button" data-tool="${t.id}" aria-current="${t===cur}"><b>${t.name}</b><span>${t.desc}</span><em>${NEED(t)}</em></button>`).join("")}</div>`;
 }
 function renderCfg(){
+  if(cur&&cur.panel){const n=getCorpus().length,srcName=(sources().find(x=>x[0]===srcId)||[0,""])[1];$("#rCfg").innerHTML=`<div class="pad"><div class="steph"><span class="stepn">3</span><div><h2>${cur.name}</h2><p>${cur.desc}</p></div><span class="tag">${cur.from}</span></div>${n?`<div class="usebar"><b>1번 대상</b> ${esc(srcName)} ${n}편 — 아래 '대상'에서 '리서치 1번 대상'을 고르면 이 논문들로 선별해요</div>`:""}<div id="prBody"></div></div>`;const ro=$("#rOut");if(ro&&lastOut&&lastOut.tool==="prisma"){}if(HUB.prisma)HUB.prisma.draw();return;}
   const t=cur,n=getCorpus().length,sv=saved[t.id]||{},srcName=(sources().find(x=>x[0]===srcId)||[0,""])[1];
   const inputs=(t.inputs||[]).map(f=>`<div class="field"><div class="flabel"><label for="ri_${f.id}">${f.label}${f.req?"":""}</label>${f.rows>=5?`<button class="linkbtn" type="button" data-fill="${f.id}">파일에서 불러오기</button>`:""}</div>${f.opts?`<select id="ri_${f.id}">${f.opts.map(o=>`<option ${sv[f.id]===o?"selected":""}>${o}</option>`).join("")}</select>`:f.rows?`<textarea id="ri_${f.id}" style="min-height:${f.rows*27+18}px" placeholder="${esc(f.ph||"")}">${esc(sv[f.id]||"")}</textarea>`:`<input id="ri_${f.id}" placeholder="${esc(f.ph||"")}" value="${esc(sv[f.id]||"")}">`}</div>`).join("");
   $("#rCfg").innerHTML=`<div class="pad"><div class="steph"><span class="stepn">3</span><div><h2>${t.name}</h2><p>${t.desc}</p></div><span class="tag">${t.from}</span></div>
@@ -5131,31 +5137,6 @@ ${mine.map(([n,c])=>n+" ("+c+")").join(", ")||"(없음)"}`,{modelTier:"default",
   lastOut={tool:t.id,md,title:t.name};showOut(lastOut);await saveReport(t.name,t.id,md);
 }
 
-/* ---------- PRISMA screening ---------- */
-async function runPrisma(a,t){
-  const out=[];
-  for(let i=0;i<a.list.length;i+=20){
-    $("#rOut").innerHTML=`<div class="pad"><p class="muted" style="margin:0"><span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>선별 중 ${Math.min(i+20,a.list.length)}/${a.list.length}편</p></div>`;
-    const part=a.list.slice(i,i+20);
-    const r=await HUB.ai.json(`체계적 문헌고찰의 제목·초록 선별 단계입니다. 각 논문을 기준에 따라 판정하고 JSON 객체 하나로만 답하세요.
-형식: {"decisions":[{"i":번호,"decision":"include"|"exclude"|"maybe","reason":"한국어 한 문장, 해당 기준을 밝힐 것"}]}
-- 초록만으로 판단할 수 없으면 "maybe". 목록의 모든 번호를 빠짐없이.
-포함 기준: ${a.in.inc}
-제외 기준: ${a.in.exc||"(없음)"}
-
-논문 목록:
-${part.map((p,k)=>`[#${i+k+1}] ${p.title}\n${p.journal} ${p.year}\n${p.body}`).join("\n\n")}`);
-    (r.decisions||[]).forEach(d=>{const n=parseInt(d.i,10);if(a.list[n-1])out[n-1]={decision:/^inc/.test(d.decision)?"include":/^exc/.test(d.decision)?"exclude":"maybe",reason:String(d.reason||"")};});
-  }
-  a.list.forEach((p,i)=>{if(!out[i])out[i]={decision:"maybe",reason:"판정이 누락됨 — 직접 확인"};});
-  const cnt=k=>out.filter(d=>d.decision===k).length;const st=HUB.search.stats();const fromSearch=(srcId==="sel"||srcId==="top")&&st.raw;
-  const flow=[fromSearch?[`DB에서 찾은 기록`,st.raw]:null,fromSearch?[`중복 제거 후`,st.dedup]:null,fromSearch?[`검색 조건·저널 필터 통과`,st.kept]:null,[`제목·초록 선별 대상`,a.list.length],[`제외`,cnt("exclude")],[`보류 (전문 확인 필요)`,cnt("maybe")],[`포함`,cnt("include")]].filter(Boolean);
-  const lab={include:"포함",exclude:"제외",maybe:"보류"};
-  const md=`## PRISMA 흐름\n| 단계 | 편수 |\n|---|---|\n${flow.map(f=>`| ${f[0]} | ${f[1]} |`).join("\n")}\n\n포함 기준: ${a.in.inc}\n\n제외 기준: ${a.in.exc||"없음"}\n\n## 선별 결과\n| 번호 | 판정 | 논문 | 이유 |\n|---|---|---|---|\n${a.list.map((p,i)=>`| ${i+1} | ${lab[out[i].decision]} | ${p.title.replace(/\|/g,"/")} (${p.journal} ${p.year}) | ${out[i].reason.replace(/\|/g,"/")} |`).join("\n")}\n\n제목과 초록만 본 1차 선별이에요. 전문 검토(eligibility) 단계는 직접 해야 해요.`;
-  const title=`PRISMA 선별${topic()?" · "+topic():""}`;
-  lastOut={tool:t.id,md,title,html:`<div class="flow">${flow.map((f,i)=>`${i?`<span>↓</span>`:""}<div><b class="mono">${f[1]}</b> ${f[0]}</div>`).join("")}</div>`};
-  showOut(lastOut);await saveReport(title,t.id,md);
-}
 
 /* ---------- citation check against Crossref (no AI) ---------- */
 const toks=s=>String(s||"").toLowerCase().replace(/[^a-z0-9가-힣]+/g," ").split(" ").filter(w=>w.length>3);
@@ -5882,6 +5863,15 @@ const CAT=[
  ["common","AI 에이전트 스킬","Anthropic Skills","공식 스킬 모음 (mcp-builder, skill-creator 등)","https://github.com/anthropics/skills"],
  ["common","데이터 보관소","FAIRsharing","데이터 표준·DB 목록","https://fairsharing.org/"]
 ];
+/* the old '그 밖의 공공데이터 바로가기' list is folded into this catalog (one place for link-out databases) */
+(()=>{const f=DB.portals&&DB.portals.run;if(!f)return;delete DB.portals;
+  const PF={"서열·유전체":"bio","변이·표현형":"bio","암":"bio","면역":"bio","단일세포·발현":"bio","단백질·대사":"bio","세포주":"bio","국내":"bio","임상":"pharm"};
+  Promise.resolve(f("{q}")).then(md=>{const have=new Set(CAT.map(c=>{try{return new URL(c[4]).host+"|"+c[2].toLowerCase();}catch(e){return c[2];}}));
+    String(md).split("\n").forEach(l=>{const m=l.match(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]*?)\s*\|\s*(?:\[[^\]]*\]\()?(https?:\/\/[^\s|)]+)\)?\s*\|/);if(!m||/^분야$/.test(m[1]))return;
+      const url=m[4],tpl=/%7Bq%7D|\{q\}/.test(url)?url.replace(/%7Bq%7D/g,"{q}"):"",home=tpl?(()=>{try{return new URL(url.replace(/%7Bq%7D|\{q\}/g,"")).origin+"/";}catch(e){return url;}})():url;
+      let k;try{k=new URL(home).host+"|"+m[2].toLowerCase();}catch(e){k=m[2];}if(have.has(k))return;have.add(k);
+      CAT.push([PF[m[1]]||"bio","공공 데이터 · "+m[1],m[2],m[3]||"",home,tpl||undefined].filter(x=>x!==undefined));});
+    if(typeof renderField==="function")try{renderField();}catch(e){}}).catch(()=>{});})();
 let RCAT=false,RCATT=0;let dbFld=(f=>FNAME[f]?f:"")(ls.get("dbfld",""));const dbCatQv=()=>{const i=$("#dbQ");return i?i.value:"";};
 const catHit=c=>!dbF||(c[2]+" "+c[3]+" "+c[1]+" "+FNAME[c[0]].replace(/ \(.*\)$/,"")).toLowerCase().includes(dbF);
 function catLink(c){const q=dbCatQv().trim(),u=q&&c[5]?c[5].replace("{q}",encodeURIComponent(q)):c[4];return `<a class="chip" href="${esc(u)}" target="_blank" rel="noopener noreferrer" title="${esc(c[3])}${q&&c[5]?" — '"+esc(q)+"' 검색으로 열기":""}"><b>${esc(c[2])}</b>${q&&c[5]?'<span class="catgo" aria-hidden="true">🔍</span>':""}<small>${esc(c[3])}</small></a>`;}
@@ -6136,7 +6126,7 @@ HUB.lookup={list:()=>Object.keys(DB).map(k=>({k,name:DB[k].name,label:DB[k].labe
 document.addEventListener("hub:proj",()=>{if(HUB.view==="research"&&!busy){renderCorpus();renderCfg();}});
 /* counts on the source buttons can be stale if papers were added or picked while another tab was open */
 document.addEventListener("hub:view",e=>{if(e.detail==="research"&&!busy)renderCorpus();});
-HUB.research={useSource(id){srcId=id;ls.set("rsrc",id);renderCorpus();if(!busy)renderCfg();const c=$("#rCorpus");if(c)c.scrollIntoView({block:"start",behavior:"smooth"});},send(id,inputs,papers,name){const t=TOOLS.find(x=>x.id===id);if(!t)return;saved[id]=Object.assign(saved[id]||{},inputs||{});ls.set("rin",saved);if(papers&&papers.length){msList=papers;msName=name||"";srcId="ms";}HUB.go("research");pick(id);HUB.toast("원고를 +t.name+에 넣었어요. 내용을 확인하고 실행을 누르세요.",5000);},pick,attach,openReport(id){HUB.go("reports");RF.q="";RF.folder="*";RF.tool="*";RF.star=false;RF.open.add(id);renderReports();setTimeout(()=>{const d=document.querySelector(`details.rep[data-rid="${id}"]`);if(d)d.scrollIntoView({block:"start",behavior:"smooth"});},80);}};
+HUB.research={corpusRaw(){const s=sources().find(x=>x[0]===(srcId||pickSrc()));return {name:s?s[1]:"",list:(s?s[2]:[]).filter(p=>p&&p.title).map(p=>({id:p.id||("r:"+String(p.doi||p.title||"").toLowerCase().replace(/\s+/g," ").slice(0,90)),title:p.title||"",year:p.year||"",journal:p.journal||"",doi:p.doi||"",authors:p.authors||[],abstract:String(p.abstract||(p.summary&&p.summary.ko&&p.summary.ko.oneLine)||p.text||"").slice(0,1500)}))};},savedPrisma:()=>saved.prisma||{},useSource(id){srcId=id;ls.set("rsrc",id);renderCorpus();if(!busy)renderCfg();const c=$("#rCorpus");if(c)c.scrollIntoView({block:"start",behavior:"smooth"});},send(id,inputs,papers,name){const t=TOOLS.find(x=>x.id===id);if(!t)return;saved[id]=Object.assign(saved[id]||{},inputs||{});ls.set("rin",saved);if(papers&&papers.length){msList=papers;msName=name||"";srcId="ms";}HUB.go("research");pick(id);HUB.toast("원고를 +t.name+에 넣었어요. 내용을 확인하고 실행을 누르세요.",5000);},pick,attach,openReport(id){HUB.go("reports");RF.q="";RF.folder="*";RF.tool="*";RF.star=false;RF.open.add(id);renderReports();setTimeout(()=>{const d=document.querySelector(`details.rep[data-rid="${id}"]`);if(d)d.scrollIntoView({block:"start",behavior:"smooth"});},80);}};
 document.addEventListener("DOMContentLoaded",init);
 })();
 
@@ -6152,6 +6142,7 @@ function pool(r){const P=HUB.lib.papers.filter(p=>!p.derived),s=r.src||{kind:"al
   if(s.kind==="pick"){const pk=new Set(ls.get("libpick",[])||[]);return P.filter(p=>pk.has(p.id));}
   if(s.kind==="folder"){const all=HUB.col("lfolders").list,kids=id=>[id,...all.filter(f=>f.parent===id).flatMap(f=>kids(f.id))],set=new Set(kids(s.val));return P.filter(p=>set.has(p.ufolder));}
   if(s.kind==="project")return P.filter(p=>(p.project||"")===s.val);
+  if(s.kind==="research")return Array.isArray(r.recs)?r.recs:[];
   return P;}
 function dedupe(l){const seen=new Map(),keep=[],dups=[];l.forEach(p=>{const k=p.doi?"d:"+String(p.doi).toLowerCase():"t:"+nrm(p.title).slice(0,120);if(seen.has(k))dups.push(p);else{seen.set(k,p);keep.push(p);}});return {keep,dups};}
 function counts(r){const all=pool(r),{keep,dups}=dedupe(all),dec=r.dec||{},s1=p=>(dec[p.id]||{}).s1,s2=p=>(dec[p.id]||{}).s2;
@@ -6197,11 +6188,11 @@ function draw(){const box=$("#prBody");if(!box)return;const list=rcol().list.sli
     return `<div class="prrow ${v||""}"><div class="prt"><b>${esc(p.title||"(제목 없음)")}</b><span class="muted">${esc([String((p.authors||[])[0]||"").split(",")[0],p.year,p.journal].filter(Boolean).join(" · "))}</span>${st==="s1"&&d.r1?`<small>${d.ai1?"AI: ":""}${esc(d.r1)}</small>`:""}${st==="s2"&&v==="out"?`<input class="prwhy" data-prw="${p.id}" value="${esc(d.r2||"")}" placeholder="제외 사유 (예: 대조군 없음)" list="prWhyList">`:""}</div><div class="prb">${st==="s1"?btn("in","포함")+btn("maybe","보류")+btn("out","제외"):btn("in","포함")+btn("out","제외")+btn("noft","원문 없음")}</div></div>`;};
   const s1list=c.keep.filter(p=>PR.filt==="all"||(PR.filt==="todo"?!(dec[p.id]||{}).s1:(dec[p.id]||{}).s1===PR.filt));
   box.innerHTML=`<div class="row" style="gap:6px;flex-wrap:wrap;align-items:center"><select id="prPick" aria-label="문헌고찰 고르기">${list.map(x=>`<option value="${x.id}" ${x.id===r.id?"selected":""}>${esc(x.title||"제목 없음")}</option>`).join("")}</select><button class="btn sm" type="button" data-pr="new">새로</button><button class="btn sm ghost danger" type="button" data-pr="del">삭제</button></div>
-    <div class="prgrid"><label class="field" style="margin:0">제목<input data-prf="title" value="${esc(r.title||"")}"></label><label class="field" style="margin:0">연구 질문 (PICO)<input data-prf="q" value="${esc(r.q||"")}" placeholder="예: AKI 동물모델에서 나노입자 전달 약물이 신기능 지표를 낮추는가"></label>
-      <label class="field" style="margin:0">포함 기준 (한 줄에 하나)<textarea data-prf="inc" rows="3" placeholder="동물 또는 사람의 AKI 모델&#10;나노입자 기반 약물 전달&#10;BUN·크레아티닌 등 신기능 결과">${esc(r.inc||"")}</textarea></label><label class="field" style="margin:0">제외 기준 (한 줄에 하나 · 적격성 제외 사유 목록으로도 써요)<textarea data-prf="exc" rows="3" placeholder="리뷰·학회 초록&#10;대조군 없음&#10;신기능 결과 없음">${esc(r.exc||"")}</textarea></label></div>
-    <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px"><span class="muted" style="font-size:13px">대상</span><select id="prSrc"><option value="all" ${S.kind==="all"?"selected":""}>라이브러리 전체</option><option value="pick" ${S.kind==="pick"?"selected":""}>라이브러리에서 고른 논문</option>${folders.map(f=>`<option value="folder:${f.id}" ${S.kind==="folder"&&S.val===f.id?"selected":""}>폴더: ${esc(f.name||"")}</option>`).join("")}${pjs.map(n=>`<option value="project:${esc(n)}" ${S.kind==="project"&&S.val===n?"selected":""}>프로젝트: ${esc(n)}</option>`).join("")}</select>
+    <div class="prgrid"><label class="field" style="margin:0">제목<input data-prf="title" value="${esc(r.title||"")}"></label><label class="field" style="margin:0">연구 질문 (PICO)<input data-prf="q" value="${esc(r.q||"")}" placeholder="예: 질환 동물모델에서 후보 약물이 주요 지표를 낮추는가"></label>
+      <label class="field" style="margin:0">포함 기준 (한 줄에 하나)<textarea data-prf="inc" rows="3" placeholder="동물 또는 사람의 질환 모델&#10;시험 약물 처치&#10;주요 결과 지표 보고">${esc(r.inc||"")}</textarea></label><label class="field" style="margin:0">제외 기준 (한 줄에 하나 · 적격성 제외 사유 목록으로도 써요)<textarea data-prf="exc" rows="3" placeholder="리뷰·학회 초록&#10;대조군 없음&#10;신기능 결과 없음">${esc(r.exc||"")}</textarea></label></div>
+    <div class="row" style="gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px"><span class="muted" style="font-size:13px">대상</span><select id="prSrc"><option value="research" ${S.kind==="research"?"selected":""}>리서치 1번 대상${S.kind==="research"&&r.recs?` (불러온 ${r.recs.length}편)`:""}</option><option value="all" ${S.kind==="all"?"selected":""}>라이브러리 전체</option><option value="pick" ${S.kind==="pick"?"selected":""}>라이브러리에서 고른 논문</option>${folders.map(f=>`<option value="folder:${f.id}" ${S.kind==="folder"&&S.val===f.id?"selected":""}>폴더: ${esc(f.name||"")}</option>`).join("")}${pjs.map(n=>`<option value="project:${esc(n)}" ${S.kind==="project"&&S.val===n?"selected":""}>프로젝트: ${esc(n)}</option>`).join("")}</select>
       <label class="muted" style="font-size:13px">다른 출처 수 <input type="number" min="0" data-pro="n" value="${esc(String((r.other||{}).n||""))}" style="width:70px"></label><label class="muted" style="font-size:13px">등록부 수 <input type="number" min="0" data-pro="reg" value="${esc(String((r.other||{}).reg||""))}" style="width:70px"></label>
-      <span class="muted" style="font-size:12.5px">기록 ${c.all.length} · 중복 ${c.dups.length} · 선별 대상 ${c.keep.length}</span></div>
+      ${S.kind==="research"?`<button class="btn sm" type="button" data-pr="loadres">1번 대상 ${(HUB.research&&HUB.research.corpusRaw().list.length)||0}편 불러오기</button>`:""}<span class="muted" style="font-size:12.5px">기록 ${c.all.length} · 중복 ${c.dups.length} · 선별 대상 ${c.keep.length}</span></div>
     <div class="seg" role="tablist" style="margin-top:12px"><button type="button" data-prs="s1" aria-pressed="${PR.stage==="s1"}">① 제목·초록 선별 <span class="mono">${c.keep.length-c.undec1.length}/${c.keep.length}</span></button><button type="button" data-prs="s2" aria-pressed="${PR.stage==="s2"}">② 원문 적격성 <span class="mono">${c.pass.length-c.undec2.length-c.noft.length+c.noft.length}/${c.pass.length}</span></button><button type="button" data-prs="flow" aria-pressed="${PR.stage==="flow"}">③ 흐름도·내보내기 <span class="mono">포함 ${c.inc.length}</span></button></div>
     <datalist id="prWhyList">${String(r.exc||"").split("\n").map(x=>x.trim()).filter(Boolean).map(x=>`<option value="${esc(x)}">`).join("")}</datalist>
     ${PR.stage==="s1"?`<div class="row" style="gap:6px;flex-wrap:wrap;margin:10px 0;align-items:center"><button class="btn sm primary" type="button" data-pr="ai" ${PR.busy?"disabled":""}>${PR.busy?esc(PR.prog||"선별 중…"):`AI로 미판정 ${c.undec1.length}편 먼저 거르기`}</button>${["all","todo","in","maybe","out"].map(k=>`<button class="chip sm" type="button" data-prfl="${k}" aria-pressed="${PR.filt===k}">${{all:"전체",todo:"미판정",in:"포함",maybe:"보류",out:"제외"}[k]}</button>`).join("")}<span class="muted" style="font-size:12px">보류는 원문 단계로 넘어가요</span></div><div class="prlist">${s1list.map(p=>row(p,"s1")).join("")||'<p class="muted">해당하는 논문이 없어요</p>'}</div>`:""}
@@ -6209,10 +6200,11 @@ function draw(){const box=$("#prBody");if(!box)return;const list=rcol().list.sli
     ${PR.stage==="flow"?`<div class="prflow">${flowSvg(r)}</div><div class="row" style="gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn sm primary" type="button" data-pr="svg">흐름도 SVG</button><button class="btn sm" type="button" data-pr="png">흐름도 PNG</button><button class="btn sm" type="button" data-pr="csv">판정표 CSV</button><button class="btn sm" type="button" data-pr="rep">보고서에 저장</button><button class="btn sm" type="button" data-pr="ms">원고 Methods에 넣기</button></div><p class="muted" style="font-size:12px;margin:6px 0 0">PRISMA 2020 흐름도 형식(Page et al., BMJ 2021)을 따라요. 데이터베이스별 검색 건수가 필요하면 '다른 출처 수'와 보고서 표를 고쳐 쓰세요.</p>`:""}`;}
 document.addEventListener("click",async e=>{const t=e.target;if(!t.closest||!t.closest("#prBody"))return;const r=rev();
   const b=t.closest("[data-pr]");if(b){const k=b.dataset.pr;
-    if(k==="new"){const id=uid();await rcol().set(id,{title:"새 문헌고찰",q:"",inc:"",exc:"",src:{kind:"all"},other:{},dec:{},at:Date.now()});PR.cur=id;ls.set("prisma",id);PR.stage="s1";setTimeout(draw,60);return;}
+    if(k==="new"){const id=uid(),sv=(HUB.research&&HUB.research.savedPrisma&&HUB.research.savedPrisma())||{},hasRes=HUB.research&&HUB.research.corpusRaw().list.length;await rcol().set(id,{title:"새 문헌고찰",q:"",inc:sv.inc||"",exc:sv.exc||"",src:{kind:hasRes?"research":"all"},recs:hasRes?HUB.research.corpusRaw().list.slice(0,500):undefined,other:{},dec:{},at:Date.now()});PR.cur=id;ls.set("prisma",id);PR.stage="s1";setTimeout(draw,60);return;}
     if(!r)return;
     if(k==="del"){if(b.dataset.arm!=="1"){b.dataset.arm="1";b.textContent="한 번 더 누르면 삭제";return;}await rcol().remove(r.id);PR.cur="";setTimeout(draw,60);return;}
     if(k==="ai"){screenAI();return;}
+    if(k==="loadres"){const x=HUB.research&&HUB.research.corpusRaw();if(!x||!x.list.length){HUB.toast("리서치 1번에서 대상 논문을 먼저 골라 주세요");return;}await rcol().update(r.id,{recs:x.list.slice(0,500),recsName:x.name});HUB.toast(`${x.name} ${Math.min(500,x.list.length)}편을 불러왔어요`);setTimeout(draw,40);return;}
     const name=(r.title||"PRISMA").replace(/[\\/:*?"<>|]/g," ").slice(0,50);
     if(k==="svg"){HUB.save(name+"_PRISMA.svg",new Blob([flowSvg(r)],{type:"image/svg+xml"}));return;}
     if(k==="png"){const svg=flowSvg(r),m=svg.match(/width="(\d+)" height="(\d+)"/),w=+m[1],h=+m[2],img=new Image();img.onload=()=>{const c=document.createElement("canvas");c.width=w*3;c.height=h*3;const g=c.getContext("2d");g.scale(3,3);g.fillStyle="#fff";g.fillRect(0,0,w,h);g.drawImage(img,0,0);c.toBlob(bl=>HUB.save(name+"_PRISMA.png",bl),"image/png");};img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);return;}
@@ -6232,7 +6224,8 @@ document.addEventListener("change",async e=>{const t=e.target;if(!t.closest||!t.
   if(t.id==="prSrc"){const v=t.value,i=v.indexOf(":");await rcol().update(r.id,{src:i<0?{kind:v}:{kind:v.slice(0,i),val:v.slice(i+1)}});setTimeout(draw,30);return;}
   if(t.dataset.pro){await rcol().update(r.id,{other:Object.assign({},r.other||{},{[t.dataset.pro]:t.value})});setTimeout(draw,30);return;}
   if(t.dataset.prw){const dec=Object.assign({},r.dec||{});dec[t.dataset.prw]=Object.assign({},dec[t.dataset.prw]||{},{r2:t.value.trim()});await rcol().update(r.id,{dec});setTimeout(draw,30);}});
-HUB.ready.then(()=>{rcol().subscribe(()=>{const a=document.activeElement;if(a&&a.closest&&a.closest("#prBody")&&/INPUT|TEXTAREA/.test(a.tagName))return;draw();});const p=$("#prPanel");if(p)p.addEventListener("toggle",()=>{if(p.open)draw();});HUB.lib&&HUB.lib.papers&&draw();});
+HUB.prisma={draw};
+HUB.ready.then(()=>{rcol().subscribe(()=>{const a=document.activeElement;if(a&&a.closest&&a.closest("#prBody")&&/INPUT|TEXTAREA/.test(a.tagName))return;draw();});});
 })();
 
 </script>
@@ -7474,7 +7467,7 @@ function poHtml(d){const p=poGet(d),o=p.outline,B=(s,n,dis)=>`<button class="btn
   return `<div class="page"><section class="card pad wrpo" id="poBox">
     <div class="row" style="justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px"><h2 style="margin:0">PaperOrchestra 방식으로 원고 쓰기</h2><button class="btn sm ghost" type="button" data-wr="po">닫기</button></div>
     <p class="muted" style="margin:6px 0 12px;font-size:13px">Google Cloud AI Research의 PaperOrchestra(arXiv:2604.05018)처럼 일을 나눠요: ① 개요 → ② 그림 계획 · ③ 서론·선행연구 → ④ 나머지 섹션 한 번에 → ⑤ 가상 심사로 고치고, 점수가 오를 때만 채택. 숫자와 인용은 넣어 준 실험 기록과 라이브러리 논문에서만 써요.</p>
-    <div class="pogrid"><label class="field" style="margin:0"><span class="pohd">아이디어 (무엇을, 왜, 핵심 주장)</span><textarea id="poIdea" rows="5" placeholder="예: 신장 표적 초분자 나노입자로 약물를 전달해 시스플라틴 유발 AKI를 줄인다. 핵심 주장: …">${esc(p.idea)}</textarea></label>
+    <div class="pogrid"><label class="field" style="margin:0"><span class="pohd">아이디어 (무엇을, 왜, 핵심 주장)</span><textarea id="poIdea" rows="5" placeholder="예: 표적 전달체로 약물을 전달해 질환 모델의 손상을 줄인다. 핵심 주장: …">${esc(p.idea)}</textarea></label>
       <label class="field" style="margin:0"><span class="pohd">실험 기록 (조건·결과·숫자)<button class="linkbtn" type="button" data-po="notes">실험노트에서 가져오기${d.project?" ("+esc(d.project)+")":""}</button></span><textarea id="poLog" rows="5" placeholder="실험 조건, 군별 결과, 통계 값을 그대로 붙여넣거나 실험노트에서 가져오세요">${esc(p.log)}</textarea></label>
       <label class="field" style="margin:0">투고 지침 (선택)<input id="poGuide" value="${esc(p.guide)}" placeholder="예: 6,000단어 이내, 그림 6개, 구조화 초록"></label></div>
     <div class="posteps">
@@ -7528,11 +7521,11 @@ function draw(){const V=$("#v-write");if(!V)return;const list=col().list.slice()
       <label class="field" for="wrStyle" style="margin:0">인용 양식<select id="wrStyle">${Object.entries(bib.STYLES).map(([k,v])=>`<option value="${k}" ${W.style===k?"selected":""}>${esc(v.name)}</option>`).join("")}</select></label>
       <div class="wrbtns"><button class="btn primary" type="button" data-wr="docx">Word로 저장 (인용·참고문헌 포함)</button><button class="btn" type="button" data-wr="subdocx">투고용 Word (줄 간격·줄 번호·쪽 번호)</button><details class="subopt"><summary class="muted">투고용 양식 설정</summary><div class="subgrid"><label>글꼴<select data-subo="font">${["Times New Roman","Arial","Calibri","맑은 고딕"].map(f=>`<option ${SUBO.font===f?"selected":""}>${f}</option>`).join("")}</select></label><label>크기<select data-subo="size">${[11,12].map(n=>`<option value="${n}" ${SUBO.size==n?"selected":""}>${n}pt</option>`).join("")}</select></label><label>줄 간격<select data-subo="spacing">${[[2,"2배"],[1.5,"1.5배"],[1,"1배"]].map(([v,n])=>`<option value="${v}" ${SUBO.spacing==v?"selected":""}>${n}</option>`).join("")}</select></label>${[["lines","줄 번호"],["pages","쪽 번호"],["title","제목 쪽 따로"],["figs","그림 설명 새 쪽"],["refs","참고문헌 새 쪽"]].map(([k,n])=>`<label class="ck"><input type="checkbox" data-subo="${k}" ${SUBO[k]?"checked":""}><span>${n}</span></label>`).join("")}</div></details><button class="btn" type="button" data-wr="preview">완성본 미리보기</button><button class="btn" type="button" data-wr="md">Markdown 저장</button></div>
       <h3 class="cap">처음부터 쓰기</h3>
-      <div class="wrtl"><button type="button" data-wr="po" aria-pressed="${!!W.po}"><b>PaperOrchestra 방식으로 쓰기</b><span>실험 기록·아이디어 → 개요 → 서론·선행연구 → 섹션 → 가상 심사</span></button></div>
+      <div class="wrtl"><button type="button" data-wr="po" aria-pressed="${!!W.po}"><b>초안 쓰기 (PaperOrchestra 방식)</b><span>초록·서론·선행연구·방법·결과·고찰을 실험 기록과 라이브러리 논문으로 → 가상 심사로 다듬기</span></button></div>
       <h3 class="cap">이 원고로 점검하기</h3>
       <div class="wrtl">${tool("claimcheck","인용 근거 대조","인용한 논문 본문에 그 내용이 있는지")}${tool("citecheck","인용 검증","참고문헌이 실재하는지 (Crossref)")}${tool("reportcheck","통계·보고 점검","Methods·Results·그림 설명의 빠진 항목")}${tool("review","동료 심사 패널","심사위원 관점의 총평과 요구 사항")}</div>
       <h3 class="cap">투고 준비</h3>
-      <div class="wrtl">${tool("journalrec","투고 저널 추천","초록 기준으로 도전·적정·안전")}${tool("draft","초록·서론 초안","결과 섹션과 인용 논문으로")}${tool("rebuttal","심사 답변서","리뷰어 코멘트는 다음 화면에서 붙여넣기")}${tool("korean","한국어 글 다듬기","지금 섹션의 맞춤법·문체")}</div>
+      <div class="wrtl">${tool("journalrec","투고 저널 추천","초록 기준으로 도전·적정·안전")}${tool("rebuttal","심사 답변서","리뷰어 코멘트는 다음 화면에서 붙여넣기")}${tool("korean","한국어 글 다듬기","지금 섹션의 맞춤법·문체")}</div>
       <p class="muted" style="font-size:12.5px;margin:0">다 쓰지 않아도 돼요. 지금 써 둔 만큼으로 돌아가요. 누르면 리서치 화면으로 넘어가 원고가 자동으로 채워지고, 결과는 보고서에 저장돼요.</p>
       <h3 class="cap">버전</h3>
       <div class="wrbtns"><button class="btn sm" type="button" data-wr="snap">지금 상태 저장해 두기</button></div>
@@ -8107,7 +8100,7 @@ const syncSoon=()=>{clearTimeout(osyncT);osyncT=setTimeout(()=>syncOrders(false)
 /* ---------- cell and animal logs: a standard protocol for the line or strain ---------- */
 let cpBusy="";
 const LP={
- cells:{name:r=>r.line,need:"세포주 이름",sub:"해동 · 배양 · 계대 · 동결 · 마이코플라스마 검사",ph:"어디에 쓸지 (선택) · 예: 시스플라틴 독성 실험, 3D 배양",title:"세포 프로토콜 · ",role:"세포 배양실의 경험 많은 선임 연구원",
+ cells:{name:r=>r.line,need:"세포주 이름",sub:"해동 · 배양 · 계대 · 동결 · 마이코플라스마 검사",ph:"어디에 쓸지 (선택) · 예: 약물 독성 실험, 3D 배양",title:"세포 프로토콜 · ",role:"세포 배양실의 경험 많은 선임 연구원",
   desc:r=>`세포: ${r.line} | 계대: ${r.passage||"-"} | 기록된 배양 배지: ${r.medium||"-"} | 기록된 동결 배지: ${r.freeze||"-"} | 출처: ${r.source||"-"} | 마이코플라스마 기록: ${r.myco||"-"}`,
   rules:`- 이 세포주가 무엇인지(종, 조직, 형태) 확실하지 않으면 지어내지 말고 맨 위에 Cellosaurus·분양처(ATCC·KCLB 등) 정보로 확인하라고 적으세요.
 - 배지·혈청 농도, 분주 비율, 계대 주기는 그 세포주에 널리 쓰이는 범위로 적고 '분양처 권장 조건 확인'이라고 표시하세요. 기록된 배지가 있으면 그것을 기준으로 쓰세요.`,
@@ -8122,7 +8115,7 @@ const LP={
 ## 논문 Methods 문장 (영어, 과거 수동태. 세포 출처·배지·조건, 실제 값은 [대괄호 빈칸])
 ## 쓰기 전에 확인할 것 (분양처 데이터시트, 기관 생물안전 규정)`,
   foot:"분양처 데이터시트와 기관의 생물안전 규정"},
- animals:{name:r=>r.strain,need:"계통",sub:"입고·순화 · 사육 환경 · 관찰·체중 · 투여·채혈 · 인도적 종료 기준",ph:"어디에 쓸지 (선택) · 예: 시스플라틴 유발 AKI 모델, 꼬리정맥 나노입자 투여",title:"동물 프로토콜 · ",role:"실험동물실의 경험 많은 선임 연구원",
+ animals:{name:r=>r.strain,need:"계통",sub:"입고·순화 · 사육 환경 · 관찰·체중 · 투여·채혈 · 인도적 종료 기준",ph:"어디에 쓸지 (선택) · 예: 질환 유발 모델, 꼬리정맥 투여",title:"동물 프로토콜 · ",role:"실험동물실의 경험 많은 선임 연구원",
   desc:r=>`계통: ${r.strain} | 종: ${r.species||"-"} | 성별: ${r.sex||"-"} | 입고 주령·생년월일: ${r.age||"-"} | 체중: ${r.weight||"-"} | 실험군·처치: ${r.group||"-"} | 공급처: ${r.source||"-"} | 승인번호: ${r.iacuc||"없음"}`,
   rules:`- 이 계통의 특성(유전 배경, 알려진 표현형, 주의할 점)이 확실하지 않으면 지어내지 말고 맨 위에 공급처(JAX·Charles River·오리엔트바이오 등) 데이터시트와 MGI로 확인하라고 적으세요.
 - 투여량·채혈량·마취 조건은 널리 쓰이는 범위로 적고 '기관 동물실험윤리위원회(IACUC) 승인 프로토콜과 수의사 지침 확인'이라고 표시하세요. 승인 프로토콜이 이 문서보다 우선한다고 밝히세요.
@@ -8443,7 +8436,7 @@ function bsHtml(p){const s=BS[p.id];if(!s)return "";
     ${!s.busy&&s.ap?`<div class="bsap">${s.ap.map((a,i)=>`<div class="bsapc"><b>${i===0?"추천 · ":""}${esc(a.name||"")}</b><p>${esc(a.goal||"")}</p><p class="muted">장점: ${esc(a.why||"")}<br>대가: ${esc(a.risk||"")}</p><button class="btn sm ${i===0?"primary":""}" type="button" data-bs="pick" data-id="${p.id}" data-i="${i}">이걸로 목표 정하기</button></div>`).join("")}</div>`:""}</div>`;}
 function roadHtml(p){if(!p)return "";const r=p.road||{},ph=r.phases||[],all=ph.flatMap(x=>x.must||[]),ok=all.filter(m=>m.done).length;
   return `<div class="pjroad"><div class="row" style="justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px"><b>로드맵 <span class="muted" style="font-weight:400;font-size:12.5px">목표 → 단계 → 꼭 있어야 할 결과 → 기록으로 검증</span></b>${all.length?`<span class="tag ${ok===all.length?"ft":""}">필수 결과 ${ok}/${all.length}</span>`:""}</div>
-    <label class="field" style="margin:6px 0 0">이 프로젝트의 최종 목표 (무엇이 되면 끝인가)<textarea data-rmgoal="${p.id}" rows="2" placeholder="예: 시스플라틴 AKI 마우스에서 나노입자가 BUN·크레아티닌을 낮추는 것을 보이고 논문 투고">${esc(r.goal||"")}</textarea></label>
+    <label class="field" style="margin:6px 0 0">이 프로젝트의 최종 목표 (무엇이 되면 끝인가)<textarea data-rmgoal="${p.id}" rows="2" placeholder="예: 질환 모델 마우스에서 후보 약물이 주요 지표를 낮추는 것을 보이고 논문 투고">${esc(r.goal||"")}</textarea></label>
     ${BS[p.id]?bsHtml(p):`<div><button class="linkbtn" type="button" data-bs="start" data-id="${p.id}">목표가 막막하면 — 질문에 하나씩 답하며 같이 정하기 (AI)</button></div>`}
     <div class="row" style="gap:6px;margin-top:6px;flex-wrap:wrap"><button class="btn sm ${ph.length?"":"primary"}" type="button" data-rm="plan" data-id="${p.id}" ${RM.busy?"disabled":""}>${RM.busy==="plan"+p.id?"단계 짜는 중…":ph.length?"단계 다시 짜기":"단계 짜기 (AI)"}</button>${ph.length?`<button class="btn sm primary" type="button" data-rm="verify" data-id="${p.id}" ${RM.busy?"disabled":""}>${RM.busy==="verify"+p.id?"기록 확인 중…":"기록으로 검증하기 (AI)"}</button>`:""}${r.at?`<span class="muted" style="font-size:12px">${r.vat?"마지막 검증 "+new Date(r.vat).toLocaleDateString("ko-KR"):""}</span>`:""}</div>
     ${ph.map((x,i)=>{const m=x.must||[],k=m.filter(y=>y.done).length;return `<div class="rmph ${m.length&&k===m.length?"done":""}"><div class="row" style="justify-content:space-between;gap:6px"><b>${i+1}. ${esc(x.name||"")}</b><span class="muted" style="font-size:12px">${k}/${m.length}</span></div>${x.goal?`<p class="muted" style="margin:2px 0 6px;font-size:12.5px">${esc(x.goal)}</p>`:""}
@@ -8452,7 +8445,7 @@ function roadHtml(p){if(!p)return "";const r=p.road||{},ph=r.phases||[],all=ph.f
     ${r.next?`<div class="note-bar" style="display:block;font-size:13px"><b>다음에 할 일</b> — ${esc(r.next)}</div>`:""}</div>`;}
 async function roadRun(k,id,el){const p=prcol().list.find(x=>x.id===id);if(!p||RM.busy)return;const r=Object.assign({},p.road||{}),g=(document.querySelector(`[data-rmgoal="${id}"]`)||{}).value;if(g!=null)r.goal=g.trim();
   if(k==="plan"){if(!r.goal){HUB.toast("최종 목표를 먼저 적어 주세요");return;}RM.busy="plan"+id;draw();
-    try{const t=await HUB.ai.text(`연구 프로젝트 '${p.name}'의 로드맵을 GSD(Get Shit Done) 방식으로 짜세요: 목표에서 거꾸로 생각해(goal-backward) 단계(phase)를 3~6개로 나누고, 단계마다 '끝났다고 말하려면 반드시 있어야 하는 결과(must-have)'를 2~4개, 구체적인 할 일을 2~5개 적으세요. must-have는 기록으로 확인할 수 있게 구체적으로(예: '시스플라틴 단독군 대비 BUN 감소, n≥5'). 한국어. JSON 객체 하나로만 답하세요:
+    try{const t=await HUB.ai.text(`연구 프로젝트 '${p.name}'의 로드맵을 GSD(Get Shit Done) 방식으로 짜세요: 목표에서 거꾸로 생각해(goal-backward) 단계(phase)를 3~6개로 나누고, 단계마다 '끝났다고 말하려면 반드시 있어야 하는 결과(must-have)'를 2~4개, 구체적인 할 일을 2~5개 적으세요. must-have는 기록으로 확인할 수 있게 구체적으로(예: '질환 단독군 대비 주요 지표 감소, n≥5'). 한국어. JSON 객체 하나로만 답하세요:
 {"phases":[{"name":"","goal":"","must":["",""],"tasks":["",""]}]}
 최종 목표: ${r.goal}
 프로젝트 설명: ${p.memo||"-"}
@@ -8462,7 +8455,7 @@ async function roadRun(k,id,el){const p=prcol().list.find(x=>x.id===id);if(!p||R
     catch(e){HUB.toast(HUB.aiErr?HUB.aiErr(e):(e.message||"실패했어요"),6000);}RM.busy="";setTimeout(draw,60);return;}
   if(k==="verify"){const ph=r.phases||[];if(!ph.length)return;RM.busy="verify"+id;draw();
     try{const list=ph.flatMap((x,i)=>(x.must||[]).map((m,j)=>({id:`${i}.${j}`,phase:x.name,must:m.t})));
-      const t=await HUB.ai.text(`목표에서 거꾸로 검증하세요(goal-backward verification). 아래 '꼭 있어야 할 결과' 각각이 실험 기록에 실제로 근거가 있는지 판정합니다. 기록에 분명한 근거가 있을 때만 done=true. 추측하지 마세요. 근거(ev)는 어떤 기록인지 짧게(예: '노트 11-03 BUN 측정'), 없으면 무엇이 빠졌는지. 한국어. JSON 하나로만:
+      const t=await HUB.ai.text(`목표에서 거꾸로 검증하세요(goal-backward verification). 아래 '꼭 있어야 할 결과' 각각이 실험 기록에 실제로 근거가 있는지 판정합니다. 기록에 분명한 근거가 있을 때만 done=true. 추측하지 마세요. 근거(ev)는 어떤 기록인지 짧게(예: '노트 11-03 주요 지표 측정'), 없으면 무엇이 빠졌는지. 한국어. JSON 하나로만:
 {"items":[{"id":"0.0","done":true,"ev":""}],"next":"지금 가장 먼저 할 일 한 문장"}
 꼭 있어야 할 결과:\n${list.map(x=>`${x.id} [${x.phase}] ${x.must}`).join("\n")}
 실험 기록:\n${rmEvidence(p.name)||"(기록 없음)"}`,{modelTier:"default"});
