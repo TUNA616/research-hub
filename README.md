@@ -46,7 +46,7 @@
 | 실험실 | 프로젝트, 과제 계획·평가, 재료 및 방법(물품·발주), 세포·동물 관리 기록부, 실험노트, 실험 일정 |
 | 원고 | 섹션별로 쓰고 라이브러리 논문 인용, AI 다듬기, 초안 쓰기(PaperOrchestra 방식), 투고용 Word |
 | 일러스트레이터 | 모식도·그래피컬 초록·그래프 그리기, 통계, 패널 조립, 디자인 비평 |
-| DB 조회 | 사이트 안에서 바로 조회하는 DB 33종 + 분야별 바로가기 158곳, Curieus 연동 |
+| DB 조회 | 사이트 안에서 바로 조회하는 DB 50종(BLAST, NCBI 전체 DB 포함) + 분야별 바로가기 173곳, Curieus 연동 |
 | 보고서 | 리서치 결과를 모아 정리하고 Word·PPT·엑셀로 내보내기 |
 
 - 라이트·다크 테마를 지원하고, 휴대폰에서도 열립니다.
@@ -93,22 +93,23 @@
 - **다른 사이트 바로가기:** 🔍 표시가 붙은 곳은 조회칸에 넣은 말로 그 사이트의 검색 결과가 바로 열립니다.
 - **실패해도 계속:** 조회가 실패하면 같은 내용을 찾을 수 있는 바로가기를 보여 줍니다. **연결 점검**으로 이 브라우저에서 어느 DB가 연결되는지 한 번에 확인합니다.
 
-**사이트 안에서 바로 조회 (33종)**
+**사이트 안에서 바로 조회 (50종)**
 
 | 묶음 | DB |
 |---|---|
-| 유전자·서열 | NCBI Gene, GenBank·RefSeq, Ensembl |
-| 단백질·구조 | UniProt, PDB |
-| 변이·질병 | ClinVar, dbSNP |
+| NCBI 통합 · BLAST | BLAST 서열 유사성 검색, NCBI 전체 DB에서 건수 보기 |
+| 유전자·서열 | NCBI Gene, GenBank·RefSeq, Ensembl, NCBI Taxonomy, Assembly |
+| 단백질·구조 | UniProt, PDB, NCBI Protein, NCBI Structure, Conserved Domains |
+| 변이·질병 | ClinVar, dbSNP, dbVar, MedGen, OMIM, GTR |
 | 경로·기능 | Reactome, KEGG |
 | 기전 분석·발현 | g:Profiler, STRING, Human Protein Atlas, CELLxGENE, KPMP |
-| 암·면역·오믹스 | GEO, GDC·TCGA, cBioPortal, Open Targets |
+| 암·면역·오믹스 | GEO, GDC·TCGA, cBioPortal, Open Targets, BioProject, BioSample, SRA |
 | 세포주·항체·동물 모델 | Cellosaurus(분양 번호·오염 경고), Antibody Registry(RRID), Alliance(질환 모델) |
 | 화합물 | PubChem, 질량·스펙트럼, 합성 생성물 예측, 생물활성(ChEMBL·PubChem), PROTAC·분해제, 표적–리간드 약리(IUPHAR/BPS) |
 | 독성·도핑·마약류 | PubChem 독성·GHS, openFDA 식품 회수, 스포츠 도핑(추정), 마약류 검출 정보 |
-| 문헌·임상 | PubMed, ClinicalTrials.gov, 원문 오픈액세스 찾기(Unpaywall·OpenAlex) |
+| 문헌·임상 | PubMed, PMC, Bookshelf, MeSH, ClinicalTrials.gov, 원문 오픈액세스 찾기(Unpaywall·OpenAlex) |
 
-**다른 사이트 바로가기 (158곳) 예시**
+**다른 사이트 바로가기 (173곳) 예시**
 
 | 분야 | 예 |
 |---|---|
@@ -119,11 +120,22 @@
 | 수소·에너지 | H2Tools, NREL, OpenEI, IEA, 국가에너지통계 |
 | 환경·기후 | 에어코리아, 기상자료개방포털, Copernicus, 물환경정보시스템, NCIS, EPA CompTox |
 | 소재·화학 | CCDC, COD, AFLOW, OQMD, NIMS MatNavi, SDBS, Reaxys, SciFinder |
-| 의과학·생명 | SRA, GTEx, Human Cell Atlas, AlphaFold DB, OMIM, MGI, K-BDS, 공공 데이터 저장소(ENA, EGA, dbGaP, GWAS Catalog, COSMIC, DepMap, ImmPort, IEDB, ATCC·KCLB 등) |
+| 의과학·생명 | NCBI·서열 도구(NCBI BLAST, Primer-BLAST, ORFfinder, CD-Search, COBALT, Genome Data Viewer, NCBI Datasets, NCBI Virus, iCn3D, SRA Run Selector, PubTator3, LitVar2, ALFA, EBI BLAST·Clustal Omega, UniProt BLAST), SRA, GTEx, Human Cell Atlas, AlphaFold DB, OMIM, MGI, K-BDS, 공공 데이터 저장소(ENA, EGA, dbGaP, GWAS Catalog, COSMIC, DepMap, ImmPort, IEDB, ATCC·KCLB 등) |
 | 의·약학 | DrugBank, KEGG DRUG, CLUE, 의약품안전나라, Drugs@FDA, DailyMed, EMA, WHO ICTRP, CRIS, Cochrane |
 | 기초과학 | PDG, INSPIRE-HEP, NIST ASD, CERN Open Data, GBIF, PANGAEA, NASA Earthdata, USGS |
 | 천문·우주 | NASA ADS, SIMBAD, VizieR, NED, MAST, Gaia, SDSS, 한국천문연구원 |
 | 공통 | ScienceON, NTIS, KCI, RISS, DBpia, KIPRIS, Google Patents, Espacenet, Zenodo, re3data, skills.sh |
+
+**BLAST와 NCBI DB**
+
+- **BLAST:** 서열(FASTA 또는 문자만), UniProt 번호(예: P04637), NCBI 번호(예: NM_000546)를 넣으면 EMBL-EBI의 BLAST로 비슷한 단백질을 찾아 일치율·정렬 길이·E-value·비트 점수 표로 보여 줍니다. 번호를 넣으면 서열은 알아서 받아 옵니다.
+  - 단백질 서열은 blastp, 염기서열은 번역해서 단백질과 비교(blastx)합니다. 기본 대상은 UniProtKB/Swiss-Prot이고, 끝에 `| pdb`를 붙이면 PDB 구조, `| uniprot`을 붙이면 UniProtKB 전체에서 찾습니다.
+  - 보통 30초~3분 걸리고, 기다리는 동안 경과 시간이 표시됩니다.
+  - EBI가 요청자 이메일을 요구하므로 설정의 **Unpaywall 이메일** 칸을 채워야 합니다.
+  - 결과 아래에 EBI 전체 결과 보기, NCBI BLAST에서 다시 돌리기(서열이 채워진 채로 열림) 링크가 붙습니다. 염기서열끼리 비교(blastn)는 NCBI BLAST 링크로 하세요.
+  - UniProt 결과와 GenBank·RefSeq·NCBI Protein 결과 옆에도 **이 사이트에서 BLAST**와 **NCBI BLAST** 버튼이 붙습니다.
+- **NCBI 전체 DB에서 건수 보기:** 검색어 하나로 NCBI의 DB 31곳(PubMed, PMC, Gene, Nucleotide, Protein, Structure, SRA, GEO, ClinVar, dbSNP, dbVar, MedGen, OMIM, PubChem 등)에 각각 몇 건이 있는지 많은 순서로 보여 줍니다. 이 사이트에서 바로 조회되는 DB는 **사이트에서 보기**로 이어집니다. NCBI 요청 한도 때문에 10초쯤 걸립니다.
+- **NCBI DB 바로 조회:** Protein, Structure, Conserved Domains, Taxonomy, Assembly, MedGen, OMIM, GTR, dbVar, BioProject, BioSample, SRA, PMC, Bookshelf, MeSH를 사이트 안에서 표로 봅니다.
 
 **Curieus 연동** — [Curieus](https://curieus.net/)는 구조 예측, 도킹, 분자동역학(MD), 단백질 디자인, scRNA-seq 분석을 코드 없이 돌리는 분석 플랫폼입니다.
 
@@ -302,7 +314,7 @@ AI 기능은 설정에 넣은 **본인 API 키**로 실행됩니다. 키는 본�
 | Anthropic API 키 | 요약, 번역, 질문, 리서치, 원고 도구, 벡터 모식도, 사진·명세서 읽기, 과제 문서, 프로토콜, PRISMA 선별 | console.anthropic.com |
 | Google AI API 키 | 이미지 생성(Google). Anthropic 키가 없으면 요약·분석도 이 키로 | aistudio.google.com |
 | OpenAI API 키 | 이미지 생성(OpenAI) | platform.openai.com |
-| Unpaywall 이메일 (키 아님) | 원문 오픈액세스 찾기. 비우면 OpenAlex로 | unpaywall.org |
+| Unpaywall 이메일 (키 아님) | 원문 오픈액세스 찾기(비우면 OpenAlex로), DB 조회의 BLAST(EBI가 요청자 이메일을 요구) | 본인 이메일 |
 | GtoPdb API 키 | 표적–리간드 약리 | guidetopharmacology.org |
 | Curieus API 키 | DB 조회의 Curieus 연결 (시험 기능) | curieus.net 마이페이지 |
 | OpenAlex, Semantic Scholar 키 | 검색이 막히거나 느릴 때만 (선택) | 각 서비스 |
@@ -311,7 +323,7 @@ AI 기능은 설정에 넣은 **본인 API 키**로 실행됩니다. 키는 본�
 - **키가 없어도 됩니다.** AI가 필요한 곳에서 복사·붙여넣기 방식이 뜹니다. 프롬프트를 AI 대화창에 붙여 넣고 답을 다시 붙여 넣으면 됩니다.
 - claude.ai 화면에서 열면 키 없이 Claude가 바로 동작합니다.
 - API 사용료는 각 회사가 본인 계정에 청구합니다. ChatGPT·Claude 구독과는 별개입니다.
-- 검색, 관계도, 서지 가져오기·내보내기, 그래프와 통계, 패널 조립, PRISMA 흐름도는 AI 없이 됩니다.
+- 검색, DB 조회와 BLAST, 관계도, 서지 가져오기·내보내기, 그래프와 통계, 패널 조립, PRISMA 흐름도는 AI 없이 됩니다.
 
 ---
 
@@ -363,7 +375,7 @@ AI 기능은 설정에 넣은 **본인 API 키**로 실행됩니다. 키는 본�
 
 **연결하는 공개 서비스**
 
-OpenAlex · Europe PMC · PubMed · Crossref · Semantic Scholar · PubChem · UniProt · ClinicalTrials.gov · NCBI E-utilities(Gene, Nucleotide, ClinVar, dbSNP, GEO) · Ensembl · RCSB PDB · Reactome · KEGG · NCI GDC · cBioPortal · Open Targets · Cellosaurus · Antibody Registry · Alliance of Genome Resources · openFDA · ChEMBL · g:Profiler · STRING · Human Protein Atlas · CZ CELLxGENE · IUPHAR/BPS Guide to PHARMACOLOGY · Unpaywall · CDK Depict · Curieus(사용자 키로 선택 연결)
+OpenAlex · Europe PMC · PubMed · Crossref · Semantic Scholar · PubChem · UniProt · ClinicalTrials.gov · NCBI E-utilities(Gene, Nucleotide, Protein, Structure, CDD, Taxonomy, Assembly, ClinVar, dbSNP, dbVar, MedGen, OMIM, GTR, GEO, BioProject, BioSample, SRA, PMC, Bookshelf, MeSH 등) · EMBL-EBI Job Dispatcher(NCBI BLAST+) · Ensembl · RCSB PDB · Reactome · KEGG · NCI GDC · cBioPortal · Open Targets · Cellosaurus · Antibody Registry · Alliance of Genome Resources · openFDA · ChEMBL · g:Profiler · STRING · Human Protein Atlas · CZ CELLxGENE · IUPHAR/BPS Guide to PHARMACOLOGY · Unpaywall · CDK Depict · Curieus(사용자 키로 선택 연결)
 
 **쓰는 오픈소스 라이브러리**
 

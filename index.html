@@ -5278,7 +5278,7 @@ const DB={
    const r=d.results||[];if(!r.length)return"결과가 없어요.";
    return r.map(x=>{const nm=x.proteinDescription&&((x.proteinDescription.recommendedName&&x.proteinDescription.recommendedName.fullName.value)||(x.proteinDescription.submissionNames&&x.proteinDescription.submissionNames[0].fullName.value))||x.uniProtkbId;
      const fn=((x.comments||[]).find(c=>c.commentType==="FUNCTION")||{texts:[{value:""}]}).texts[0].value;
-     return `## ${nm} (${x.primaryAccession})\n- 유전자: ${((x.genes||[])[0]&&x.genes[0].geneName&&x.genes[0].geneName.value)||"—"} · 종: ${(x.organism&&x.organism.scientificName)||"—"} · 길이: ${(x.sequence&&x.sequence.length)||"—"} aa · ${x.entryType||""}\n- 기능: ${fn?fn:"기록 없음"}\n- [UniProt](https://www.uniprot.org/uniprotkb/${x.primaryAccession}) · [AlphaFold 구조](https://alphafold.ebi.ac.uk/entry/${x.primaryAccession})${x.sequence&&x.sequence.value?" · "+cuLink("seq",x.sequence.value,"Curieus에서 구조 예측·디자인하기 (서열 복사)"):""}`;}).join("\n\n");}},
+     return `## ${nm} (${x.primaryAccession})\n- 유전자: ${((x.genes||[])[0]&&x.genes[0].geneName&&x.genes[0].geneName.value)||"—"} · 종: ${(x.organism&&x.organism.scientificName)||"—"} · 길이: ${(x.sequence&&x.sequence.length)||"—"} aa · ${x.entryType||""}\n- 기능: ${fn?fn:"기록 없음"}\n- [UniProt](https://www.uniprot.org/uniprotkb/${x.primaryAccession}) · [AlphaFold 구조](https://alphafold.ebi.ac.uk/entry/${x.primaryAccession})${x.sequence&&x.sequence.value?" · "+cuLink("seq",x.sequence.value,"Curieus에서 구조 예측·디자인하기 (서열 복사)"):""}\n- 비슷한 단백질 찾기: ${blastHub(x.primaryAccession,"이 사이트에서 BLAST")} · [NCBI BLAST](${ncbiBlastUrl(x.primaryAccession,false)})`;}).join("\n\n");}},
  trials:{name:"ClinicalTrials.gov",ph:"질환·약물 예: cancer immunotherapy resistance",from:"scientific-agent-skills · clinical",async run(q){
    const d=await HUB.getJson("https://clinicaltrials.gov/api/v2/studies?pageSize=15&query.term="+encodeURIComponent(q));
    const s=d.studies||[];if(!s.length)return"결과가 없어요.";
@@ -5302,7 +5302,7 @@ Object.assign(DB,{
    return head("NCBI Gene",r.total,r.rows.length,q)+r.rows.map(x=>`### ${x.name||"—"} — ${cellT(x.description)}\n- 종: ${cellT(x.organism&&x.organism.scientificname)} · 위치: ${cellT(x.maplocation||x.chromosome)} · Gene ID ${x.uid}${x.otheraliases?"\n- 다른 이름: "+cellT(x.otheraliases):""}${x.summary?"\n- 요약: "+cellT(x.summary):""}\n- [NCBI Gene](https://www.ncbi.nlm.nih.gov/gene/${x.uid}) · [RefSeq 서열](https://www.ncbi.nlm.nih.gov/nuccore/?term=${encodeURIComponent((x.name||"")+"[Gene] AND refseq[filter]")})`).join("\n\n");}},
  nuccore:{g:"유전자·서열",label:"GenBank · RefSeq (핵산)",name:"GenBank/RefSeq",ph:"유전자·생물·접근번호 예: NM_000546, BRCA1 mRNA human",from:"NCBI Nucleotide (GenBank·ENA·DDBJ 공유)",async run(q){
    const r=await ncbi("nuccore",q,10);if(!r.rows.length)return NONE;
-   return head("GenBank/RefSeq 핵산 서열",r.total,r.rows.length,q)+`| 접근번호 | 설명 | 종 | 길이 | 분자 | 갱신 | 같은 기록 |\n|---|---|---|---|---|---|---|\n`+r.rows.map(x=>{const a=x.accessionversion||x.caption;return `| [${a}](https://www.ncbi.nlm.nih.gov/nuccore/${a}) | ${cellT(x.title)} | ${cellT(x.organism)} | ${x.slen?(+x.slen).toLocaleString()+" bp":"—"} | ${cellT(x.biomol||x.moltype)} | ${cellT(x.updatedate)} | [ENA](https://www.ebi.ac.uk/ena/browser/view/${a}) · [DDBJ](https://getentry.ddbj.nig.ac.jp/getentry/na/${a}) |`;}).join("\n")+`\n\nGenBank(NCBI), ENA(EMBL-EBI), DDBJ는 서열 기록을 서로 주고받아 같은 접근번호로 같은 기록을 볼 수 있어요. 접근번호가 NM_/NR_/NC_/NG_로 시작하면 NCBI가 정리한 RefSeq 참조 서열이에요.`;}},
+   return head("GenBank/RefSeq 핵산 서열",r.total,r.rows.length,q)+`| 접근번호 | 설명 | 종 | 길이 | 분자 | 갱신 | 같은 기록 | BLAST |\n|---|---|---|---|---|---|---|---|\n`+r.rows.map(x=>{const a=x.accessionversion||x.caption;return `| [${a}](https://www.ncbi.nlm.nih.gov/nuccore/${a}) | ${cellT(x.title)} | ${cellT(x.organism)} | ${x.slen?(+x.slen).toLocaleString()+" bp":"—"} | ${cellT(x.biomol||x.moltype)} | ${cellT(x.updatedate)} | [ENA](https://www.ebi.ac.uk/ena/browser/view/${a}) · [DDBJ](https://getentry.ddbj.nig.ac.jp/getentry/na/${a}) | [NCBI](${ncbiBlastUrl(a,true)}) · ${blastHub(a,"사이트")} |`;}).join("\n")+`\n\nGenBank(NCBI), ENA(EMBL-EBI), DDBJ는 서열 기록을 서로 주고받아 같은 접근번호로 같은 기록을 볼 수 있어요. 접근번호가 NM_/NR_/NC_/NG_로 시작하면 NCBI가 정리한 RefSeq 참조 서열이에요.`;}},
  ensembl:{g:"유전자·서열",label:"Ensembl 유전체",name:"Ensembl",ph:"유전자 기호 예: BRCA2 (쥐는 'Trp53 mouse')",from:"Ensembl REST",async run(q){
    const SP={mouse:"mus_musculus",쥐:"mus_musculus",마우스:"mus_musculus",rat:"rattus_norvegicus",랫드:"rattus_norvegicus",zebrafish:"danio_rerio",human:"homo_sapiens",사람:"homo_sapiens"};
    let sp="homo_sapiens";const sym=q.split(/\s+/).filter(w=>{const k=SP[w.toLowerCase()];if(k){sp=k;return false;}return true;}).join(" ").trim();if(!sym)return NONE;
@@ -5673,7 +5673,138 @@ Object.assign(DB,{
    return `## 오픈액세스 원문 — ${out.length}편 (읽을 수 있음 ${ok} · 구독 필요 ${closed})\n${H1}${out.join("\n")}\n\n${VER}.${useUp?"":"\n\n지금은 OpenAlex의 오픈액세스 정보로 찾았어요 (OpenAlex도 Unpaywall 자료를 써요). 설정에 'Unpaywall 이메일'을 넣으면 Unpaywall에서 직접 찾아요."}\n\n구독 필요로 나와도 저자 사본이 있을 수 있어요: 소속 기관 도서관, 저자에게 요청, [Google Scholar](https://scholar.google.com/)의 'All versions'를 확인하세요.`;}}
 });
 const ENRICHLINKS=(G,org)=>{const t=G.join("%0A");return `### 다른 도구로도 확인\n- [Enrichr](https://maayanlab.cloud/Enrichr/) · [DAVID](https://david.ncifcrf.gov/) · [g:Profiler 웹](https://biit.cs.ut.ee/gprofiler/gost?organism=${org}&query=${t}) · [Metascape](https://metascape.org/) · [GSEA·MSigDB](https://www.gsea-msigdb.org/gsea/msigdb)\n- 단백질 상호작용은 아래 '같은 목록으로 STRING 상호작용망 보기' 버튼으로 바로 볼 수 있어요.`;};
-const DBGROUPS=["유전자·서열","단백질·구조","변이·질병","경로·기능","기전 분석·발현","암·면역·오믹스 공공데이터","세포주·항체·동물 모델","독성·도핑·마약류","화합물","문헌·임상"];
+/* ---------- BLAST (EBI Job Dispatcher in-site, NCBI BLAST hand-off) and more NCBI Entrez databases ---------- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const dbProg=t=>{const p=document.querySelector("#dbOut .pad p.muted");if(p)p.innerHTML=`<span class="spin" style="display:inline-block;vertical-align:-2px;margin-right:6px"></span>${esc(t)}`;};
+const UNIACC=/^([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})(-\d+)?$/;
+const NCBIACC=/^([A-Z]{1,2}_?[0-9]{5,9}|[A-Z]{2}_[A-Z]{0,4}[0-9]{6,9})(\.\d+)?$/;
+const seqClean=s=>String(s||"").split(/\n/).filter(l=>!/^\s*>/.test(l)).join("").replace(/[\s\d*]/g,"").toUpperCase();
+const isDna=s=>{const t=s.replace(/[^A-Z]/g,"");if(!t)return false;const n=(t.match(/[ACGTUN]/g)||[]).length;return n/t.length>=0.9;};
+const ncbiBlastUrl=(q,dna)=>`https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastSearch&PROGRAM=${dna?"blastn":"blastp"}&LINK_LOC=blasthome&QUERY=${encodeURIComponent(String(q).slice(0,7000))}`;
+const blastHub=(q,label)=>q?`[${label||"이 사이트에서 BLAST"}](https://www.ebi.ac.uk/jdispatcher/sss/ncbiblast?from=hub#hb=${encodeURIComponent(q)})`:"";
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href*="ncbiblast?from=hub#hb="]');if(!a)return;e.preventDefault();
+  const m=a.getAttribute("href").match(/#hb=(.*)$/);const v=m?decodeURIComponent(m[1]):"";if(v)HUB.lookup.open("blast",v,true);});
+async function blastSeq(main){let t=String(main||"").trim();
+  if(UNIACC.test(t.toUpperCase())&&!/_/.test(t)){dbProg("UniProt에서 "+t+" 서열을 받는 중…");const fa=await getText("https://rest.uniprot.org/uniprotkb/"+encodeURIComponent(t.toUpperCase())+".fasta");return {seq:seqClean(fa),src:"UniProt "+t.toUpperCase(),acc:t.toUpperCase()};}
+  if(NCBIACC.test(t.toUpperCase())){const prot=/^(NP|XP|WP|YP|AP|ZP)_/i.test(t);dbProg("NCBI에서 "+t+" 서열을 받는 중…");
+    const fa=await getText(EU+"efetch.fcgi?db="+(prot?"protein":"nuccore")+"&rettype=fasta&retmode=text&id="+encodeURIComponent(t));if(!/^>/.test(fa.trim()))throw new Error("'"+t+"' 서열을 찾지 못했어요");return {seq:seqClean(fa),src:"NCBI "+t,acc:t};}
+  const s=seqClean(t);if(s.length<10||/[^A-Z]/.test(s))throw new Error("서열(FASTA 또는 문자만), UniProt 접근번호(예: P04637), NCBI 접근번호(예: NM_000546)를 넣어 주세요");return {seq:s,src:"입력한 서열"};}
+Object.assign(DB,{
+ blast:{g:"NCBI 통합 · BLAST",label:"BLAST 서열 유사성 검색",name:"BLAST",ph:"서열(FASTA)·UniProt 번호·NCBI 번호 예: P04637, NM_000546 · 끝에 '| pdb'를 붙이면 PDB 구조에서 찾기",from:"EMBL-EBI Job Dispatcher (NCBI BLAST+)",async run(q){
+   const [main,opt0]=String(q).split("|");const opt=String(opt0||"").trim().toLowerCase();
+   const mail=(HUB.cfg.upMail||"").trim();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))throw new Error("EBI BLAST는 요청자 이메일이 필요해요. 설정의 'Unpaywall 이메일' 칸에 이메일을 넣어 주세요");
+   const S=await blastSeq(main);const dna=isDna(S.seq);if(S.seq.length>40000)throw new Error("서열이 너무 길어요(4만 자 이하로 넣어 주세요)");
+   const dbase=opt==="pdb"?"pdb":opt==="uniprot"||opt==="uniprotkb"?"uniprotkb":"uniprotkb_swissprot";const DBN={pdb:"PDB 구조",uniprotkb:"UniProtKB 전체",uniprotkb_swissprot:"UniProtKB/Swiss-Prot (검토된 단백질)"};
+   const prog=dna?"blastx":"blastp";const base="https://www.ebi.ac.uk/Tools/services/rest/ncbiblast/";
+   dbProg(`EBI에 ${prog} 작업을 보내는 중… (${S.seq.length.toLocaleString()} ${dna?"nt":"aa"})`);
+   const body=new URLSearchParams({email:mail,program:prog,stype:dna?"dna":"protein",database:dbase,sequence:">query\n"+S.seq,alignments:"25",scores:"25",exp:"1e-3"});
+   let r;try{r=await fetch(base+"run",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded","Accept":"text/plain"},body});}catch(e){throw new Error(HUB.embedded?"claude.ai 화면에서는 외부 DB 연결이 막혀 있어요":"EBI BLAST 서버에 연결하지 못했어요 (CORS 또는 네트워크)");}
+   const job=(await r.text()).trim();if(!r.ok||!/^ncbiblast-/.test(job))throw new Error("EBI가 작업을 받지 않았어요 ("+r.status+") "+job.replace(/<[^>]+>/g," ").slice(0,160));
+   const t0=Date.now();let st="";await sleep(4000);
+   while(true){st=(await getText(base+"status/"+job)).trim();const sec=Math.round((Date.now()-t0)/1000);
+     if(st==="FINISHED")break;if(/ERROR|FAILURE|NOT_FOUND/.test(st))throw new Error("EBI BLAST 작업이 실패했어요 ("+st+")");
+     if(sec>480)throw new Error("8분이 지나도 끝나지 않았어요. 작업 번호 "+job+"로 EBI에서 결과를 확인해 주세요");
+     dbProg(`BLAST 실행 중… ${sec}초 (${st==="QUEUED"?"대기열":"계산 중"}, 보통 30초~3분)`);await sleep(sec<60?5000:10000);}
+   dbProg("결과를 받는 중…");const sum=`https://www.ebi.ac.uk/jdispatcher/sss/ncbiblast/summary?jobId=${job}`;
+   const hd=`## BLAST (${prog}) · ${S.src} → ${DBN[dbase]}\n- 질의: ${S.seq.length.toLocaleString()} ${dna?"nt (번역해서 단백질과 비교)":"aa"} · E-value ≤ 1e-3 · 작업 ${job}\n`;
+   const tail=`\n\n- [EBI에서 결과 전체·정렬 보기](${sum}) · [NCBI BLAST에서 다시 돌리기](${ncbiBlastUrl(S.acc&&!UNIACC.test(S.acc)?S.acc:S.seq,dna)})${!dna?" · "+cuLink("seq",S.seq,"Curieus에서 구조 예측하기 (서열 복사)"):""}\n\n일치율은 정렬된 구간 기준이에요. 정렬 길이가 질의보다 훨씬 짧으면 일부 도메인만 닮은 것일 수 있어요.${dna?" 염기서열끼리 비교(blastn)는 NCBI BLAST 링크로 하세요.":""}`;
+   let js=null;try{js=await HUB.getJson(base+"result/"+job+"/json");}catch(e){}
+   const hits=js&&(js.hits||(js.result&&js.result.hits))||null;
+   if(!hits){let out="";try{out=await getText(base+"result/"+job+"/out");}catch(e){}if(!out)return hd+"\n결과를 읽지 못했어요."+tail;return hd+"\n```\n"+out.slice(0,6000)+(out.length>6000?"\n…":"")+"\n```"+tail;}
+   if(!hits.length)return hd+"\n비슷한 서열을 찾지 못했어요 (E-value ≤ 1e-3)."+tail;
+   const lk=h=>{const a=h.hit_acc||h.hit_id||"";return dbase==="pdb"?`[${cellT(h.hit_id||a)}](https://www.rcsb.org/structure/${String(h.hit_id||a).replace(/^pdb:?/i,"").split(/[_:]/)[0]})`:`[${cellT(a)}](https://www.uniprot.org/uniprotkb/${encodeURIComponent(a)})`;};
+   return hd+`\n| # | 히트 | 설명 | 종 | 길이 | 일치율 | 정렬 길이 | E-value | 비트 점수 |\n|---|---|---|---|---|---|---|---|---|\n`+hits.slice(0,20).map((h,i)=>{const p=(h.hit_hsps||[])[0]||{};const desc=h.hit_uni_de||h.hit_desc||h.hit_def||"";const os=h.hit_uni_os||h.hit_os||"";
+     return `| ${i+1} | ${lk(h)} | ${cellT(String(desc).slice(0,110))} | ${cellT(os)} | ${cellT(h.hit_len)} | ${p.hsp_identity!=null?(+p.hsp_identity).toFixed(1)+"%":"—"} | ${cellT(p.hsp_align_len)} | ${cellT(p.hsp_expect)} | ${cellT(p.hsp_bit_score)} |`;}).join("\n")+(hits.length>20?`\n\n${hits.length}개 중 20개만 보여요.`:"")+tail;}},
+ ncbiall:{g:"NCBI 통합 · BLAST",label:"NCBI 전체 DB에서 건수 보기",name:"NCBI 전체 DB",ph:"검색어 예: TP53, breast cancer mouse, metformin",from:"NCBI E-utilities (esearch)",async run(q){
+   const out=[];let i=0;for(const [db,nm,what,url] of NCBI_ALL){i++;dbProg(`NCBI ${NCBI_ALL.length}개 DB 중 ${i}번째 (${nm}) 세는 중…`);
+     let n=null;try{const s=await HUB.getJson(EU+"esearch.fcgi?db="+db+"&retmode=json&rettype=count&term="+encodeURIComponent(q));n=+(s.esearchresult&&s.esearchresult.count);if(isNaN(n))n=null;}catch(e){}
+     out.push([db,nm,what,url,n]);await sleep(360);}
+   const ok=out.filter(x=>x[4]!=null);if(!ok.length)throw new Error("NCBI에 연결하지 못했어요");
+   const inSite=db=>Object.keys(DB).find(k=>DB[k].ncbi===db||(k===db&&DB[k]))||({nuccore:"nuccore",gene:"gene",clinvar:"clinvar",snp:"snp",gds:"geo",pubmed:"pubmed",pccompound:"pubchem"})[db];
+   return `## NCBI 전체 DB · '${q}'\n건수가 많은 순서예요. '사이트에서 보기'를 누르면 이 사이트 안에서 바로 조회해요.\n\n| DB | 담긴 것 | 건수 | 보기 |\n|---|---|---|---|\n`+
+     out.sort((a,b)=>(b[4]||-1)-(a[4]||-1)).map(([db,nm,what,url,n])=>{const k=inSite(db);return `| ${nm} | ${what} | ${n==null?"—":n.toLocaleString()} | [NCBI](${url.replace("{q}",encodeURIComponent(q))})${k&&DB[k]?` · [사이트에서 보기](https://www.ncbi.nlm.nih.gov/?from=hub#ndb=${k}:${encodeURIComponent(q)})`:""} |`;}).join("\n")+
+     `\n\n건수는 NCBI 검색식 그대로 센 값이라 관련 없는 기록이 섞일 수 있어요. [NCBI 통합 검색](https://www.ncbi.nlm.nih.gov/search/all/?term=${encodeURIComponent(q)})`;}}
+});
+document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest('a[href*="ncbi.nlm.nih.gov/?from=hub#ndb="]');if(!a)return;e.preventDefault();
+  const m=a.getAttribute("href").match(/#ndb=(\w+):(.*)$/);if(m)HUB.lookup.open(m[1],decodeURIComponent(m[2]),true);});
+const NCBI_ALL=[
+ ["pubmed","PubMed","생명과학·의학 논문 초록","https://pubmed.ncbi.nlm.nih.gov/?term={q}"],
+ ["pmc","PMC","무료 전문 논문","https://pmc.ncbi.nlm.nih.gov/search/?term={q}"],
+ ["books","Bookshelf","교과서·리뷰 책·GeneReviews","https://www.ncbi.nlm.nih.gov/books/?term={q}"],
+ ["mesh","MeSH","의학 주제어","https://www.ncbi.nlm.nih.gov/mesh/?term={q}"],
+ ["nlmcatalog","NLM Catalog","저널·도서 목록","https://www.ncbi.nlm.nih.gov/nlmcatalog/?term={q}"],
+ ["gene","Gene","유전자","https://www.ncbi.nlm.nih.gov/gene/?term={q}"],
+ ["nuccore","Nucleotide","핵산 서열 (GenBank·RefSeq)","https://www.ncbi.nlm.nih.gov/nuccore/?term={q}"],
+ ["protein","Protein","단백질 서열","https://www.ncbi.nlm.nih.gov/protein/?term={q}"],
+ ["ipg","Identical Protein Groups","같은 서열 단백질 묶음","https://www.ncbi.nlm.nih.gov/ipg/?term={q}"],
+ ["structure","Structure (MMDB)","3차원 구조","https://www.ncbi.nlm.nih.gov/structure/?term={q}"],
+ ["cdd","Conserved Domains","보존 도메인","https://www.ncbi.nlm.nih.gov/cdd/?term={q}"],
+ ["protfam","Protein Family Models","단백질 패밀리 모델","https://www.ncbi.nlm.nih.gov/protfam/?term={q}"],
+ ["popset","PopSet","집단·계통 연구 서열 세트","https://www.ncbi.nlm.nih.gov/popset/?term={q}"],
+ ["taxonomy","Taxonomy","생물 분류","https://www.ncbi.nlm.nih.gov/taxonomy/?term={q}"],
+ ["assembly","Assembly","유전체 조립","https://www.ncbi.nlm.nih.gov/assembly/?term={q}"],
+ ["bioproject","BioProject","연구 프로젝트","https://www.ncbi.nlm.nih.gov/bioproject/?term={q}"],
+ ["biosample","BioSample","시료 정보","https://www.ncbi.nlm.nih.gov/biosample/?term={q}"],
+ ["sra","SRA","시퀀싱 원자료","https://www.ncbi.nlm.nih.gov/sra/?term={q}"],
+ ["gds","GEO DataSets","발현 실험","https://www.ncbi.nlm.nih.gov/gds/?term={q}"],
+ ["geoprofiles","GEO Profiles","유전자별 발현 프로필","https://www.ncbi.nlm.nih.gov/geoprofiles/?term={q}"],
+ ["clinvar","ClinVar","임상 변이 해석","https://www.ncbi.nlm.nih.gov/clinvar/?term={q}"],
+ ["snp","dbSNP","단일염기 변이","https://www.ncbi.nlm.nih.gov/snp/?term={q}"],
+ ["dbvar","dbVar","구조 변이","https://www.ncbi.nlm.nih.gov/dbvar/?term={q}"],
+ ["gap","dbGaP","유전형–표현형 연구 (접근 제한)","https://www.ncbi.nlm.nih.gov/gap/?term={q}"],
+ ["medgen","MedGen","의학 유전 질환·표현형","https://www.ncbi.nlm.nih.gov/medgen/?term={q}"],
+ ["omim","OMIM","유전 질환과 유전자","https://www.ncbi.nlm.nih.gov/omim/?term={q}"],
+ ["gtr","GTR","유전자 검사 등록부","https://www.ncbi.nlm.nih.gov/gtr/all/?term={q}"],
+ ["pccompound","PubChem Compound","화합물","https://pubchem.ncbi.nlm.nih.gov/#query={q}&tab=compound"],
+ ["pcsubstance","PubChem Substance","기탁 물질","https://pubchem.ncbi.nlm.nih.gov/#query={q}&tab=substance"],
+ ["pcassay","PubChem BioAssay","생물 검정","https://pubchem.ncbi.nlm.nih.gov/#query={q}&tab=bioassay"],
+ ["biocollections","BioCollections","표본·배양 보관 기관","https://www.ncbi.nlm.nih.gov/biocollections/?term={q}"]];
+const nF=(r,...ks)=>{for(const k of ks){let v=r&&r[k];if(v&&typeof v==="object"&&!Array.isArray(v))v=v.value||v.name||v.scientificname||"";
+  if(Array.isArray(v))v=v.map(x=>x&&typeof x==="object"?(x.value||x.name||x.scientificname||x.term||""):x).filter(Boolean).slice(0,4).join(", ");if(v!=null&&String(v).trim()!=="")return String(v).trim();}return "";};
+const nT=(s,n)=>cellT(s&&String(s).length>(n||120)?String(s).slice(0,n||120)+"…":s);
+const unX=s=>String(s||"").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&amp;/g,"&");
+const sraX=r=>{const x=unX(r.expxml),g=re=>((x.match(re)||[])[1]||"");return {acc:g(/<Experiment[^>]*acc="([^"]+)"/),title:g(/<Title>([^<]*)<\/Title>/),org:g(/ScientificName="([^"]+)"/),plat:g(/instrument_model="([^"]+)"/)||g(/<Platform[^>]*>([^<]*)</),strat:g(/<LIBRARY_STRATEGY>([^<]*)</),runs:(unX(r.runs).match(/<Run /g)||[]).length};};
+function ncbiDb(o){return {g:o.g,label:o.label,name:o.name,ph:o.ph,from:"NCBI "+o.name+" (E-utilities)",ncbi:o.db,async run(q){
+  const r=await ncbi(o.db,q,o.n||10);if(!r.rows.length)return NONE;const web=(NCBI_ALL.find(x=>x[0]===o.db)||[])[3]||"https://www.ncbi.nlm.nih.gov/search/all/?term={q}";
+  return head(o.name,r.total,r.rows.length,q)+`| ${o.cols.map(c=>c[0]).join(" | ")} |\n|${o.cols.map(()=>"---").join("|")}|\n`+r.rows.map(x=>"| "+o.cols.map(c=>{const v=c[1](x);return v==null||v===""?"—":v;}).join(" | ")+" |").join("\n")+
+    `\n\n[NCBI ${o.name}에서 전체 ${r.total.toLocaleString()}건 보기](${web.replace("{q}",encodeURIComponent(q))})${o.note?"\n\n"+o.note:""}`;}};}
+const nLink=(t,u)=>t?`[${cellT(t)}](${u})`:"—";
+Object.assign(DB,{
+ protein:ncbiDb({db:"protein",g:"단백질·구조",label:"NCBI Protein 단백질 서열",name:"Protein",ph:"단백질·종·접근번호 예: TP53 human, NP_000537",cols:[
+   ["접근번호",x=>{const a=x.accessionversion||x.caption||x.uid;return nLink(a,"https://www.ncbi.nlm.nih.gov/protein/"+a);}],["설명",x=>nT(x.title,110)],["종",x=>nT(x.organism)],["길이",x=>x.slen?(+x.slen).toLocaleString()+" aa":"—"],["갱신",x=>cellT(x.updatedate)],
+   ["BLAST",x=>{const a=x.accessionversion||x.caption;return a?`[NCBI](${ncbiBlastUrl(a,false)}) · ${blastHub(a,"사이트")}`:"—";}]],note:"RefSeq(NP_·XP_)은 정리된 대표 서열이에요. 같은 서열이 여러 번호로 있으면 Identical Protein Groups(IPG)로 묶어 볼 수 있어요."}),
+ structure:ncbiDb({db:"structure",g:"단백질·구조",label:"NCBI Structure (MMDB)",name:"Structure",ph:"단백질·리간드 예: kinase inhibitor, insulin receptor",cols:[
+   ["PDB",x=>{const a=x.pdbacc||x.uid;return nLink(a,"https://www.ncbi.nlm.nih.gov/Structure/pdb/"+a)+(x.pdbacc?` · [RCSB](https://www.rcsb.org/structure/${x.pdbacc})`:"");}],["설명",x=>nT(nF(x,"pdbdescr","title"),110)],["실험법",x=>nT(nF(x,"expmethod"))],["해상도",x=>x.resolution?x.resolution+" Å":"—"],["종",x=>nT(nF(x,"organismlist","organism"),60)],["공개",x=>cellT(nF(x,"pdbdepositdate","pdbreleasedate"))]]}),
+ cdd:ncbiDb({db:"cdd",g:"단백질·구조",label:"Conserved Domains 보존 도메인",name:"Conserved Domains",ph:"도메인·패밀리 예: PTPc, kinase domain, SH2",cols:[
+   ["번호",x=>{const a=nF(x,"accession")||x.uid;return nLink(a,"https://www.ncbi.nlm.nih.gov/Structure/cdd/cddsrv.cgi?uid="+encodeURIComponent(a));}],["이름",x=>nT(nF(x,"title"))],["설명",x=>nT(nF(x,"subtitle","abstract"),140)],["출처",x=>nT(nF(x,"database"))]],
+   note:"서열에 어떤 도메인이 있는지 찾으려면 [CD-Search](https://www.ncbi.nlm.nih.gov/Structure/cdd/wrpsb.cgi)에 서열을 넣으세요."}),
+ taxonomy:ncbiDb({db:"taxonomy",g:"유전자·서열",label:"NCBI Taxonomy 생물 분류",name:"Taxonomy",ph:"학명·일반명 예: Mus musculus, rat, E. coli",cols:[
+   ["학명",x=>nLink(nF(x,"scientificname")||x.uid,"https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id="+(x.taxid||x.uid))],["일반명",x=>nT(nF(x,"commonname","genbankcommonname"))],["계급",x=>cellT(nF(x,"rank"))],["분류군",x=>cellT(nF(x,"division"))],["Tax ID",x=>cellT(x.taxid||x.uid)]]}),
+ medgen:ncbiDb({db:"medgen",g:"변이·질병",label:"MedGen 질환·표현형",name:"MedGen",ph:"질환·증상 예: Fanconi anemia, cystic fibrosis",cols:[
+   ["개념",x=>{const c=nF(x,"conceptid")||x.uid;return nLink(c,"https://www.ncbi.nlm.nih.gov/medgen/"+c);}],["이름",x=>nT(nF(x,"title"))],["정의",x=>nT(nF(x,"definition"),180)],["유형",x=>nT(nF(x,"semantictype"))]],note:"MedGen은 OMIM, Orphanet, HPO, ClinVar의 질환·표현형 정보를 한 곳에 모은 NCBI 사전이에요."}),
+ gtr:ncbiDb({db:"gtr",g:"변이·질병",label:"GTR 유전자 검사",name:"GTR",ph:"유전자·질환 예: BRCA1, cystic fibrosis",cols:[
+   ["검사",x=>nLink(nF(x,"testname","title","name")||x.uid,"https://www.ncbi.nlm.nih.gov/gtr/tests/"+x.uid+"/")],["종류",x=>nT(nF(x,"testtype","testpurpose"))],["대상 질환",x=>nT(nF(x,"conditionlist","conditions"),100)],["대상 유전자",x=>nT(nF(x,"analytes","genelist"),80)],["검사 기관",x=>nT(nF(x,"offerer","labname"),60)]],note:"GTR은 검사 기관이 스스로 등록한 정보예요. 진단 판단에는 쓰지 마세요."}),
+ omim:ncbiDb({db:"omim",g:"변이·질병",label:"OMIM 유전 질환",name:"OMIM",ph:"유전자·질환 예: CFTR, Marfan syndrome",cols:[
+   ["MIM",x=>nLink(nF(x,"oid")||x.uid,"https://www.omim.org/entry/"+x.uid)],["이름",x=>nT(nF(x,"title"),110)],["다른 이름",x=>nT(nF(x,"alttitles"),110)]],note:"앞의 기호: * 유전자, # 표현형(원인 유전자 알려짐), % 원인 모름, + 유전자와 표현형."}),
+ dbvar:ncbiDb({db:"dbvar",g:"변이·질병",label:"dbVar 구조 변이",name:"dbVar",ph:"유전자·질환·연구 예: BRCA1 deletion, nstd102",cols:[
+   ["번호",x=>{const a=nF(x,"sv","st","accession")||x.uid;return nLink(a,"https://www.ncbi.nlm.nih.gov/dbvar/?term="+encodeURIComponent(a));}],["종류",x=>nT(nF(x,"obj_type","dbvarvarianttypelist","variant_type"))],["연구",x=>nT(nF(x,"st","study"))],["변이 형태",x=>nT(nF(x,"dbvarvarianttypelist","dbvarmethodlist"),80)],["관련 질환",x=>nT(nF(x,"dbvarclinicalsignificancelist","dbvarphenotypelist"),80)]]}),
+ bioproject:ncbiDb({db:"bioproject",g:"암·면역·오믹스 공공데이터",label:"BioProject 연구 프로젝트",name:"BioProject",ph:"주제·생물 예: lung single cell mouse, PRJNA",cols:[
+   ["번호",x=>{const a=nF(x,"project_acc")||x.uid;return nLink(a,"https://www.ncbi.nlm.nih.gov/bioproject/"+a);}],["제목",x=>nT(nF(x,"project_title"),120)],["생물",x=>nT(nF(x,"organism_name"))],["데이터",x=>nT(nF(x,"project_data_type"))],["등록",x=>cellT(nF(x,"registration_date"))]]}),
+ biosample:ncbiDb({db:"biosample",g:"암·면역·오믹스 공공데이터",label:"BioSample 시료 정보",name:"BioSample",ph:"시료·조직·세포 예: HeLa, liver tissue mouse",cols:[
+   ["번호",x=>{const a=nF(x,"accession")||x.uid;return nLink(a,"https://www.ncbi.nlm.nih.gov/biosample/"+a);}],["제목",x=>nT(nF(x,"title"),120)],["생물",x=>nT(nF(x,"organism"))],["원천",x=>nT(nF(x,"sourcesample"),60)],["등록",x=>cellT(nF(x,"date"))]]}),
+ sra:ncbiDb({db:"sra",g:"암·면역·오믹스 공공데이터",label:"SRA 시퀀싱 원자료",name:"SRA",ph:"주제·방법 예: lung scRNA-seq mouse, ATAC-seq HeLa",cols:[
+   ["실험",x=>{const s=sraX(x);return nLink(s.acc||x.uid,"https://www.ncbi.nlm.nih.gov/sra/"+(s.acc||x.uid));}],["제목",x=>nT(sraX(x).title,110)],["생물",x=>nT(sraX(x).org)],["방법",x=>nT(sraX(x).strat)],["기기",x=>nT(sraX(x).plat)],["런 수",x=>cellT(sraX(x).runs||"—")],["등록",x=>cellT(nF(x,"createdate"))]],note:"원자료를 받으려면 SRA Toolkit(fasterq-dump)이나 [ENA](https://www.ebi.ac.uk/ena/browser/)의 FASTQ 링크를 쓰세요."}),
+ assembly:ncbiDb({db:"assembly",g:"유전자·서열",label:"Assembly 유전체 조립",name:"Assembly",ph:"생물 예: Mus musculus, GRCh38",cols:[
+   ["번호",x=>{const a=nF(x,"assemblyaccession")||x.uid;return nLink(a,"https://www.ncbi.nlm.nih.gov/datasets/genome/"+a+"/");}],["이름",x=>nT(nF(x,"assemblyname"))],["종",x=>nT(nF(x,"speciesname","organism"))],["수준",x=>nT(nF(x,"assemblystatus"))],["등록",x=>cellT(String(nF(x,"submissiondate","asmreleasedate_genbank")).slice(0,10))]],note:"유전체·주석 파일은 [NCBI Datasets](https://www.ncbi.nlm.nih.gov/datasets/)에서 받아요."}),
+ pmc:ncbiDb({db:"pmc",g:"문헌·임상",label:"PMC 무료 전문 논문",name:"PMC",ph:"검색어 예: CRISPR base editing",cols:[
+   ["논문",x=>{const id=(((x.articleids||[]).find(a=>a.idtype==="pmcid")||{}).value)||("PMC"+x.uid);return nLink(nT(x.title,120),"https://pmc.ncbi.nlm.nih.gov/articles/"+(String(id).startsWith("PMC")?id:"PMC"+id)+"/");}],
+   ["저자",x=>{const a=(x.authors||[]).map(y=>y.name).filter(Boolean);return cellT(a.length?a[0]+(a.length>1?" 외":""):"—");}],["저널",x=>nT(nF(x,"fulljournalname","source"),50)],["발행",x=>cellT(nF(x,"pubdate","epubdate"))]],note:"PMC 논문은 전문을 무료로 읽을 수 있어요. 라이브러리에 담으려면 PDF를 받아 끌어다 놓으세요."}),
+ books:ncbiDb({db:"books",g:"문헌·임상",label:"Bookshelf 교과서·GeneReviews",name:"Bookshelf",ph:"주제 예: sepsis, GeneReviews cystic fibrosis",cols:[
+   ["제목",x=>{const a=nF(x,"chapteraccessionid","accessionid");return nLink(nT(nF(x,"title")||x.uid,120),a?"https://www.ncbi.nlm.nih.gov/books/"+a+"/":"https://www.ncbi.nlm.nih.gov/books/?term="+encodeURIComponent(nF(x,"title")));}],["책",x=>nT(nF(x,"booktitle","book"),60)],["발행",x=>cellT(nF(x,"pubdate"))]]}),
+ mesh:ncbiDb({db:"mesh",g:"문헌·임상",label:"MeSH 의학 주제어",name:"MeSH",ph:"용어 예: neoplasms, nanoparticles",cols:[
+   ["주제어",x=>nLink((x.ds_meshterms||[])[0]||x.uid,"https://www.ncbi.nlm.nih.gov/mesh/"+x.uid)],["다른 표현",x=>nT((x.ds_meshterms||[]).slice(1,5).join(", "),90)],["설명",x=>nT(nF(x,"ds_scopenote"),180)],["MeSH ID",x=>cellT(nF(x,"ds_meshui"))]],note:"PubMed에서 '주제어[MeSH]'로 검색하면 표현이 달라도 같은 주제 논문을 빠짐없이 찾아요."})
+});
+const DBGROUPS=["NCBI 통합 · BLAST","유전자·서열","단백질·구조","변이·질병","경로·기능","기전 분석·발현","암·면역·오믹스 공공데이터","세포주·항체·동물 모델","독성·도핑·마약류","화합물","문헌·임상"];
 /* ---------- Curieus (curieus.net): hand a sequence / PDB ID / SMILES over, and a trial MCP connection with the user's API key ---------- */
 const CU_HOME="https://curieus.net/Analysis";
 const cuEnc=s=>encodeURIComponent(String(s||"")).replace(/\(/g,"%28").replace(/\)/g,"%29").replace(/'/g,"%27").replace(/!/g,"%21").replace(/\*/g,"%2A");
@@ -5725,7 +5856,7 @@ function cuRender(){const box=$("#cuBody");if(!box)return;const has=!!cuKey(),se
 /* ---------- field catalog: in-site DBs mapped to research fields + link-out DBs by field ---------- */
 const FIELDS=[["ai","AI·데이터"],["robot","로봇·기계"],["semi","반도체·양자"],["echem","전기화학·전지"],["energy","수소·에너지"],["env","환경·기후"],["mat","소재·화학"],["bio","의과학·생명"],["pharm","의·약학"],["basic","기초과학 (물리·화학·생명·지구)"],["astro","천문·우주"],["common","공통 (국내 연구정보·특허·데이터 보관소)"]];
 const FNAME=Object.fromEntries(FIELDS);
-const GFIELD={"유전자·서열":["bio","basic"],"단백질·구조":["bio","basic","pharm"],"변이·질병":["bio","pharm"],"경로·기능":["bio","basic"],"기전 분석·발현":["bio"],"암·면역·오믹스 공공데이터":["bio"],"세포주·항체·동물 모델":["bio"],"독성·도핑·마약류":["pharm","env"],"화합물":["pharm","mat","basic"],"문헌·임상":["bio","pharm","common"]};
+const GFIELD={"NCBI 통합 · BLAST":["bio","basic","pharm"],"유전자·서열":["bio","basic"],"단백질·구조":["bio","basic","pharm"],"변이·질병":["bio","pharm"],"경로·기능":["bio","basic"],"기전 분석·발현":["bio"],"암·면역·오믹스 공공데이터":["bio"],"세포주·항체·동물 모델":["bio"],"독성·도핑·마약류":["pharm","env"],"화합물":["pharm","mat","basic"],"문헌·임상":["bio","pharm","common"]};
 const KFIELD={trials:["pharm","bio"],unpaywall:["common","bio","pharm","mat","ai","semi","echem","energy","env","basic","astro","robot"],portals:["common","bio","pharm"],spectra:["mat","basic","pharm"],rxn:["mat","basic"],tox:["pharm","env"],foodrec:["env","pharm"]};
 const fieldsOf=k=>KFIELD[k]||GFIELD[(DB[k]||{}).g]||[];
 /* [field, sub-group, name, what it holds, home url, search url with {q} (optional)] */
@@ -5793,6 +5924,21 @@ const CAT=[
  ["mat","반응 (구독)","Reaxys","반응·물성 (기관 구독)","https://www.reaxys.com/"],
  ["mat","반응 (구독)","SciFinder (CAS)","화합물·반응 (기관 구독)","https://scifinder-n.cas.org/"],
  ["bio","분석 플랫폼","Curieus","구조 예측·도킹·MD·단백질 디자인·scRNA-seq을 코드 없이 (UniProt·PDB·PubChem 결과에서 바로 넘길 수 있어요)","https://curieus.net/Analysis"],
+ ["bio","NCBI·서열 도구","NCBI BLAST","서열 유사성 검색 (조회칸의 서열·번호로 열려요)","https://blast.ncbi.nlm.nih.gov/Blast.cgi","https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastSearch&PROGRAM=blastp&LINK_LOC=blasthome&QUERY={q}"],
+ ["bio","NCBI·서열 도구","Primer-BLAST","PCR 프라이머 설계와 특이성 확인","https://www.ncbi.nlm.nih.gov/tools/primer-blast/"],
+ ["bio","NCBI·서열 도구","ORFfinder","서열에서 단백질 암호 구간(ORF) 찾기","https://www.ncbi.nlm.nih.gov/orffinder/"],
+ ["bio","NCBI·서열 도구","CD-Search","서열 속 보존 도메인 찾기","https://www.ncbi.nlm.nih.gov/Structure/cdd/wrpsb.cgi"],
+ ["bio","NCBI·서열 도구","COBALT","단백질 다중 서열 정렬","https://www.ncbi.nlm.nih.gov/tools/cobalt/"],
+ ["bio","NCBI·서열 도구","Genome Data Viewer","유전체 위치·주석 브라우저","https://www.ncbi.nlm.nih.gov/gdv/"],
+ ["bio","NCBI·서열 도구","NCBI Datasets","유전체·유전자 서열과 주석 파일 받기","https://www.ncbi.nlm.nih.gov/datasets/","https://www.ncbi.nlm.nih.gov/datasets/gene/?gene={q}"],
+ ["bio","NCBI·서열 도구","NCBI Virus","바이러스 서열 검색·다운로드","https://www.ncbi.nlm.nih.gov/labs/virus/"],
+ ["bio","NCBI·서열 도구","iCn3D","웹에서 3차원 구조 보기·분석","https://www.ncbi.nlm.nih.gov/Structure/icn3d/"],
+ ["bio","NCBI·서열 도구","SRA Run Selector","SRA 런 메타데이터 보고 골라 받기","https://www.ncbi.nlm.nih.gov/Traces/study/"],
+ ["bio","NCBI·서열 도구","PubTator3","논문 속 유전자·질환·화합물·변이 자동 표시","https://www.ncbi.nlm.nih.gov/research/pubtator3/","https://www.ncbi.nlm.nih.gov/research/pubtator3/docsum?text={q}"],
+ ["bio","NCBI·서열 도구","LitVar2","변이(rs 번호)가 나온 논문 찾기","https://www.ncbi.nlm.nih.gov/research/litvar2/"],
+ ["bio","NCBI·서열 도구","ALFA 대립유전자 빈도","dbGaP 기반 집단별 변이 빈도","https://www.ncbi.nlm.nih.gov/snp/docs/gsr/alfa/"],
+ ["bio","NCBI·서열 도구","EBI BLAST·Clustal Omega","EMBL-EBI 서열 검색·다중 정렬","https://www.ebi.ac.uk/jdispatcher/","https://www.ebi.ac.uk/jdispatcher/sss/ncbiblast"],
+ ["bio","NCBI·서열 도구","UniProt BLAST·Align","UniProt 단백질 대상 BLAST와 정렬","https://www.uniprot.org/blast"],
  ["bio","오믹스","NCBI SRA","시퀀싱 원자료","https://www.ncbi.nlm.nih.gov/sra","https://www.ncbi.nlm.nih.gov/sra/?term={q}"],
  ["bio","오믹스","BioStudies·ArrayExpress","EBI 실험 데이터","https://www.ebi.ac.uk/biostudies/","https://www.ebi.ac.uk/biostudies/search?query={q}"],
  ["bio","오믹스","GTEx","정상 조직별 유전자 발현","https://gtexportal.org/","https://gtexportal.org/home/gene/{q}"],
@@ -5921,10 +6067,14 @@ Object.assign(DBLINKS,{
  pubmed:q=>`- [PubMed에서 '${q}' 검색](https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(q)}) · [Europe PMC](https://europepmc.org/search?query=${encodeURIComponent(q)}) · [Google Scholar](https://scholar.google.com/scholar?q=${encodeURIComponent(q)})`,
  trials:q=>`- [ClinicalTrials.gov에서 '${q}' 검색](https://clinicaltrials.gov/search?term=${encodeURIComponent(q)}) · [WHO ICTRP](https://trialsearch.who.int/) · [한국 CRIS](https://cris.nih.go.kr/)`,
  pubchem:q=>`- [PubChem에서 '${q}' 검색](https://pubchem.ncbi.nlm.nih.gov/#query=${encodeURIComponent(q)}) · [ChemSpider](https://www.chemspider.com/Search.aspx?q=${encodeURIComponent(q)}) · [DrugBank](https://go.drugbank.com/unearth/q?query=${encodeURIComponent(q)}&searcher=drugs)`});
+Object.assign(DBLINKS,{blast:q=>{const t=String(q).split("|")[0].trim(),d=isDna(seqClean(t));return `- [NCBI BLAST에 넣어서 열기](${ncbiBlastUrl(t,d)}) · [EBI BLAST](https://www.ebi.ac.uk/jdispatcher/sss/ncbiblast) · [UniProt BLAST](https://www.uniprot.org/blast)\n- 서열이 길면 링크에 다 안 들어갈 수 있어요. 그때는 서열을 복사해 BLAST 화면에 붙여넣으세요.`;},
+ ncbiall:q=>`- [NCBI 통합 검색에서 '${q}'](https://www.ncbi.nlm.nih.gov/search/all/?term=${encodeURIComponent(q)})`});
+NCBI_ALL.forEach(([db,nm,,url])=>{const k=Object.keys(DB).find(x=>DB[x].ncbi===db);if(k&&!DBLINKS[k])DBLINKS[k]=q=>`- [NCBI ${nm}에서 '${q}' 검색](${url.replace("{q}",encodeURIComponent(q))}) · [NCBI 통합 검색](https://www.ncbi.nlm.nih.gov/search/all/?term=${encodeURIComponent(q)})`;});
 DBLINKS.narc=DBLINKS.spectra;DBLINKS.doping=q=>`- [Global DRO](https://www.globaldro.com/) · [WADA 금지목록](https://www.wada-ama.org/en/prohibited-list) · [한국도핑방지위원회 (KADA)](https://www.kada-ad.or.kr/)`;DBLINKS.rxn=DBLINKS.spectra;
 const dbFail=(k,q,err)=>{const why=String((err&&err.message)||err||"");const f=DBLINKS[k];
   return `## 조회하지 못했어요 — ${DB[k]?DB[k].name:k} · '${q}'\n> ${why}\n\n이 사이트는 브라우저에서 바로 DB 서버로 연결해요. 그래서 서버가 브라우저 요청을 받지 않도록 막아 두었거나(CORS), 잠시 응답이 없거나, 인터넷이 끊기면 이렇게 돼요. 내 컴퓨터나 검색어 문제가 아닐 수 있어요.${location.protocol==="file:"?" 지금은 내려받은 파일(file://)로 열었는데, 파일로 연 페이지는 요청에 주소가 없어서(Origin: null) 거절하는 DB가 있어요. GitHub 주소(https://…)로 열면 되는 경우가 많으니 한 번 해 보세요.":""}${HUB.embedded?" claude.ai 화면에서는 외부 연결이 아예 막혀 있으니 내려받은 HTML 파일에서 써 보세요.":""}\n\n`+(f?`### 대신 이 사이트에서 바로 찾기\n${f(q)}`:"")+`\n\n잠시 뒤 다시 눌러 보고, 계속 안 되면 위 링크로 찾으세요.`;};
-const PROBE=[["NCBI (Gene·GEO·PubMed 등)","https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi?retmode=json",["gene","nuccore","clinvar","snp","geo","pubmed"]],
+const PROBE=[["NCBI (Gene·GEO·PubMed 등)","https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi?retmode=json",["gene","nuccore","clinvar","snp","geo","pubmed","ncbiall","protein","structure","cdd","taxonomy","medgen","gtr","omim","dbvar","bioproject","biosample","sra","assembly","pmc","books","mesh"]],
+ ["EMBL-EBI BLAST","https://www.ebi.ac.uk/Tools/services/rest/ncbiblast/parameters",["blast"]],
  ["PubChem (화합물·독성·스펙트럼)","https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/2244/property/Title/JSON",["pubchem","tox","narc","spectra","doping","rxn"]],
  ["UniProt","https://rest.uniprot.org/uniprotkb/P04637?fields=accession&format=json",["uniprot"]],
  ["Ensembl","https://rest.ensembl.org/info/ping?content-type=application/json",["ensembl"]],
@@ -5995,6 +6145,12 @@ const DBASK2={
  narc:"이 물질의 검출 정보를 분석화학자 관점에서 해석하세요. 형식: **한 줄 정리** → '### 질량분석에서 볼 이온' (표의 이론 m/z를 그대로 인용, 극성 모드) → '### 시료 전처리·분석 고려' (XLogP로 본 추출 용매 극성 등, 일반 지식이라고 밝히고) → '### 규제 확인'. 합성·입수·사용 방법은 쓰지 말 것.",
  pubmed:"이 논문 목록을 해석하세요. 형식: **한 줄 정리** → '### 흐름' → '### 먼저 읽을 것' (3건 이내와 이유) → '### 내 연구와의 연결'. 제목과 서지만 근거로 삼고 내용을 지어내지 말 것."
 };
+Object.assign(DBASK2,{
+ blast:"이 BLAST 결과를 해석하세요. 형식: **한 줄 정리** (질의가 무엇과 가장 닮았는지) → '### 가까운 히트' (일치율·정렬 길이·E-value를 그대로 인용, 3건 이내) → '### 해석할 때 주의' (정렬 길이가 짧은 부분 일치, 종 차이, 일치율 30% 미만의 의미) → '### 다음에 할 일' (도메인 확인, 구조 확인 등). 표에 없는 값은 지어내지 말 것.",
+ ncbiall:"이 NCBI DB별 건수를 해석하세요. 형식: **한 줄 정리** → '### 먼저 볼 DB' (건수와 내 질문의 성격을 근거로 3곳 이내, 이유) → '### 검색식 다듬기' (건수가 너무 많거나 적은 DB에 맞는 필드 태그 예: [Title], [Organism], [MeSH]) . 건수만 근거로 삼을 것.",
+ sra:"이 SRA 실험 목록을 해석하세요. 형식: **한 줄 정리** → '### 쓸 만한 데이터' (생물, 방법, 기기, 런 수를 근거로 3건 이내) → '### 재분석할 때' (원자료 받는 법, 메타데이터 확인할 점).",
+ medgen:"이 MedGen 기록을 해석하세요. 형식: **한 줄 정리** → '### 개념 풀이' (정의를 한국어로 쉽게) → '### 연구에 쓸 때' (관련 DB로 이어 볼 곳). 진단이나 치료 조언은 하지 말 것."
+});
 /* ---------- ask in plain words: AI picks the databases ---------- */
 const dmd=s=>s.replace(/^(#{2,5}) /gm,(m,h)=>"#".repeat(Math.min(6,h.length+1))+" ");
 async function askDb(question){
