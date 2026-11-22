@@ -7,7 +7,7 @@
 
 | 함께 쓰는 사이트 | 주소 |
 |---|---|
-| 실험도구모음 (농도·희석, BCA, SDS-PAGE, DAR, 투여량 계산) | https://tuna616.github.io/research-hub/lab-tools/ |
+| 실험도구모음 (BCA, 몰농도, SDS-PAGE, DAR, 투여량, 서열 도구) | https://tuna616.github.io/research-hub/lab-tools/ |
 | 전공 학습실 (수업 자료로 공부 노트·시험 문제 만들기) | https://tuna616.github.io/study-room/ |
 
 ---
@@ -134,7 +134,8 @@
   - EBI가 요청자 이메일을 요구하므로 설정의 **Unpaywall 이메일** 칸을 채워야 합니다.
   - 결과 아래에 EBI 전체 결과 보기, NCBI BLAST에서 다시 돌리기(서열이 채워진 채로 열림) 링크가 붙습니다. 염기서열끼리 비교(blastn)는 NCBI BLAST 링크로 하세요.
   - UniProt 결과와 GenBank·RefSeq·NCBI Protein 결과 옆에도 **이 사이트에서 BLAST**와 **NCBI BLAST** 버튼이 붙습니다.
-- **NCBI 전체 DB에서 건수 보기:** 검색어 하나로 NCBI의 DB 31곳(PubMed, PMC, Gene, Nucleotide, Protein, Structure, SRA, GEO, ClinVar, dbSNP, dbVar, MedGen, OMIM, PubChem 등)에 각각 몇 건이 있는지 많은 순서로 보여 줍니다. 이 사이트에서 바로 조회되는 DB는 **사이트에서 보기**로 이어집니다. NCBI 요청 한도 때문에 10초쯤 걸립니다.
+- **NCBI 전체 DB에서 건수 보기:** 검색어 하나로 NCBI의 DB 31곳(PubMed, PMC, Gene, Nucleotide, Protein, Structure, SRA, GEO, ClinVar, dbSNP, dbVar, MedGen, OMIM, PubChem 등)에 각각 몇 건이 있는지 많은 순서로 보여 줍니다. 이 사이트에서 바로 조회되는 DB는 **사이트에서 보기**로 이어집니다. NCBI 요청 한도 때문에 10초쯤 걸리고, 설정에 NCBI API 키를 넣으면 3~4초로 줄어듭니다.
+- **결과를 실험노트에:** 모든 DB 조회 결과 아래의 **실험노트에 붙이기**로 고른 실험노트의 '결과·관찰' 칸 끝에 표 그대로 붙이거나, 새 실험노트(분석·기타)를 만듭니다. AI 해석을 받았으면 함께 들어갑니다.
 - **NCBI DB 바로 조회:** Protein, Structure, Conserved Domains, Taxonomy, Assembly, MedGen, OMIM, GTR, dbVar, BioProject, BioSample, SRA, PMC, Bookshelf, MeSH를 사이트 안에서 표로 봅니다.
 
 **Curieus 연동** — [Curieus](https://curieus.net/)는 구조 예측, 도킹, 분자동역학(MD), 단백질 디자인, scRNA-seq 분석을 코드 없이 돌리는 분석 플랫폼입니다.
@@ -317,6 +318,7 @@ AI 기능은 설정에 넣은 **본인 API 키**로 실행됩니다. 키는 본�
 | Unpaywall 이메일 (키 아님) | 원문 오픈액세스 찾기(비우면 OpenAlex로), DB 조회의 BLAST(EBI가 요청자 이메일을 요구) | 본인 이메일 |
 | GtoPdb API 키 | 표적–리간드 약리 | guidetopharmacology.org |
 | Curieus API 키 | DB 조회의 Curieus 연결 (시험 기능) | curieus.net 마이페이지 |
+| NCBI API 키 (선택) | DB 조회의 NCBI 요청 한도를 초당 3번에서 10번으로 (NCBI 전체 DB 건수 보기가 빨라짐) | ncbi.nlm.nih.gov 계정 설정 |
 | OpenAlex, Semantic Scholar 키 | 검색이 막히거나 느릴 때만 (선택) | 각 서비스 |
 
 - **Google 모델 이름은 적지 않아도 됩니다.** 비워 두면 쓸 수 있는 모델을 자동으로 고르고, 적은 모델이 종료됐으면 다른 모델로 이어 씁니다.
