@@ -1052,6 +1052,26 @@ button.attpill{cursor:pointer;font:inherit;font-size:12px}
 .dbnotebox[hidden]{display:none}
 .dbnotebox .field{display:flex;flex-direction:column;gap:4px;font-size:13px}
 .dbnotebox select{background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:8px;padding:6px 8px;font:inherit;max-width:100%}
+
+.labinbox{position:fixed;right:16px;bottom:16px;z-index:60;width:min(380px,calc(100vw - 32px));max-height:min(70vh,560px);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border:1px solid var(--accent,var(--line2));border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+.labinbox .lbhead{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line2)}
+.labinbox .lbbody{overflow:auto;padding:8px 12px 12px;display:flex;flex-direction:column;gap:10px}
+.labinbox.min .lbbody{display:none}
+.labinbox .lbitem{display:flex;flex-direction:column;gap:6px;padding:8px 0;border-bottom:1px solid var(--line2)}
+.labinbox .lbitem:last-child{border-bottom:0}
+.labinbox .lbt{font-weight:600}
+.labinbox .field{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.labinbox select{background:var(--surface);color:var(--ink);border:1px solid var(--line2);border-radius:8px;padding:6px 8px;font:inherit;max-width:100%}
+.labinbox .lbpre{white-space:pre-wrap;font-size:12px;max-height:200px;overflow:auto;background:var(--surface2,var(--bg));border-radius:8px;padding:8px;margin:0}
+@media print{.labinbox{display:none}}
+
+.tkrow{display:flex;flex-direction:column;gap:6px}
+.tkal{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;padding:8px 12px;border-radius:8px;background:var(--surface2,var(--bg));font-size:14px}
+.tkal span{color:var(--muted);font-size:13px}
+.tkal.warn{background:var(--warn-bg,#fdf0d9);color:var(--warn-ink,#8a5200)}
+.tkal.bad{background:var(--bad-bg,#fbe4e2);color:var(--bad-ink,#a3271e)}
+.tkal.ok{background:var(--ok-bg,#e2f3ea);color:var(--ok-ink,#1d6b45)}
+.tkal.warn span,.tkal.bad span,.tkal.ok span{color:inherit;opacity:.85}
 </style>
 </head>
 <body>
@@ -1951,7 +1971,7 @@ H.view="home";
 H.go=function(v,silent){if(!VIEWS.includes(v))v="home";H.view=v;
   VIEWS.forEach(n=>{const el=$("#v-"+n);if(el)el.hidden=n!==v;});
   $$("#nav button").forEach(b=>b.setAttribute("aria-current",String(b.dataset.go===v)));
-  if(!silent){try{if(location.hash.slice(1)!==v)location.hash=v;}catch(e){}}ls.set("view",v);
+  if(!silent){try{if(String(location.hash.slice(1)||"").split("?")[0]!==v)location.hash=v;}catch(e){}}ls.set("view",v);
   if(v==="home")H.renderHome();window.scrollTo(0,0);H.navFit(true);
   try{document.dispatchEvent(new CustomEvent("hub:view",{detail:v}));}catch(e){}};
 /* 실험도구모음: one address used by the home banner and the lab tab banner (fill TOOLKIT_URL once the site is up) */
@@ -1964,7 +1984,10 @@ H.navFit=function(center){const nav=$("#nav"),q=$("#quick");if(!nav)return;const
   nav.classList.toggle("end",nav.scrollLeft+nav.clientWidth>=nav.scrollWidth-6);
   const top=document.querySelector("header.top");if(top)document.documentElement.style.setProperty("--toph",top.offsetHeight+"px");};
 addEventListener("resize",()=>H.navFit(false));document.addEventListener("DOMContentLoaded",()=>{const nav=$("#nav");if(nav)nav.addEventListener("scroll",()=>nav.classList.toggle("end",nav.scrollLeft+nav.clientWidth>=nav.scrollWidth-6),{passive:true});H.navFit(true);});
-window.addEventListener("hashchange",()=>H.go(location.hash.slice(1)||"home",true));
+const hashView=()=>String(location.hash.slice(1)||"").split("?")[0];
+const hashArg=k=>{const m=String(location.hash).match(new RegExp("[?&]"+k+"=([^&]*)"));return m?decodeURIComponent(m[1].replace(/\+/g," ")):"";};
+H.hashArg=hashArg;
+window.addEventListener("hashchange",()=>{H.go(hashView()||"home",true);try{document.dispatchEvent(new CustomEvent("hub:hash"));}catch(e){}});
 
 H.favHtml=function(){
   const P=cols.papers.list.filter(x=>x.star),R=cols.reports.list.filter(x=>x.star),F=cols.figs.list.filter(x=>x.star);
@@ -1998,6 +2021,7 @@ H.renderHome=function(){
       <button class="step" type="button" data-go="illust"><span class="mono">6 그리기</span><b>일러스트레이터</b><span>원고나 한 줄 설명으로 그래피컬 초록, 기전 모식도, 막대그래프를 그려요.</span><em class="mono">그림 ${cols.figs.list.length}개</em></button>
     </div>
     ${H.guideHtml()}
+    <div id="homeTk"></div>
     <div id="homeLab"></div>
     <div id="homeToday"></div>
     <div id="homeWatch"></div>
@@ -2195,7 +2219,7 @@ document.addEventListener("DOMContentLoaded",()=>{
   cols.papers.subscribe(l=>{const n=$("#navLib");if(n)n.textContent=l.filter(p=>!p.derived).length||"";H.renderHome();});
   cols.reports.subscribe(l=>{const n=$("#navRep");if(n)n.textContent=l.length||"";H.renderHome();});
   cols.figs.subscribe(()=>H.renderHome());
-  H.go(location.hash.slice(1)||ls.get("view","home")||"home",true);
+  H.go(hashView()||ls.get("view","home")||"home",true);
   H.ready.then(()=>H.renderHome());
 });
 return H;
@@ -8936,7 +8960,23 @@ function drawHomeLab(){const el=$("#homeLab");if(!el)return;const td=today(),pl=
     <button class="step" type="button" data-hsub="plan"><span class="mono">실험 일정·노트</span><b>일정과 실험노트</b><span>달력에 실험 계획을 세우고, 그날 한 실험을 합성·세포·동물로 나눠 적어요.</span><em class="mono">${tp||late?[tp&&"오늘 "+tp+"건",late&&"밀린 일정 "+late+"건"].filter(Boolean).join(" · "):nn?"실험노트 "+nn+"건":"아직 일정 없음"}</em></button>
     <button class="step" type="button" data-hsub="${wl?"animals":wait?"orders":low?"cells":"materials"}"><span class="mono">재료·세포·동물·발주</span><b>물품과 세포·동물 기록</b><span>라벨·명세서 사진으로 물품을 등록하고, 세포 바이알·동물과 발주를 요청부터 입고까지 챙겨요.</span><em class="mono">${wait||low||mx||ml||wl?[wl&&"체중 감소 경고 "+wl+"건",wait&&"기다리는 발주 "+wait+"건",low&&"바이알 부족 "+low+"건",mx&&"유효기한 임박·지남 "+mx+"개",ml&&"재고 부족 "+ml+"개"].filter(Boolean).join(" · "):nm?"물품 "+nm+"개":"아직 등록 전"}</em></button>
     <button class="step" type="button" data-hsub="grant"><span class="mono">과제 계획·평가</span><b>계획서와 보고서</b><span>연구계획서·연차보고서를 항목별로 쓰고, 평가 기준에 맞춰 미리 점검해요.</span><em class="mono">${gr.length?"문서 "+gr.length+"개"+(ev?" · 평가 "+ev+"건":""):"아직 문서 없음"}</em></button></div>`;}
-function drawHomeToday(){try{drawHomeLab();}catch(e){}const el=$("#homeToday");if(!el)return;const td=today();
+/* ---------- what the toolkit (same address) has going on: timers, unsent photos, protocols ---------- */
+const tkGet=k=>{try{return JSON.parse(localStorage.getItem("lab-tools-"+k));}catch(e){return null;}};
+const tkMin=ms=>{const m=Math.max(0,Math.round(ms/60000));return m>=60?Math.floor(m/60)+"시간 "+(m%60)+"분":m+"분";};
+function drawHomeTk(){const el=$("#homeTk");if(!el)return;const out=[];
+  const tm=tkGet("timers-v1");
+  if(tm&&tm.timers){const done=tm.timers.filter(t=>t.done),run=tm.timers.filter(t=>t.end&&!t.done);
+    if(done.length)out.push(["bad","⏰ 끝난 타이머 "+done.length+"개",done.map(t=>t.name||"타이머").join(", ")]);
+    if(run.length)out.push(["warn","⏱ 타이머 "+run.length+"개 진행 중","가장 빠른 것 "+tkMin(Math.min(...run.map(t=>t.end-Date.now())))+" 남음"]);}
+  const ph=tkGet("photo-v1");if(ph&&(ph.items||[]).length)out.push(["warn","사진 "+ph.items.length+"장이 아직 안 왔어요","실험도구모음의 '사진 메모'에서 보내면 실험노트에 붙어요"]);
+  const pr=tkGet("proto-v1");
+  if(pr&&pr.runs)Object.keys(pr.runs).forEach(k=>{const r=pr.runs[k],n=Object.keys(r.done||{}).length;
+    if(n&&r.start&&new Date(r.start).toDateString()===new Date().toDateString())out.push(["ok","프로토콜 진행 중",n+"단계 체크함"]);});
+  const fz=tkGet("freezer-v1");if(fz&&fz.items&&Object.keys(fz.items).length)out.push(["","냉동고에 "+Object.keys(fz.items).length+"칸 기록됨","실험도구모음의 '냉동고 지도'에서 찾아요"]);
+  if(!out.length){el.innerHTML="";return;}
+  el.innerHTML=`<section class="card pad" style="margin-bottom:16px"><div class="mbar"><h3 class="cap" style="margin:0">실험도구모음</h3><button class="btn sm" type="button" data-toolkit="1">열기 ↗</button></div>
+    <div class="tkrow">${out.slice(0,5).map(o=>`<div class="tkal ${o[0]}"><b>${esc(o[1])}</b><span>${esc(o[2])}</span></div>`).join("")}</div></section>`;}
+function drawHomeToday(){try{drawHomeLab();}catch(e){}try{drawHomeTk();}catch(e){}const el=$("#homeToday");if(!el)return;const td=today();
   const tp=pcol().list.filter(p=>onDay(p,td)).sort((a,b)=>String(a.time||"99").localeCompare(String(b.time||"99")));
   if(!tp.length){el.innerHTML="";return;}
   el.innerHTML=`<section class="card pad" style="margin-bottom:16px"><div class="mbar"><h3 class="cap" style="margin:0">오늘의 실험 · ${dlabel(td)}</h3><button class="btn sm" type="button" data-hsub="plan">일정 열기</button></div>
@@ -9063,6 +9103,63 @@ HUB.proj={names:()=>pjNames(),color:n=>pjColor(n),dot:n=>pjDot(n),get current(){
   set(n){n=n||"";if(M.proj===n)return;M.proj=n;save();if(HUB.view==="mat")draw();pjNotify();},
   open(){M.tab="proj";save();HUB.go("mat");draw();}};
 document.addEventListener("hub:proj",()=>{if(HUB.view==="mat")draw();});
+/* ---------- inbox: results sent from 실험도구모음 (same origin, localStorage) ---------- */
+const IBK="researchhub-inbox-v1";
+const ibGet=()=>{try{const q=JSON.parse(localStorage.getItem(IBK)||"[]");return Array.isArray(q)?q:[];}catch(e){return [];}};
+const sharePhotos=keys=>new Promise(res=>{if(!keys||!keys.length)return res([]);let r;try{r=indexedDB.open("labtools-share",1);}catch(e){return res([]);}
+  r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains("photos"))r.result.createObjectStore("photos");};
+  r.onerror=()=>res([]);
+  r.onsuccess=()=>{const db=r.result;if(!db.objectStoreNames.contains("photos")){db.close();return res([]);}
+    const out=[],t=db.transaction("photos","readonly"),st=t.objectStore("photos");
+    keys.forEach((k,i)=>{const q=st.get(k);q.onsuccess=()=>{if(q.result)out[i]=q.result;};});
+    t.oncomplete=()=>{db.close();res(out);};t.onerror=()=>{db.close();res([]);};};});
+const sharePhotosDel=keys=>{if(!keys||!keys.length)return;try{const r=indexedDB.open("labtools-share",1);
+  r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains("photos"))r.result.createObjectStore("photos");};
+  r.onsuccess=()=>{const db=r.result;if(!db.objectStoreNames.contains("photos")){db.close();return;}
+    const t=db.transaction("photos","readwrite"),st=t.objectStore("photos");keys.forEach(k=>st.delete(k));t.oncomplete=()=>db.close();t.onerror=()=>db.close();};}catch(e){}};
+const ibSet=q=>{try{localStorage.setItem(IBK,JSON.stringify(q));}catch(e){}};
+let ibOpen={};
+function ibDraw(){let box=document.getElementById("labInbox");const q=ibGet();
+  if(!q.length){if(box)box.remove();return;}
+  if(!box){box=document.createElement("aside");box.id="labInbox";box.className="labinbox";box.setAttribute("aria-label","실험도구모음에서 보낸 결과");document.body.appendChild(box);}
+  const nc=HUB.col("notes"),L=(nc&&nc.list||[]).slice().sort((x,y)=>String(y.date||"").localeCompare(String(x.date||""))||(y.addedAt||0)-(x.addedAt||0)).slice(0,40);
+  const opts=`<option value="">새 실험노트 만들기</option>${L.map(n=>`<option value="${esc(n.id)}">${esc([n.date,n.title||"(제목 없음)",n.kind].filter(Boolean).join(" · "))}</option>`).join("")}`;
+  box.innerHTML=`<div class="lbhead"><b>실험도구모음에서 보낸 결과 ${q.length}건</b><button class="btn ghost sm" type="button" data-ib="min">${box.classList.contains("min")?"펼치기":"접기"}</button></div>
+    <div class="lbbody">${q.map(it=>`<div class="lbitem"><div class="lbt">${esc(it.title||"결과")}</div><div class="muted" style="font-size:12px">${esc(it.from||"")} · ${new Date(it.at||Date.now()).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}</div>
+      ${ibOpen[it.id]?`<pre class="lbpre">${esc(String(it.body||"").slice(0,4000))}</pre>`:""}
+      ${(it.photoKeys||[]).length?`<div class="muted" style="font-size:12px">사진 ${it.photoKeys.length}장도 함께 들어가요</div>`:""}
+      <label class="field">넣을 곳<select data-ibsel="${esc(it.id)}">${opts}</select></label>
+      <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn primary sm" type="button" data-ib="put" data-id="${esc(it.id)}">넣기</button><button class="btn sm" type="button" data-ib="view" data-id="${esc(it.id)}">${ibOpen[it.id]?"내용 접기":"내용 보기"}</button><button class="btn ghost sm" type="button" data-ib="drop" data-id="${esc(it.id)}">버리기</button></div></div>`).join("")}</div>`;}
+document.addEventListener("click",async e=>{const b=e.target.closest&&e.target.closest("[data-ib]");if(!b||!b.closest("#labInbox"))return;const k=b.dataset.ib,box=document.getElementById("labInbox");
+  if(k==="min"){box.classList.toggle("min");ibDraw();return;}
+  const q=ibGet(),it=q.find(x=>x.id===b.dataset.id);if(!it){ibDraw();return;}
+  if(k==="view"){ibOpen[it.id]=!ibOpen[it.id];ibDraw();return;}
+  if(k==="drop"){if(b.dataset.armed!=="1"){b.dataset.armed="1";b.textContent="한 번 더 누르면 버려요";return;}ibSet(q.filter(x=>x.id!==it.id));ibDraw();return;}
+  if(k==="put"){const nc=HUB.col("notes");if(!nc){HUB.toast("실험노트를 불러오지 못했어요");return;}const sel=(document.querySelector(`[data-ibsel="${CSS.escape(it.id)}"]`)||{}).value||"";
+    const d=new Date(),p2=x=>String(x).padStart(2,"0"),day=`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;let nid=sel;
+    try{if(sel){const n=nc.list.find(x=>x.id===sel);if(!n){HUB.toast("그 실험노트를 찾지 못했어요");return;}await nc.update(sel,{result:((n.result||"").trim()?n.result.trim()+"\n\n":"")+it.body});}
+      let pics=[];
+      if((it.photoKeys||[]).length){const blobs=await sharePhotos(it.photoKeys);
+        for(const b of blobs){if(!b)continue;try{pics.push((await HUB.assets.upload(b)).id);}catch(err){}}
+        if(pics.length)sharePhotosDel(it.photoKeys);}
+      if(sel){if(pics.length){const n2=nc.list.find(x=>x.id===sel);await nc.update(sel,{photos:[...((n2&&n2.photos)||[]),...pics]});}}
+      else{nid=uid();await nc.set(nid,{kind:it.kind||"분석·기타",title:it.title||"실험도구모음 결과",date:day,project:M.proj||"",method:it.from?"실험도구모음 · "+it.from:"실험도구모음",aim:"",proc:"",result:it.body||"",next:"",photos:pics,addedAt:Date.now()});}
+      ibSet(ibGet().filter(x=>x.id!==it.id));ibDraw();HUB.toast(sel?"실험노트 '결과·관찰' 칸에 붙였어요":"새 실험노트를 만들었어요",4000);
+      if(HUB.view==="mat")draw();if(HUB.mat&&HUB.mat.openNote&&!ibGet().length)HUB.mat.openNote(nid);}
+    catch(err){HUB.toast("넣지 못했어요: "+(err&&err.message||err));}}});
+window.addEventListener("storage",e=>{if(e.key===IBK)ibDraw();});
+window.addEventListener("focus",()=>ibDraw());
+HUB.ready.then(()=>setTimeout(ibDraw,300));
+/* ---------- open straight from a QR code / link: #mat?find=NaCl ---------- */
+function findFromHash(){const q=HUB.hashArg&&HUB.hashArg("find");if(!q)return;
+  const key=q.trim().toLowerCase(),has=c=>{const C=HUB.col(c);return C&&C.list.some(r=>Object.keys(r).some(k=>typeof r[k]==="string"&&r[k].toLowerCase().includes(key)))};
+  const tab=["materials","cells","animals","notes","orders"].find(has)||"materials";
+  if(tab==="orders"){M.tab="orders";M.q=q;save();}else{M.tab=tab;if(tab==="materials")M.q=q;else{RS.q=q;RS.chip="*";}save();}
+  HUB.go("mat");setTimeout(draw,40);
+  HUB.toast(`'${q}'(으)로 ${({materials:"물품 목록",cells:"세포 관리 기록부",animals:"동물 관리 기록부",notes:"실험노트",orders:"발주 기록"})[tab]}에서 찾았어요`,5000);
+  try{history.replaceState(null,"","#mat");}catch(e){}}
+document.addEventListener("hub:hash",findFromHash);
+HUB.ready.then(()=>setTimeout(findFromHash,350));
 document.addEventListener("DOMContentLoaded",init);
 })();
 
