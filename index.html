@@ -1863,7 +1863,7 @@ H.renderHome=function(){
     ["저장",H.storage!=="memory",H.storage==="cloud"?"claude.ai 계정에 저장돼 어느 기기에서 열어도 같아요. 이 사이트를 공유받은 사람과 자료가 섞이지 않고, 각자 자기 것만 보여요.":H.storage==="browser"?"이 브라우저에만 저장돼요. 설정에서 백업 파일을 내보내 두세요.":"이 창에서는 저장이 안 돼요. 닫으면 사라져요."]];
   el.innerHTML=`<div class="page">
     <section class="hero"><div><h2>찾고, 읽고, 분석하고, 쓰고, 그리기</h2><p>논문 검색부터 정리, 리서치, 원고 작성, 그림까지 한 곳에 모았어요. 기준 연구 주제: <b>${esc((H.lib&&H.lib.context)||"")}</b> <button class="btn sm ghost" type="button" id="homeSet">바꾸기</button></p></div>
-      <div class="herobox"><a class="studylink toollink" href="#" data-toolkit="1"><span class="sl-ic" aria-hidden="true">🧪</span><span class="sl-tx"><b>실험하는 도중에 실험 TOOL이 어디있는지 헷갈린다면?</b><small>실험도구모음 — 농도·희석, BCA, SDS-PAGE, DAR, 투여량 계산</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
+      <div class="herobox"><a class="studylink toollink" href="#" data-toolkit="1"><span class="sl-ic" aria-hidden="true">🧪</span><span class="sl-tx"><b>실험 TOOL이 어디있는지 헷갈린다면?</b><small>실험도구모음 — 농도·희석, BCA, SDS-PAGE, DAR, 투여량 계산</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
 <a class="studylink" href="https://tuna616.github.io/study-room/" target="_blank" rel="noopener"><span class="sl-ic" aria-hidden="true">📚</span><span class="sl-tx"><b>전공 공부나 수업 자료를 만들고 싶다면?</b><small>전공 학습실에서 공부 노트·요약·시험 대비 문제를 만들어요</small></span><span class="sl-go" aria-hidden="true">↗</span></a>
       <form class="qform" id="homeQ"><label class="sr" for="homeQi">검색 키워드</label><input id="homeQi" type="search" placeholder="예: gut microbiome metabolism" autocomplete="off"><button class="btn primary" type="submit">문헌 검색 GO</button></form></div></section>
     ${H.lib&&H.lib.recentHtml?H.lib.recentHtml():""}
