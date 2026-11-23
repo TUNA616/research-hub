@@ -418,6 +418,22 @@ nav.tools .toolrow a[hidden]{display:none}
 .bk-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 12px;margin:8px 0}
 .bk-it{display:flex;align-items:center;gap:6px;font-size:13.5px}
 .bk-it input{width:16px;height:16px;accent-color:var(--accent)}
+.pl-grid.dragging td{cursor:crosshair}
+.pl-grid.dragging{box-shadow:inset 0 0 0 2px var(--accent);border-radius:8px}
+.fzsep{border-top:2px solid var(--line);padding-top:16px;margin-top:4px}
+.fzsep h2{font-size:17px;margin:0 0 4px}
+.xt .lede a,.xt .hint a{color:var(--accent)}
+/* plate / box grid: shrink cells so the whole plate fits a phone screen */
+.pl-grid.pfit{border-spacing:var(--pg,2px);width:auto}
+.pl-grid.pfit th{font-size:var(--pth,10px);padding:0 1px}
+.pl-grid.pfit td,.pl-grid.f384.pfit td,.pl-grid.fz-grid.pfit td{width:var(--pw,44px);min-width:0;max-width:var(--pw,44px);height:var(--ph,40px);font-size:var(--pf,10px);padding:1px;border-radius:var(--pr,6px)}
+.pl-grid.pfit td .pl-l{line-height:1.05}
+.pl-grid.pfit td .pl-v{font-size:var(--pf,10px);line-height:1.05}
+.pl-grid.pfit.small td .pl-v{display:none}
+.pl-grid.pfit.micro td .pl-l{display:block;height:100%;overflow:hidden;text-indent:-999px}
+.pl-grid.pfit.micro td{border-width:1px}
+.plfit{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 6px}
+.plfit .hint{margin:0}
 </style>
 <script>try{var t=localStorage.getItem("lab-tools-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
@@ -450,9 +466,8 @@ nav.tools .toolrow a[hidden]{display:none}
         <a href="#cells" data-view="cells" data-cat="cell">세포 계수</a>
         <a href="#serial" data-view="serial" data-cat="cell">Serial dilution</a>
         <a href="#via" data-view="via" data-cat="cell">생존율 · IC50</a>
-        <a href="#dosing" data-view="dosing" data-cat="cell">투여량 계산기</a>
+        <a href="#dosing" data-view="dosing" data-cat="cell">투여량 · 주사량</a>
         <a href="#animal" data-view="animal" data-cat="cell">동물 군 배정</a>
-        <a href="#inject" data-view="inject" data-cat="cell">주사량 표</a>
         <a href="#qpcr" data-view="qpcr" data-cat="mol">qPCR ΔΔCt</a>
         <a href="#trans" data-view="trans" data-cat="mol">Transfection</a>
         <a href="#seq" data-view="seq" data-cat="mol">서열 도구</a>
@@ -465,8 +480,7 @@ nav.tools .toolrow a[hidden]{display:none}
         <a href="#plate" data-view="plate" data-cat="lab">플레이트 배치도</a>
         <a href="#proto" data-view="proto" data-cat="lab">프로토콜 체크리스트</a>
         <a href="#label" data-view="label" data-cat="lab">라벨 · 시료 코드</a>
-        <a href="#freezer" data-view="freezer" data-cat="lab">냉동고 지도</a>
-        <a href="#stock" data-view="stock" data-cat="lab">재고 · 유효기한</a>
+        <a href="#freezer" data-view="freezer" data-cat="lab">냉동고 · 재고</a>
         <a href="#photo" data-view="photo" data-cat="lab">사진 메모</a>
       </div>
     </nav>
@@ -880,8 +894,8 @@ nav.tools .toolrow a[hidden]{display:none}
 
   <section id="dosing" class="view" hidden>
     <div>
-      <h1>투여량·필요량 계산기</h1>
-      <p class="lede">용량을 정하고, 군 구성에 맞춰 총 필요량과 제형 농도를 계산하고, 나노입자면 합성 출발량까지 거꾸로 올립니다. 처음 값은 예시입니다.</p>
+      <h1>투여량 · 주사량</h1>
+      <p class="lede">용량을 정하고, 군 구성에 맞춰 총 필요량과 제형 농도를 계산하고, 나노입자면 합성 출발량까지 거꾸로 올립니다. 맨 아래에서 개체별로 실제 뽑을 부피까지 봅니다. 처음 값은 예시입니다.</p>
     </div>
 
     <div class="panel">
@@ -1029,6 +1043,32 @@ nav.tools .toolrow a[hidden]{display:none}
         <li>종간 환산 결과는 독성 시험의 시작 용량을 잡는 용도입니다. 약효 용량을 그대로 옮기는 근거는 되지 않습니다.</li>
       </ul>
     </div>
+    <div class="xt"><div class="fzsep"><h2>마리별 주사량 표</h2><p class="hint">위에서 정한 용량으로, 개체마다 실제로 뽑을 부피를 계산합니다. 마취제처럼 두세 약물을 한 주사기에 섞는 경우도 함께 봅니다.</p></div>
+    <div class="panel">
+      <div class="panel-head"><h2>개체</h2><div class="spacer"><button type="button" id="ij-fromgrp">동물 군 배정에서 가져오기</button><button type="button" id="ij-ex">예시 넣기</button></div></div>
+      <p class="hint">한 줄에 하나: 개체 번호 · 체중(g) · 군(선택). 군을 적으면 군별로 묶어 보여 줍니다.</p>
+      <textarea id="ij-list" class="mono" rows="7" spellcheck="false" aria-label="개체 목록"></textarea>
+      <div class="grid">
+        <label class="field" for="ij-route">투여 경로<span class="ctl"><select id="ij-route"></select></span></label>
+        <label class="field" for="ij-species">동물<span class="ctl"><select id="ij-species"><option value="mouse">마우스</option><option value="rat">랫드</option></select></span></label>
+        <label class="field" for="ij-extra">조제 여유분<span class="ctl"><input type="text" inputmode="decimal" id="ij-extra"><span class="u">%</span></span></label>
+        <label class="field" for="ij-round">주사기 눈금<span class="ctl"><select id="ij-round"><option value="0">반올림 안 함</option><option value="1">0.01 mL</option><option value="2">0.005 mL</option><option value="5">0.05 mL</option></select></span></label>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>약물</h2><div class="spacer"><button type="button" id="ij-add">약물 추가</button><button type="button" id="ij-anes">마취 조합 넣기</button></div></div>
+      <div class="scroll"><table class="sqt" id="ij-drugs"></table></div>
+      <p class="hint">같은 '혼합'에 든 약물은 한 주사기에 섞어 한 번에 놓습니다. 혼합이 다르면 따로 놓습니다. '고정 부피'를 켜면 체중과 상관없이 같은 부피를 놓습니다(용량은 체중별로 달라집니다).</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>주사량 표</h2><div class="spacer"><button type="button" id="ij-copy">표 복사</button><button type="button" id="ij-print">인쇄</button><button type="button" id="ij-send">실험노트로</button></div></div>
+      <div class="outbox" id="ij-sum"></div>
+      <div class="scroll"><table class="sqt" id="ij-tab"></table></div>
+      <div class="warnbox" id="ij-warn" hidden></div>
+      <p class="hint">투여 부피 상한은 Diehl 등(2001) good practice 값을 씁니다. 소속 기관 IACUC 승인 프로토콜이 우선합니다. 마취제 용량은 계통·나이·마취 심도에 따라 달라지니 수의사 지침을 따르세요.</p>
+      <span id="ij-status" class="hint" role="status" aria-live="polite"></span>
+    </div>
+  </div>
   </section>
   <section id="cells" class="view xt" hidden>
     <div>
@@ -1165,7 +1205,7 @@ nav.tools .toolrow a[hidden]{display:none}
   <section id="qpcr" class="view xt" hidden>
     <div>
       <h1>qPCR 상대 발현 (ΔΔCt)</h1>
-      <p class="lede">Ct 값을 붙여넣으면 기준 유전자로 보정한 상대 발현량(2<sup>−ΔΔCt</sup>, 증폭 효율을 넣으면 Pfaffl 식)과 그래프를 만듭니다.</p>
+      <p class="lede">Ct 값을 붙여넣으면 기준 유전자로 보정한 상대 발현량(2<sup>−ΔΔCt</sup>, 증폭 효율을 넣으면 Pfaffl 식)과 그래프를 만듭니다. 단백질은 <a href="#wb">Western 정량</a> 탭에서 같은 방식으로 봅니다.</p>
     </div>
     <div class="panel">
       <div class="panel-head"><h2>Ct 값 넣기</h2><p class="hint">엑셀에서 열을 복사해 붙여넣으세요. 한 줄이 한 well입니다.</p></div>
@@ -1322,7 +1362,7 @@ nav.tools .toolrow a[hidden]{display:none}
   <section id="wb" class="view xt" hidden>
     <div>
       <h1>Western blot 밴드 정량</h1>
-      <p class="lede">ImageJ·Image Lab에서 잰 밴드 세기를 붙여넣으면 loading control로 보정하고, 대조군 대비 상대값과 그래프·통계를 만듭니다.</p>
+      <p class="lede">ImageJ·Image Lab에서 잰 밴드 세기를 붙여넣으면 loading control로 보정하고, 대조군 대비 상대값과 그래프·통계를 만듭니다. mRNA는 <a href="#qpcr">qPCR ΔΔCt</a> 탭에서 같은 방식으로 봅니다.</p>
     </div>
     <div class="panel">
       <div class="panel-head"><h2>밴드 세기 넣기</h2><p class="hint">한 줄이 한 레인입니다. 배경을 뺀 면적(integrated density)을 넣으세요.</p></div>
@@ -1419,7 +1459,7 @@ nav.tools .toolrow a[hidden]{display:none}
   <section id="curve" class="view xt" hidden>
     <div>
       <h1>표준곡선 (ELISA · Bradford · 형광)</h1>
-      <p class="lede">표준 농도와 신호로 4PL·5PL·직선·2차 곡선을 맞추고, 샘플 신호에서 농도를 거꾸로 계산합니다. ELISA처럼 S자 곡선은 4PL을 쓰세요.</p>
+      <p class="lede">표준 농도와 신호로 4PL·5PL·직선·2차 곡선을 맞추고, 샘플 신호에서 농도를 거꾸로 계산합니다. ELISA처럼 S자 곡선은 4PL을 쓰세요. 단백질 정량(BCA·Bradford)에 로딩 계산까지 하려면 <a href="#bca">BCA assay</a> 탭이 더 편합니다.</p>
     </div>
     <div class="panel">
       <div class="panel-head"><h2>표준</h2><p class="hint">한 줄: 농도 · 신호1 · 신호2 … (반복은 평균). 0 농도(blank)도 넣으세요.</p></div>
@@ -1500,6 +1540,7 @@ nav.tools .toolrow a[hidden]{display:none}
         </div>
         <button type="button" id="pl-gen" style="margin-top:8px">고른 칸에 계열 넣기</button>
       </details>
+      <div class="plfit noprint"><button type="button" class="chip" id="pl-fit" aria-pressed="true">화면에 맞추기</button><span class="hint" id="pl-fitinfo"></span></div>
       <div class="scroll"><table class="pl-grid" id="pl-grid" aria-label="플레이트 배치도"></table></div>
       <div class="pl-legend hint"><span class="k-std">■ 표준</span><span class="k-smp">■ 샘플</span><span class="k-blank">■ blank</span><span class="k-veh">■ vehicle</span><span class="k-drug">■ 약물</span><span class="k-ex">■ 제외</span></div>
     </div>
@@ -1637,36 +1678,6 @@ nav.tools .toolrow a[hidden]{display:none}
       <span id="tf-status" class="hint" role="status" aria-live="polite"></span>
     </div>
   </section>
-  <section id="inject" class="view xt" hidden>
-    <div>
-      <h1>동물 체중별 주사량 표</h1>
-      <p class="lede">개체 목록(체중)과 용량(mg/kg), 제형 농도를 넣으면 마리별 주사 부피 표를 만듭니다. 마취제처럼 두세 약물을 섞어 쓰는 경우도 함께 계산합니다.</p>
-    </div>
-    <div class="panel">
-      <div class="panel-head"><h2>개체</h2><div class="spacer"><button type="button" id="ij-fromgrp">동물 군 배정에서 가져오기</button><button type="button" id="ij-ex">예시 넣기</button></div></div>
-      <p class="hint">한 줄에 하나: 개체 번호 · 체중(g) · 군(선택). 군을 적으면 군별로 묶어 보여 줍니다.</p>
-      <textarea id="ij-list" class="mono" rows="7" spellcheck="false" aria-label="개체 목록"></textarea>
-      <div class="grid">
-        <label class="field" for="ij-route">투여 경로<span class="ctl"><select id="ij-route"></select></span></label>
-        <label class="field" for="ij-species">동물<span class="ctl"><select id="ij-species"><option value="mouse">마우스</option><option value="rat">랫드</option></select></span></label>
-        <label class="field" for="ij-extra">조제 여유분<span class="ctl"><input type="text" inputmode="decimal" id="ij-extra"><span class="u">%</span></span></label>
-        <label class="field" for="ij-round">주사기 눈금<span class="ctl"><select id="ij-round"><option value="0">반올림 안 함</option><option value="1">0.01 mL</option><option value="2">0.005 mL</option><option value="5">0.05 mL</option></select></span></label>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="panel-head"><h2>약물</h2><div class="spacer"><button type="button" id="ij-add">약물 추가</button><button type="button" id="ij-anes">마취 조합 넣기</button></div></div>
-      <div class="scroll"><table class="sqt" id="ij-drugs"></table></div>
-      <p class="hint">같은 '혼합'에 든 약물은 한 주사기에 섞어 한 번에 놓습니다. 혼합이 다르면 따로 놓습니다. '고정 부피'를 켜면 체중과 상관없이 같은 부피를 놓습니다(용량은 체중별로 달라집니다).</p>
-    </div>
-    <div class="panel">
-      <div class="panel-head"><h2>주사량 표</h2><div class="spacer"><button type="button" id="ij-copy">표 복사</button><button type="button" id="ij-print">인쇄</button><button type="button" id="ij-send">실험노트로</button></div></div>
-      <div class="outbox" id="ij-sum"></div>
-      <div class="scroll"><table class="sqt" id="ij-tab"></table></div>
-      <div class="warnbox" id="ij-warn" hidden></div>
-      <p class="hint">투여 부피 상한은 Diehl 등(2001) good practice 값을 씁니다. 소속 기관 IACUC 승인 프로토콜이 우선합니다. 마취제 용량은 계통·나이·마취 심도에 따라 달라지니 수의사 지침을 따르세요.</p>
-      <span id="ij-status" class="hint" role="status" aria-live="polite"></span>
-    </div>
-  </section>
   <section id="conc" class="view xt" hidden>
     <div>
       <h1>농축 · 버퍼 교환 계산</h1>
@@ -1717,8 +1728,8 @@ nav.tools .toolrow a[hidden]{display:none}
   </section>
   <section id="freezer" class="view xt" hidden>
     <div>
-      <h1>냉동고 지도</h1>
-      <p class="lede">랙 · 박스 · 칸으로 바이알과 시료 위치를 기록합니다. 빈칸이 한눈에 보이고, 이름으로 어디 있는지 찾고, 박스 라벨을 QR과 함께 인쇄할 수 있습니다.</p>
+      <h1>냉동고 · 재고</h1>
+      <p class="lede">어디에 무엇이 있고 무엇이 모자란지 한곳에서 봅니다. 위는 냉동고 지도(랙 · 박스 · 칸), 아래는 연구 허브에서 읽어 온 시약 재고와 유효기한입니다.</p>
     </div>
     <div class="panel">
       <div class="toolbar">
@@ -1754,6 +1765,7 @@ nav.tools .toolrow a[hidden]{display:none}
         <button type="button" id="fz-seq">연번으로 채우기</button>
         <span class="hint" id="fz-sel"></span>
       </div>
+      <div class="plfit noprint"><button type="button" class="chip" id="fz-fit" aria-pressed="true">화면에 맞추기</button><span class="hint" id="fz-fitinfo"></span></div>
       <div class="scroll"><table class="pl-grid fz-grid" id="fz-grid" aria-label="박스 칸"></table></div>
       <p class="hint">칸을 누르거나 끌어서 고른 뒤 이름을 넣으세요. '연번으로 채우기'는 이름 끝 번호를 1씩 올리며 채웁니다 (예: HK-2 P8 #1, #2 …).</p>
     </div>
@@ -1763,12 +1775,9 @@ nav.tools .toolrow a[hidden]{display:none}
       <div class="scroll"><table class="sqt" id="fz-list"></table></div>
       <span id="fz-status" class="hint" role="status" aria-live="polite"></span>
     </div>
-  </section>
-  <section id="stock" class="view xt" hidden>
-    <div>
-      <h1>시약 재고 · 유효기한</h1>
-      <p class="lede">연구 허브의 물품 목록을 읽어 유효기한이 지났거나 곧 끝나는 시약, 재고가 적은 시약을 모아 보여 줍니다. 같은 주소(GitHub)에서 열었을 때만 읽을 수 있습니다.</p>
-    </div>
+  
+    <div class="fzsep"><h2>시약 재고 · 유효기한</h2><p class="hint">연구 허브의 물품 목록을 읽어 유효기한이 지났거나 곧 끝나는 시약, 재고가 적은 시약을 모아 보여 줍니다. 같은 주소(GitHub)에서 열었을 때만 읽을 수 있습니다.</p></div>
+
     <div class="panel">
       <div class="toolbar">
         <label class="field" for="sk-soon">곧 만료 기준<span class="ctl"><input type="text" inputmode="numeric" id="sk-soon"><span class="u">일 안</span></span></label>
@@ -1790,6 +1799,7 @@ nav.tools .toolrow a[hidden]{display:none}
       <div class="panel-head"><h2>세포 · 동물 기록부</h2></div>
       <div class="scroll"><table class="sqt" id="sk-cells"></table></div>
     </div>
+  
   </section>
   <section id="photo" class="view xt" hidden>
     <div>
@@ -3348,6 +3358,16 @@ L.lm=function(f,p0,X,Y,fixed){var p=p0.slice(),free=p.map(function(_,i){return !
   var df=X.length-n2,s2=df>0?cur/df:NaN,iv=L.inv(A3),se=p.map(function(){return NaN});if(iv&&isFinite(s2))idx.forEach(function(j,k){se[j]=Math.sqrt(Math.max(0,iv[k][k]*s2))});
   return {p:p,sse:cur,se:se,df:df}};
 L.colors=['var(--accent)','var(--smp)','var(--std)','#2e8b57','#c0392b','#7f8c8d','#d35400','#16a085'];
+/* shrink a well-plate style table so the whole grid fits the visible width */
+L.fitGrid=function(g,cols,on,maxW,maxH){if(!g||!g.rows||!g.rows.length)return 0;
+  var box=g.parentNode;g.classList.toggle('pfit',!!on);
+  if(!on){['--pw','--ph','--pf','--pth','--pg','--pr'].forEach(function(k){g.style.removeProperty(k)});g.classList.remove('small','micro');return 0}
+  var avail=(box&&box.clientWidth||360)-2,hd=Math.min(26,Math.max(14,Math.round(avail*0.05))),gap=avail/cols<26?1:2;
+  var w=Math.floor((avail-hd-gap*(cols+1))/cols);w=Math.max(9,Math.min(w,maxW||68));
+  var h=Math.max(9,Math.min(Math.round(w*(w<30?0.95:0.74)),maxH||44)),f=Math.max(7,Math.min(11,Math.round(w/4.6))),r=w<20?3:w<34?5:8;
+  g.style.setProperty('--pw',w+'px');  g.style.setProperty('--ph',h+'px');g.style.setProperty('--pf',f+'px');g.style.setProperty('--pth',Math.max(7,Math.min(11,f))+'px');
+  g.style.setProperty('--pg',gap+'px');g.style.setProperty('--pr',r+'px');
+  g.classList.toggle('small',h<34);g.classList.toggle('micro',w<26);return w};
 L.api={};
 /* seeded random */
 L.rng=function(seed){var a=0;String(seed).split('').forEach(function(c){a=(a*31+c.charCodeAt(0))|0});return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296}};
@@ -4219,8 +4239,13 @@ renderInputs();compute();
 var L=window.LT,$=L.$,esc=L.esc,num=L.num,f=L.f;
 var FMT={'96':[8,12],'384':[16,24],'48':[6,8],'24':[4,6]},ROWS='ABCDEFGHIJKLMNOP';
 var KN={std:'표준',smp:'샘플',blank:'blank',veh:'vehicle',drug:'약물',ex:'제외'};
-var S=L.store('lab-tools-plate-v1','plate',function(){return {t:0,fmt:'96',lay:{},meta:{},data:'',name:'',gk:'std',gn:'STD',g0:'1000',gf:'2',gd:'col',gz:'yes'}},function(s){return s&&typeof s.lay==='object'&&typeof s.data==='string'},function(){renderInputs();draw()});
+var S=L.store('lab-tools-plate-v1','plate',function(){return {t:0,fmt:'96',lay:{},meta:{},data:'',name:'',gk:'std',gn:'STD',g0:'1000',gf:'2',gd:'col',gz:'yes',fit:'on'}},function(s){return s&&typeof s.lay==='object'&&typeof s.data==='string'},function(){renderInputs();draw()});
 function st(){return S.get()}var sel={},res=null;
+function fitOn(){return st().fit!=='off'}
+function fit(){var g=$('pl-grid'),d=dims(),w=L.fitGrid(g,d[1],fitOn());
+  $('pl-fit').setAttribute('aria-pressed',fitOn()?'true':'false');
+  $('pl-fitinfo').textContent=!fitOn()?'칸이 커서 좌우로 밀어 봐야 합니다':(w&&w<26?'칸이 작아 이름은 눌러서 확인하세요':'')}
+
 function dims(){return FMT[st().fmt]||FMT['96']}
 function wells(){var d=dims(),o=[];for(var r=0;r<d[0];r++)for(var c=0;c<d[1];c++)o.push(ROWS[r]+(c+1));return o}
 function guess(lb){var l=lb.trim(),lc=l.toLowerCase();if(/^(blank|bl|b|bg|배경)$/.test(lc))return {kind:'blank',val:''};if(/^(veh|vehicle|ctrl|control|con|dmso|untreated|nc)$/.test(lc))return {kind:'veh',val:''};
@@ -4237,7 +4262,7 @@ function draw(){var s=st(),d=dims(),D=parseData(),v=D.v;
   var h='<thead><tr><th></th>';for(var c=1;c<=d[1];c++)h+='<th>'+c+'</th>';h+='</tr></thead><tbody>';
   for(var r=0;r<d[0];r++){h+='<tr><th>'+ROWS[r]+'</th>';for(var c2=1;c2<=d[1];c2++){var w=ROWS[r]+c2,lb=s.lay[w]||'',k=lb?meta(lb).kind:'';
     h+='<td data-w="'+w+'" class="'+(k?'k-'+k:'')+(sel[w]?' sel':'')+'" title="'+w+(lb?' · '+esc(lb):'')+(v[w]!=null?' · '+v[w]:'')+'"><span class="pl-l">'+esc(lb)+'</span>'+(v[w]!=null?'<span class="pl-v">'+(+v[w].toPrecision(4))+'</span>':'')+'</td>'}h+='</tr>'}
-  $('pl-grid').innerHTML=h+'</tbody>';$('pl-grid').className='pl-grid f'+s.fmt;
+  $('pl-grid').innerHTML=h+'</tbody>';$('pl-grid').className='pl-grid f'+s.fmt;fit();
   var ns=Object.keys(sel).length;$('pl-selinfo').textContent=ns?ns+'칸 골랐음':'';
   $('pl-dinfo').textContent=s.data.trim()?D.n+'개 well 값을 읽었습니다'+(D.n<d[0]*d[1]?' (빈 칸이나 숫자가 아닌 칸은 건너뜀)':''):'';
   summary(v)}
@@ -4250,25 +4275,42 @@ function summary(v){var s=st(),G={},order=[],w=[];Object.keys(s.lay).forEach(fun
       '<td>'+(g.kind==='drug'?'<input class="cellin txt" data-pc="'+lbE+'" value="'+esc(g.cmp)+'" placeholder="화합물" aria-label="'+lbE+' 화합물">':'<span class="hint">–</span>')+'</td>'+
       '<td class="m">'+esc(g.wells.slice(0,6).join(', ')+(g.wells.length>6?' …':''))+'</td><td class="n">'+g.vals.length+'</td><td class="n">'+(g.vals.length?(+g.m.toPrecision(4)):'–')+'</td><td class="n">'+(isFinite(g.sd)?+g.sd.toPrecision(3):'–')+'</td><td class="n">'+(isFinite(g.cv)?f(g.cv,1)+'%':'–')+'</td></tr>'}).join('')+'</tbody>':'<tbody><tr><td class="hint">배치도에 이름을 넣으면 여기서 묶어 보여 줍니다.</td></tr></tbody>';
   $('pl-warn').hidden=!w.length;$('pl-warn').innerHTML=w.slice(0,8).join('<br>')}
-/* selection */
-var down=null;function rect(a,b){var ra=ROWS.indexOf(a[0]),ca=+a.slice(1),rb=ROWS.indexOf(b[0]),cb=+b.slice(1),o={};for(var r=Math.min(ra,rb);r<=Math.max(ra,rb);r++)for(var c=Math.min(ca,cb);c<=Math.max(ca,cb);c++)o[ROWS[r]+c]=1;return o}
-var base={};
-$('pl-grid').addEventListener('pointerdown',function(e){var td=e.target.closest('td[data-w]'),th=e.target.closest('th');if(th&&!td){var tr=th.parentNode,isHead=tr.parentNode.tagName==='THEAD',d=dims(),o={};
+$('pl-fit').addEventListener('click',function(){var s2=st();s2.fit=fitOn()?'off':'on';S.touch();fit()});
+var rtm=null;window.addEventListener('resize',function(){clearTimeout(rtm);rtm=setTimeout(fit,120)});
+window.addEventListener('orientationchange',function(){setTimeout(fit,250)});
+window.addEventListener('hashchange',function(){if((location.hash||'').indexOf('#plate')===0)setTimeout(fit,30)});
+/* selection: press and drag to sweep, release or click again to stop */
+var down=null,base={},moved=false;
+function rect(a,b){var ra=ROWS.indexOf(a[0]),ca=+a.slice(1),rb=ROWS.indexOf(b[0]),cb=+b.slice(1),o={};
+  for(var r=Math.min(ra,rb);r<=Math.max(ra,rb);r++)for(var c=Math.min(ca,cb);c<=Math.max(ca,cb);c++)o[ROWS[r]+c]=1;return o}
+function paintSel(){Array.prototype.forEach.call($('pl-grid').querySelectorAll('td[data-w]'),function(td){td.classList.toggle('sel',!!sel[td.dataset.w])});
+  var n=Object.keys(sel).length;$('pl-selinfo').textContent=n?n+'칸 골랐음'+(down?' · 한 번 더 누르면 멈춰요':''):''}
+function stopDrag(){if(down===null)return;down=null;$('pl-grid').classList.remove('dragging');paintSel()}
+$('pl-grid').addEventListener('pointerdown',function(e){var td=e.target.closest('td[data-w]'),th=e.target.closest('th');
+  if(down!==null){stopDrag();e.preventDefault();return}
+  if(th&&!td){var tr=th.parentNode,isHead=tr.parentNode.tagName==='THEAD',d=dims(),o={};
     if(isHead){var c=+th.textContent;if(c)for(var r=0;r<d[0];r++)o[ROWS[r]+c]=1}else{var rl=th.textContent;for(var c3=1;c3<=d[1];c3++)o[rl+c3]=1}
     if(!e.shiftKey&&!e.ctrlKey&&!e.metaKey)sel={};Object.keys(o).forEach(function(k){sel[k]=1});draw();return}
-  if(!td)return;e.preventDefault();down=td.dataset.w;base=(e.shiftKey||e.ctrlKey||e.metaKey)?Object.assign({},sel):{};if(sel[down]&&!e.shiftKey&&Object.keys(sel).length===1){sel={};down=null;draw();return}sel=Object.assign({},base,rect(down,down));draw()});
-$('pl-grid').addEventListener('pointerover',function(e){if(!down)return;var td=e.target.closest('td[data-w]');if(!td)return;sel=Object.assign({},base,rect(down,td.dataset.w));draw()});
-document.addEventListener('pointerup',function(){down=null});
+  if(!td)return;e.preventDefault();
+  if(sel[td.dataset.w]&&!e.shiftKey&&Object.keys(sel).length===1){sel={};paintSel();return}
+  down=td.dataset.w;moved=false;base=(e.shiftKey||e.ctrlKey||e.metaKey)?Object.assign({},sel):{};
+  sel=Object.assign({},base,rect(down,down));$('pl-grid').classList.add('dragging');paintSel()});
+$('pl-grid').addEventListener('pointerover',function(e){if(down===null)return;var td=e.target.closest('td[data-w]');if(!td)return;
+  moved=true;sel=Object.assign({},base,rect(down,td.dataset.w));paintSel()});
+document.addEventListener('pointermove',function(e){if(down!==null&&e.pointerType==='mouse'&&!e.buttons&&moved)stopDrag()});
+document.addEventListener('pointerup',stopDrag);document.addEventListener('pointercancel',stopDrag);
+window.addEventListener('blur',stopDrag);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&down!==null)stopDrag()});
 function sorted(){var d=dims();return Object.keys(sel).sort(function(a,b){return ROWS.indexOf(a[0])-ROWS.indexOf(b[0])||(+a.slice(1))-(+b.slice(1))}).filter(function(w){return ROWS.indexOf(w[0])<d[0]&&+w.slice(1)<=d[1]})}
-$('pl-put').addEventListener('click',function(){var n=$('pl-name').value.trim(),ws=sorted();if(!n){$('pl-name').focus();return}if(!ws.length){L.say('pl-status','먼저 칸을 고르세요.');return}ws.forEach(function(w){st().lay[w]=n});meta(n);sel={};draw();S.touch()});
+$('pl-put').addEventListener('click',function(){var n=$('pl-name').value.trim(),ws=sorted();if(!n){$('pl-name').focus();return}if(!ws.length){L.say('pl-status','먼저 칸을 고르세요.');return}stopDrag();ws.forEach(function(w){st().lay[w]=n});meta(n);sel={};draw();S.touch()});
 $('pl-name').addEventListener('input',function(){st().name=this.value;S.touch()});
 $('pl-name').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('pl-put').click()}});
-$('pl-erase').addEventListener('click',function(){sorted().forEach(function(w){delete st().lay[w]});sel={};draw();S.touch()});
-$('pl-none').addEventListener('click',function(){sel={};draw()});
+$('pl-erase').addEventListener('click',function(){stopDrag();sorted().forEach(function(w){delete st().lay[w]});sel={};draw();S.touch()});
+$('pl-none').addEventListener('click',function(){stopDrag();sel={};draw()});
 $('pl-gen').addEventListener('click',function(){var s=st(),ws=sorted();if(!ws.length){L.say('pl-status','먼저 계열을 넣을 칸(사각형)을 고르세요.');return}
   var top=num(s.g0),fd=num(s.gf),nm=s.gn.trim()||(s.gk==='std'?'STD':'Drug');if(!(top>0&&fd>1)){L.say('pl-status','가장 높은 농도와 희석 배수(1보다 큰 수)를 넣으세요.');return}
   var keys=s.gd==='col'?ws.map(function(w){return +w.slice(1)}):ws.map(function(w){return ROWS.indexOf(w[0])}),uniq=keys.filter(function(v,i,a){return a.indexOf(v)===i}).sort(function(a,b){return a-b});
-  ws.forEach(function(w){var k=s.gd==='col'?+w.slice(1):ROWS.indexOf(w[0]),i=uniq.indexOf(k),last=i===uniq.length-1&&s.gz==='yes',c=last?0:top/Math.pow(fd,i),cs=+c.toPrecision(4);
+  stopDrag();ws.forEach(function(w){var k=s.gd==='col'?+w.slice(1):ROWS.indexOf(w[0]),i=uniq.indexOf(k),last=i===uniq.length-1&&s.gz==='yes',c=last?0:top/Math.pow(fd,i),cs=+c.toPrecision(4);
     var lb=last?(s.gk==='std'?nm+' 0':(nm+' vehicle')):nm+' '+cs;s.lay[w]=lb;s.meta[lb]=last?(s.gk==='std'?{kind:'std',val:'0'}:{kind:'veh',val:'',cmp:nm}):(s.gk==='std'?{kind:'std',val:String(cs)}:{kind:'drug',val:String(cs),cmp:nm})});
   sel={};draw();S.touch();L.say('pl-status',uniq.length+'단계 계열을 넣었습니다.')});
 ['gk','gn','g0','gf','gd','gz'].forEach(function(k){var el=$('pl-'+k);el.addEventListener(el.tagName==='SELECT'?'change':'input',function(){st()[k]=el.value;S.touch()})});
@@ -4610,9 +4652,9 @@ renderInputs();compute();
 'use strict';
 var L=window.LT,$=L.$,esc=L.esc,num=L.num,ROWS='ABCDEFGHIJKLMNOP';
 function defUnit(i){return {id:'u'+Date.now().toString(36)+i,n:'−80 °C 냉동고',k:'−80 °C',r:4,b:4,rows:9,cols:9}}
-var S=L.store('lab-tools-freezer-v1','freezer',function(){var u=defUnit(0);return {t:0,units:[u],cur:u.id,rack:1,box:1,items:{},names:{},q:'',name:''}},
+var S=L.store('lab-tools-freezer-v1','freezer',function(){var u=defUnit(0);return {t:0,units:[u],cur:u.id,rack:1,box:1,items:{},names:{},q:'',name:'',fit:'on'}},
   function(s){return s&&Array.isArray(s.units)&&typeof s.items==='object'},function(){renderAll()});
-function st(){return S.get()}var sel={},down=null,base={};
+function st(){return S.get()}var sel={},down=null,base={},moved=false;
 function unit(){return st().units.filter(function(u){return u.id===st().cur})[0]||st().units[0]}
 function key(u,r,b,p){return u+'/'+r+'/'+b+'/'+p}
 function boxName(){var u=unit(),k=u.id+'/'+st().rack+'/'+st().box;return st().names[k]||''}
@@ -4621,6 +4663,10 @@ function renderSel(){var s=st(),u=unit();if(!u)return;
   var rs='';for(var i=1;i<=u.r;i++)rs+='<option value="'+i+'">랙 '+i+'</option>';$('fz-rack').innerHTML=rs;$('fz-rack').value=Math.min(s.rack,u.r);
   var bs='';for(var j=1;j<=u.b;j++){var nm=s.names[u.id+'/'+$('fz-rack').value+'/'+j];bs+='<option value="'+j+'">박스 '+j+(nm?' · '+esc(nm):'')+'</option>'}
   $('fz-box').innerHTML=bs;$('fz-box').value=Math.min(s.box,u.b)}
+function fzFitOn(){return st().fit!=='off'}
+function fzFit(){var u=unit();if(!u)return;var w=L.fitGrid($('fz-grid'),u.cols,fzFitOn(),76,38);
+  $('fz-fit').setAttribute('aria-pressed',fzFitOn()?'true':'false');
+  $('fz-fitinfo').textContent=!fzFitOn()?'칸이 커서 좌우로 밀어 봐야 합니다':(w&&w<26?'칸이 작아 이름은 눌러서 확인하세요':'')}
 function drawGrid(){var s=st(),u=unit();if(!u)return;var h='<thead><tr><th></th>';
   for(var c=1;c<=u.cols;c++)h+='<th>'+c+'</th>';h+='</tr></thead><tbody>';
   var used=0;
@@ -4628,7 +4674,7 @@ function drawGrid(){var s=st(),u=unit();if(!u)return;var h='<thead><tr><th></th>
     for(var c2=1;c2<=u.cols;c2++){var p=ROWS[r]+c2,it=s.items[key(u.id,s.rack,s.box,p)];if(it)used++;
       h+='<td data-p="'+p+'" class="'+(it?'k-drug':'')+(sel[p]?' sel':'')+'" title="'+p+(it?' · '+esc(it.n)+(it.d?' · '+it.d:''):' (빈칸)')+'"><span class="pl-l">'+(it?esc(it.n):'')+'</span></td>'}
     h+='</tr>'}
-  $('fz-grid').innerHTML=h+'</tbody>';
+  $('fz-grid').innerHTML=h+'</tbody>';fzFit();
   var tot=u.rows*u.cols;$('fz-title').textContent=esc(u.n)+' · 랙 '+s.rack+' · 박스 '+s.box+(boxName()?' ('+boxName()+')':'');
   $('fz-count').textContent=tot+'칸 중 '+used+'칸 사용 · 빈칸 '+(tot-used);
   var ns=Object.keys(sel).length;$('fz-sel').textContent=ns?ns+'칸 골랐음':''}
@@ -4640,33 +4686,46 @@ function drawList(){var q=st().q.trim().toLowerCase(),A=all().filter(function(x)
     return '<tr><td>'+esc(x.it.n)+'</td><td class="m">'+esc(x.u)+' · 랙'+x.r+' · 박스'+x.b+(x.bn?'('+esc(x.bn)+')':'')+' · '+x.p+'</td><td class="n">'+esc(x.it.d||'')+'</td><td><input class="cellin txt" data-fznote="'+esc(x.k)+'" value="'+esc(x.it.note||'')+'" placeholder="메모"></td><td><button type="button" data-fzgo="'+esc(x.k)+'">열기</button> <button type="button" data-fzrm="'+esc(x.k)+'" aria-label="꺼내기">×</button></td></tr>'}).join('')+'</tbody>'
     :'<tbody><tr><td class="hint">'+(q?'찾는 시료가 없습니다.':'아직 넣은 시료가 없습니다.')+'</td></tr></tbody>'}
 function renderAll(){renderSel();drawGrid();drawList();$('fz-q').value=st().q;$('fz-name').value=st().name||''}
-/* selection */
+/* selection: press and drag to sweep, release or click again to stop */
 function rect(a,b){var ra=ROWS.indexOf(a[0]),ca=+a.slice(1),rb=ROWS.indexOf(b[0]),cb=+b.slice(1),o={};
   for(var r=Math.min(ra,rb);r<=Math.max(ra,rb);r++)for(var c=Math.min(ca,cb);c<=Math.max(ca,cb);c++)o[ROWS[r]+c]=1;return o}
-$('fz-grid').addEventListener('pointerdown',function(e){var td=e.target.closest('td[data-p]'),th=e.target.closest('th');var u=unit();
-  if(th&&!td){var tr=th.parentNode,head=tr.parentNode.tagName==='THEAD',o={};
+function paintSel(){Array.prototype.forEach.call($('fz-grid').querySelectorAll('td[data-p]'),function(td){td.classList.toggle('sel',!!sel[td.dataset.p])});
+  var n=Object.keys(sel).length;$('fz-sel').textContent=n?n+'칸 골랐음'+(down!==null?' · 한 번 더 누르면 멈춰요':''):''}
+function stopDrag(){if(down===null)return;down=null;$('fz-grid').classList.remove('dragging');paintSel()}
+$('fz-fit').addEventListener('click',function(){var s2=st();s2.fit=fzFitOn()?'off':'on';S.touch();fzFit()});
+var fzrt=null;window.addEventListener('resize',function(){clearTimeout(fzrt);fzrt=setTimeout(fzFit,120)});
+window.addEventListener('orientationchange',function(){setTimeout(fzFit,250)});
+window.addEventListener('hashchange',function(){if((location.hash||'').indexOf('#freezer')===0)setTimeout(fzFit,30)});
+$('fz-grid').addEventListener('pointerdown',function(e){var td=e.target.closest('td[data-p]'),th=e.target.closest('th'),u=unit();
+  if(down!==null){stopDrag();e.preventDefault();return}
+  if(th&&!td){var head=th.parentNode.parentNode.tagName==='THEAD',o={};
     if(head){var c=+th.textContent;if(c)for(var r=0;r<u.rows;r++)o[ROWS[r]+c]=1}else{var rl=th.textContent;for(var c3=1;c3<=u.cols;c3++)o[rl+c3]=1}
     if(!e.shiftKey)sel={};Object.keys(o).forEach(function(k){sel[k]=1});drawGrid();return}
-  if(!td)return;e.preventDefault();down=td.dataset.p;base=e.shiftKey?Object.assign({},sel):{};
-  if(sel[down]&&!e.shiftKey&&Object.keys(sel).length===1){sel={};down=null;drawGrid();return}
-  sel=Object.assign({},base,rect(down,down));drawGrid();
-  var it=st().items[key(unit().id,st().rack,st().box,down)];if(it&&!e.shiftKey){$('fz-name').value=it.n;st().name=it.n}});
-$('fz-grid').addEventListener('pointerover',function(e){if(!down)return;var td=e.target.closest('td[data-p]');if(!td)return;sel=Object.assign({},base,rect(down,td.dataset.p));drawGrid()});
-document.addEventListener('pointerup',function(){down=null});
+  if(!td)return;e.preventDefault();
+  if(sel[td.dataset.p]&&!e.shiftKey&&Object.keys(sel).length===1){sel={};paintSel();return}
+  down=td.dataset.p;moved=false;base=e.shiftKey?Object.assign({},sel):{};
+  sel=Object.assign({},base,rect(down,down));$('fz-grid').classList.add('dragging');paintSel();
+  var it=st().items[key(u.id,st().rack,st().box,down)];if(it&&!e.shiftKey){$('fz-name').value=it.n;st().name=it.n}});
+$('fz-grid').addEventListener('pointerover',function(e){if(down===null)return;var td=e.target.closest('td[data-p]');if(!td)return;
+  moved=true;sel=Object.assign({},base,rect(down,td.dataset.p));paintSel()});
+document.addEventListener('pointermove',function(e){if(down!==null&&e.pointerType==='mouse'&&!e.buttons&&moved)stopDrag()});
+document.addEventListener('pointerup',stopDrag);document.addEventListener('pointercancel',stopDrag);
+window.addEventListener('blur',stopDrag);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&down!==null)stopDrag()});
 function today(){var d=new Date(),z=function(x){return (x<10?'0':'')+x};return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())}
 function picked(){var u=unit();return Object.keys(sel).filter(function(p){return ROWS.indexOf(p[0])<u.rows&&+p.slice(1)<=u.cols})
   .sort(function(a,b){return ROWS.indexOf(a[0])-ROWS.indexOf(b[0])||(+a.slice(1))-(+b.slice(1))})}
-$('fz-put').addEventListener('click',function(){var n=$('fz-name').value.trim(),P=picked();if(!n){$('fz-name').focus();return}
+$('fz-put').addEventListener('click',function(){stopDrag();var n=$('fz-name').value.trim(),P=picked();if(!n){$('fz-name').focus();return}
   if(!P.length){L.say('fz-status','먼저 칸을 고르세요.');return}var s=st(),u=unit();
   P.forEach(function(p){var k=key(u.id,s.rack,s.box,p),old=s.items[k];s.items[k]={n:n,d:(old&&old.d)||today(),note:(old&&old.note)||''}});
   sel={};renderAll();S.touch()});
 $('fz-name').addEventListener('input',function(){st().name=this.value;S.touch()});
 $('fz-name').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('fz-put').click()}});
-$('fz-seq').addEventListener('click',function(){var n=$('fz-name').value.trim(),P=picked();if(!n||!P.length){L.say('fz-status','이름을 쓰고 칸을 고르세요.');return}
+$('fz-seq').addEventListener('click',function(){stopDrag();var n=$('fz-name').value.trim(),P=picked();if(!n||!P.length){L.say('fz-status','이름을 쓰고 칸을 고르세요.');return}
   var m=n.match(/(\d+)\s*$/),base2=m?n.slice(0,m.index):n+' #',start=m?+m[1]:1,s=st(),u=unit();
   P.forEach(function(p,i){var k=key(u.id,s.rack,s.box,p),old=s.items[k];s.items[k]={n:base2+(start+i),d:(old&&old.d)||today(),note:(old&&old.note)||''}});
   sel={};renderAll();S.touch();L.say('fz-status',P.length+'칸을 연번으로 채웠습니다.')});
-$('fz-take').addEventListener('click',function(){var P=picked(),s=st(),u=unit();if(!P.length){L.say('fz-status','먼저 칸을 고르세요.');return}
+$('fz-take').addEventListener('click',function(){stopDrag();var P=picked(),s=st(),u=unit();if(!P.length){L.say('fz-status','먼저 칸을 고르세요.');return}
   P.forEach(function(p){delete s.items[key(u.id,s.rack,s.box,p)]});sel={};renderAll();S.touch()});
 ['unit','rack','box'].forEach(function(k){$('fz-'+k).addEventListener('change',function(){var s=st();
   if(k==='unit'){s.cur=this.value;s.rack=1;s.box=1}else s[k]=+this.value;sel={};renderAll();S.touch()})});
@@ -4768,10 +4827,10 @@ $('sk-reload').addEventListener('click',function(){load();L.say('sk-status','다
 $('sk-copy').addEventListener('click',function(){if(out.length<2){L.say('sk-status','복사할 표가 없습니다.');return}L.copy(out.map(function(r){return r.join('\t')}).join('\n'),'sk-status','복사했습니다.')});
 $('sk-order').addEventListener('click',function(){if(!ord.length){L.say('sk-status','발주할 물품이 없습니다 (이미 진행 중인 것은 뺍니다).');return}
   L.copy([['물품','제조사','카탈로그','사유']].concat(ord).map(function(r){return r.join('\t')}).join('\n'),'sk-status','발주 목록을 복사했습니다. 허브의 발주 기록에 붙여넣으세요.')});
-window.addEventListener('hashchange',function(){if(location.hash.indexOf('#stock')===0)load()});
-setInterval(function(){if(DATA==='none'&&!document.hidden&&location.hash.indexOf('#stock')===0)load()},5000);
-window.addEventListener('focus',function(){if(location.hash.indexOf('#stock')===0&&DATA==='none')load()});
-document.addEventListener('visibilitychange',function(){if(!document.hidden&&location.hash.indexOf('#stock')===0&&DATA==='none')load()});
+window.addEventListener('hashchange',function(){if(location.hash.indexOf('#freezer')===0)load()});
+setInterval(function(){if(DATA==='none'&&!document.hidden&&location.hash.indexOf('#freezer')===0)load()},5000);
+window.addEventListener('focus',function(){if(location.hash.indexOf('#freezer')===0&&DATA==='none')load()});
+document.addEventListener('visibilitychange',function(){if(!document.hidden&&location.hash.indexOf('#freezer')===0&&DATA==='none')load()});
 renderInputs();load();
 })();
 </script>
@@ -4976,6 +5035,10 @@ function today(){var d=new Date(),z=function(x){return (x<10?'0':'')+x};return d
 function hm(t){var d=new Date(t),z=function(x){return (x<10?'0':'')+x};return z(d.getHours())+':'+z(d.getMinutes())}
 function ls(k){try{return JSON.parse(localStorage.getItem('lab-tools-'+k))}catch(e){return null}}
 function tile(x,used){return '<a class="hm-tile" href="#'+x.v+'"><span class="hm-n">'+esc(x.n)+'</span><span class="hm-c">'+esc(cname(x.c))+(used?' · '+used+'회':'')+'</span></a>'}
+/* tools merged into another tab: carry old counts over */
+var MOVED={inject:'dosing',stock:'freezer'};
+function migrate(){var s=st(),ch=false;Object.keys(MOVED).forEach(function(k){if(s.used&&s.used[k]){var t=MOVED[k],o=s.used[k],n=s.used[t]||{n:0,at:0};
+  n.n=(n.n|0)+(o.n|0);n.at=Math.max(n.at||0,o.at||0);s.used[t]=n;delete s.used[k];ch=true}});if(ch)S.touch()}
 function draw(){var s=st(),T=tools(),u=s.used||{};
   var rec=T.slice().sort(function(a,b){return ((u[b.v]&&u[b.v].n)||0)-((u[a.v]&&u[a.v].n)||0)||((u[b.v]&&u[b.v].at)||0)-((u[a.v]&&u[a.v].at)||0)}).filter(function(x){return u[x.v]}).slice(0,8);
   $('hm-recent').innerHTML=rec.length?rec.map(function(x){return tile(x,u[x.v].n)}).join(''):'<p class="hint">아직 쓴 도구가 없습니다. 아래 \'전체 도구 보기\'에서 골라 보세요.</p>';
@@ -5045,7 +5108,7 @@ $('hm-send').addEventListener('click',function(){var v=$('hm-day').value;if(!v.t
   L.say('hm-status',n?'연구 허브로 보냈어요.':'보내지 못했습니다.')});
 $('hm-all').addEventListener('click',function(){var b=$('hm-allbox');b.hidden=!b.hidden;$('hm-all').textContent=b.hidden?'전체 도구 보기':'접기'});
 /* track which tool is used */
-function track(){var v=(location.hash||'').slice(1).split('?')[0];if(!v||v==='home')return;var s=st(),u=s.used[v]||{n:0,at:0};u.n++;u.at=Date.now();s.used[v]=u;S.touch()}
+function track(){var v=(location.hash||'').slice(1).split('?')[0];if(MOVED[v])v=MOVED[v];if(!v||v==='home')return;var s=st(),u=s.used[v]||{n:0,at:0};u.n++;u.at=Date.now();s.used[v]=u;S.touch()}
 window.addEventListener('hashchange',track);
 function archive(){var s=st();if(s.date&&s.date!==today()&&s.day&&s.day.replace(/\s/g,'').indexOf('아직오늘기록이없습니다')<0){s.log=s.log||{};s.log[s.date]=s.day;
     var ks=Object.keys(s.log).sort();while(ks.length>120){delete s.log[ks.shift()]}S.touch()}}
@@ -5065,7 +5128,7 @@ function refresh(){if((location.hash||'').indexOf('#home')!==0&&location.hash)re
 window.addEventListener('hashchange',function(){if((location.hash||'').indexOf('#home')===0)refresh()});
 var h=new Date().getHours();
 $('hm-greet').textContent=(h<5?'늦었네요':h<11?'좋은 아침이에요':h<17?'실험 잘 되고 있나요':h<22?'수고 많으셨어요':'늦게까지 고생이네요')+' · 실험도구모음';
-refresh();track();
+migrate();refresh();track();
 setInterval(function(){if((location.hash||'').indexOf('#home')===0)alerts()},30000);
 })();
 </script>
@@ -5149,7 +5212,7 @@ $('sn-send').addEventListener('click',function(){var it={id:Date.now().toString(
 (function(){
 'use strict';
 var L=window.LT,$=L.$,esc=L.esc,PK='lab-tools-presets-v1';
-var KEYS={bca:'lab-tools-bca-v1',molarity:'lab-tools-molarity-v1','sds-page':'lab-tools-gel-v1',dar:'lab-tools-dar-v1',dosing:'lab-tools-dose-v1',cells:'lab-tools-cells-v1',buffer:'lab-tools-buffer-v1',convert:'lab-tools-convert-v1',qpcr:'lab-tools-qpcr-v1',seq:'lab-tools-seq-v1',nano:'lab-tools-nano-v1',wb:'lab-tools-wb-v1',serial:'lab-tools-serial-v1',animal:'lab-tools-animal-v1',curve:'lab-tools-curve-v1',via:'lab-tools-via-v1',plate:'lab-tools-plate-v1',proto:'lab-tools-proto-v1',label:'lab-tools-label-v1',trans:'lab-tools-trans-v1',inject:'lab-tools-inject-v1',conc:'lab-tools-conc-v1',freezer:'lab-tools-freezer-v1',stock:'lab-tools-stock-v1',calc:'lab-tools-calc-v1'};
+var KEYS={bca:'lab-tools-bca-v1',molarity:'lab-tools-molarity-v1','sds-page':'lab-tools-gel-v1',dar:'lab-tools-dar-v1',dosing:'lab-tools-dose-v1',cells:'lab-tools-cells-v1',buffer:'lab-tools-buffer-v1',convert:'lab-tools-convert-v1',qpcr:'lab-tools-qpcr-v1',seq:'lab-tools-seq-v1',nano:'lab-tools-nano-v1',wb:'lab-tools-wb-v1',serial:'lab-tools-serial-v1',animal:'lab-tools-animal-v1',curve:'lab-tools-curve-v1',via:'lab-tools-via-v1',plate:'lab-tools-plate-v1',proto:'lab-tools-proto-v1',label:'lab-tools-label-v1',trans:'lab-tools-trans-v1',conc:'lab-tools-conc-v1',freezer:'lab-tools-freezer-v1',calc:'lab-tools-calc-v1'};
 function view(){return (location.hash||'').slice(1).split('?')[0]||'bca'}
 function vname(v){var a=document.querySelector('nav.tools a[data-view="'+v+'"]');return a?a.textContent:v}
 function all(){try{var p=JSON.parse(localStorage.getItem(PK));return p&&typeof p==='object'?p:{}}catch(e){return {}}}
@@ -5214,7 +5277,7 @@ function putAll(map){var ks=Object.keys(map);if(!ks.length)return Promise.resolv
 function b64(blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){res(fr.result)};fr.onerror=function(){rej(fr.error)};fr.readAsDataURL(blob)})}
 function unb64(s){return fetch(s).then(function(r){return r.blob()})}
 var NAMES={};function toolName(k){if(!Object.keys(NAMES).length)Array.prototype.forEach.call(document.querySelectorAll('nav.tools .toolrow a'),function(a){NAMES['lab-tools-'+a.dataset.view+'-v1']=a.textContent});
-  return NAMES[k]||({'lab-tools-timers-v1':'실험 타이머','lab-tools-presets-v1':'저장해 둔 조건','lab-tools-gel-v1':'SDS-PAGE gel','lab-tools-dose-v1':'투여량 계산기','lab-tools-view':'마지막으로 연 도구','lab-tools-theme':'테마','lab-tools-bk-at':'백업 기록','lab-tools-molarity-v1':'몰농도 계산기'})[k]||k.replace('lab-tools-','').replace(/-v1$/,'')}
+  return NAMES[k]||({'lab-tools-timers-v1':'실험 타이머','lab-tools-presets-v1':'저장해 둔 조건','lab-tools-gel-v1':'SDS-PAGE gel','lab-tools-dose-v1':'투여량 계산기','lab-tools-view':'마지막으로 연 도구','lab-tools-theme':'테마','lab-tools-bk-at':'백업 기록','lab-tools-molarity-v1':'몰농도 계산기','lab-tools-inject-v1':'주사량 표 (투여량 · 주사량)','lab-tools-stock-v1':'재고 · 유효기한 (냉동고 · 재고)','lab-tools-dose-v1':'투여량 · 주사량','lab-tools-home-v1':'홈 · 실험 일지'})[k]||k.replace('lab-tools-','').replace(/-v1$/,'')}
 var picked=null;
 function drawPick(){var ks=keys();picked=picked||{};ks.forEach(function(k){if(picked[k]==null)picked[k]=true});
   $('bk-pick').innerHTML=ks.map(function(k){return '<label class="bk-it"><input type="checkbox" data-bk="'+k+'"'+(picked[k]?' checked':'')+'> '+esc(toolName(k))+' <span class="hint">'+size((localStorage.getItem(k)||'').length*2)+'</span></label>'}).join('')||'<p class="hint">저장된 것이 없습니다.</p>'}
@@ -5301,12 +5364,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Enter'&&isNum(e.targ
 </script>
 <script>
 (function(){
-  var views=['home','bca','molarity','sds-page','dar','dosing','cells','buffer','convert','qpcr','seq','nano','wb','serial','animal','curve','via','plate','proto','label','trans','inject','conc','freezer','stock','photo','calc'],VK='lab-tools-view';
+  var views=['home','bca','molarity','sds-page','dar','dosing','cells','buffer','convert','qpcr','seq','nano','wb','serial','animal','curve','via','plate','proto','label','trans','conc','freezer','photo','calc'],VK='lab-tools-view';
   var cats=document.querySelectorAll('nav.tools .cats button[data-cat]'),links=document.querySelectorAll('nav.tools .toolrow a');
   function route(){
-    var raw=location.hash.replace('#',''),h=raw.split('?')[0],saved='';try{saved=localStorage.getItem(VK)||''}catch(e){}
+    var raw=location.hash.replace('#',''),h=raw.split('?')[0],saved='';var MOVED={inject:'dosing',stock:'freezer'};if(MOVED[h])h=MOVED[h];try{saved=localStorage.getItem(VK)||''}catch(e){}
     var v=views.indexOf(h)>=0?h:views.indexOf(saved)>=0?saved:'home';
-    if(h!==v&&history.replaceState)history.replaceState(null,'','#'+v);
+    if(raw!==v&&history.replaceState)history.replaceState(null,'','#'+v);
     try{localStorage.setItem(VK,v)}catch(e){}
     views.forEach(function(id){var el=document.getElementById(id);if(el)el.hidden=id!==v});
     var cat='';Array.prototype.forEach.call(links,function(a){if(a.dataset.view===v){a.setAttribute('aria-current','page');cat=a.dataset.cat}else a.removeAttribute('aria-current')});
