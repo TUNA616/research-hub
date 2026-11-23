@@ -7,7 +7,7 @@
 
 | 함께 쓰는 사이트 | 주소 |
 |---|---|
-| 실험도구모음 (홈·오늘 정리, 타이머, 조건 저장·공유, 백업, 앱 설치·오프라인, 실험노트로 보내기 / 단백질: BCA·표준곡선(ELISA)·SDS-PAGE·Western 정량·DAR / 세포·동물: 세포 계수·Serial dilution·생존율·IC50·투여량·동물 군 배정·주사량 표 / 분자생물: qPCR ΔΔCt·Transfection·서열 도구 / 제형: 나노입자 특성 / 계산: 몰농도·버퍼·변환·단위 계산 메모장·농축/버퍼 교환 / 플레이트 배치도·프로토콜 체크리스트·라벨/시료 코드·냉동고 지도·재고 알림·사진 메모) | https://tuna616.github.io/research-hub/lab-tools/ |
+| 실험도구모음 (홈·오늘 정리, 타이머, 조건 저장·공유, 백업, 앱 설치·오프라인, 실험노트로 보내기 / 단백질: BCA·표준곡선(ELISA)·SDS-PAGE·Western 정량·DAR / 세포·동물: 세포 계수·Serial dilution·생존율·IC50·투여량/주사량·동물 군 배정 / 분자생물: qPCR ΔΔCt·Transfection·서열 도구 / 제형: 나노입자 특성 / 계산: 몰농도·버퍼·변환·단위 계산 메모장·농축/버퍼 교환 / 플레이트 배치도·프로토콜 체크리스트·라벨/시료 코드·냉동고/재고·사진 메모) | https://tuna616.github.io/research-hub/lab-tools/ |
 | 전공 학습실 (수업 자료로 공부 노트·시험 문제 만들기) | https://tuna616.github.io/study-room/ |
 
 ---
